@@ -5,15 +5,184 @@
 # https://github.com/psadmin-io/psadmin-plus #
 #--------------------------------------------#
 
-# TODO fix tabs
-
-# vars
+###########################
+###  VARS
+###########################
+#PSCFGHOMES_DIR=
+#PSCONFIGS_DIR=
 title=psadmin-plus
 host=$(hostname)
 required_vars=( PSCFGHOMES_DIR PSCONFIGS_DIR )
-#PSCFGHOMES_DIR=
-#PSCONFIGS_DIR=
+set_editor
 
+###########################
+###  WEB
+###########################
+function web_status
+{
+    echoinfo "Webserver status"
+	"$PS_HOME"/bin/psadmin -w status -d "$domain"
+}
+
+function web_start
+{
+    echoinfo "Starting webserver"
+	"$PS_HOME"/bin/psadmin -w start -d "$domain"
+}
+
+function web_stop
+{
+  echoinfo "Stopping webserver"
+  "$PS_HOME"/bin/psadmin -w shutdown -d "$domain"
+}
+
+function web_purge
+{
+  echoinfo "Purging webserver cache"
+  rm -rfv "$PS_PIA_HOME/webserv/$domain/applications/peoplesoft/PORTAL*/*/cache"
+}
+
+function web_restart
+{
+    web_stop
+    web_start
+}
+
+function web_bounce
+{
+    web_stop
+    web_purge
+    web_start
+}
+
+###########################
+###  APP
+###########################
+function app_status
+{
+    "$PS_HOME"/bin/psadmin -c sstatus -d "$domain" 2>&1
+    "$PS_HOME"/bin/psadmin -c cstatus -d "$domain" 2>&1
+    "$PS_HOME"/bin/psadmin -c qstatus -d "$domain" 2>&1
+    "$PS_HOME"/bin/psadmin -c pslist -d "$domain" 2>&1
+}
+
+function app_start
+{
+   "$PS_HOME"/bin/psadmin -c boot -d "$domain" 2>&1
+}
+
+function app_stop
+{
+    "$PS_HOME"/bin/psadmin -c shutdown -d "$domain" 2>&1
+}
+
+function app_kill
+{
+    "$PS_HOME"/bin/psadmin -c shutdown! -d "$domain" 2>&1
+}
+
+function app_configure
+{
+    "$PS_HOME"/bin/psadmin -c configure -d "$domain" 2>&1
+}
+
+function app_purge
+{
+    "$PS_HOME"/bin/psadmin -c purge -d "$domain" 2>&1
+    echo "$domain cache purged."
+}
+
+function app_flush
+{
+    "$PS_HOME"/bin/psadmin -c cleanipc -d "$domain" 2>&1
+}
+
+function app_restart
+{
+	"$PS_HOME"/bin/psadmin -c shutdown -d "$domain" 2>&1
+    "$PS_HOME"/bin/psadmin -c boot -d "$domain" 2>&1
+}
+
+function app_bounce
+{
+    "$PS_HOME"/bin/psadmin -c shutdown -d "$domain" 2>&1
+    "$PS_HOME"/bin/psadmin -c cleanipc -d "$domain" 2>&1
+    "$PS_HOME"/bin/psadmin -c purge -d "$domain" 2>&1
+    "$PS_HOME"/bin/psadmin -c configure -d "$domain" 2>&1
+    "$PS_HOME"/bin/psadmin -c boot -d "$domain" 2>&1
+}
+
+########################
+### PRCS
+########################
+function prcs_status
+{
+    "$PS_HOME"/bin/psadmin -p status -d "$domain" 2>&1
+}
+
+function prcs_start
+{
+    "$PS_HOME"/bin/psadmin -p start -d "$domain" 2>&1
+}
+
+function prcs_stop
+{
+    "$PS_HOME"/bin/psadmin -p stop -d "$domain" 2>&1
+}
+
+function prcs_kill
+{
+    "$PS_HOME"/bin/psadmin -p kill -d "$domain" 2>&1
+}
+
+function prcs_configure
+{
+    "$PS_HOME"/bin/psadmin -p configure -d "$domain" 2>&1
+}
+
+function prcs_flush
+{
+    "$PS_HOME"/bin/psadmin -p cleanipc -d "$domain" 2>&1
+}
+
+function prcs_restart
+{
+    "$PS_HOME"/bin/psadmin -p stop -d "$domain" 2>&1
+    "$PS_HOME"/bin/psadmin -p start -d "$domain" 2>&1
+}
+
+function prcs_bounce
+{
+    "$PS_HOME"/bin/psadmin -p stop -d "$domain" 2>&1
+    "$PS_HOME"/bin/psadmin -p cleanipc -d "$domain" 2>&1
+    "$PS_HOME"/bin/psadmin -p configure -d "$domain" 2>&1
+    "$PS_HOME"/bin/psadmin -p start -d "$domain" 2>&1
+}
+
+function prcs_compile
+{
+    if [[ -f $PS_HOME/setup/pscbl.mak ]]; then
+      echoinfo "Recompiling COBOL"
+      cd "$PS_HOME"/setup && ./pscbl.mak
+      cd "$PS_HOME"/setup && ./pscbl.mak
+    else
+      echoerror "Could not find the file $PS_HOME/setup/pscbl.mak"
+      exit 1
+    fi
+}
+
+function prcs_link
+{
+    if [[ -f $PS_HOME/setup/psrun.mak ]]; then
+      echoinfo "Linking COBOL"
+      cd "$PS_HOME"/setup && ./psrun.mak
+    else
+      echoerror "Could not find the file $PS_HOME/setup/psrun.mak"
+      exit 1
+    fi
+}
+
+### OTHER
 function set_editor
 {	
 	if [ -z "$EDITOR" ]; then
@@ -132,6 +301,7 @@ function set_cfgfile
 	cfgtmp=$(echo ${cfgs[0]} | cut -d'-' -f1)
 	cfgfile="psconfig.${cfgtmp}.sh"
 }
+
 
 function call_psadmin
 { 
@@ -329,6 +499,5 @@ function main_menu
 
 # main
 validate_vars
-set_editor
 main_menu
 

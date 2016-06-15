@@ -4,55 +4,67 @@
 # psadmin-plus                               #
 # https://github.com/psadmin-io/psadmin-plus #
 #--------------------------------------------#
+# TODO caps please
+# TODO fix tabs please
+########################################### TODO select only dirs for get_domains ##
 
-###########################
-###  VARS
-###########################
-#PSCFGHOMES_DIR=
-#PSCONFIGS_DIR=
-title=psadmin-plus
-host=$(hostname)
-required_vars=( PSCFGHOMES_DIR PSCONFIGS_DIR )
-set_editor
 
 ###########################
 ###  WEB
 ###########################
 function web_status
-{
-    echoinfo "Webserver status"
-	"$PS_HOME"/bin/psadmin -w status -d "$domain"
+{    
+    domain=$1
+	add_step "\$PS_HOME/bin/psadmin -w status -d $domain" 
 }
 
 function web_start
 {
-    echoinfo "Starting webserver"
-	"$PS_HOME"/bin/psadmin -w start -d "$domain"
+    domain=$1
+	add_step "\$PS_HOME/bin/psadmin -w start -d $domain"
 }
 
 function web_stop
 {
-  echoinfo "Stopping webserver"
-  "$PS_HOME"/bin/psadmin -w shutdown -d "$domain"
-}
-
-function web_purge
-{
-  echoinfo "Purging webserver cache"
-  rm -rfv "$PS_PIA_HOME/webserv/$domain/applications/peoplesoft/PORTAL*/*/cache"
+    domain=$1
+	add_step "\$PS_HOME/bin/psadmin -w shutdown -d $domain"
 }
 
 function web_restart
 {
-    web_stop
-    web_start
+	domain=$1
+    web_stop $domain
+    web_start $domain
+}
+
+function web_purge
+{
+	domain=$1
+	add_step "rm -rfv $PS_PIA_HOME/webserv/$domain/applications/peoplesoft/PORTAL*/*/cache"
 }
 
 function web_bounce
 {
-    web_stop
-    web_purge
-    web_start
+	domain=$1
+    web_stop $domain
+    web_purge $domain
+    web_start $domain
+}
+
+function web_kill
+{
+
+	add_step "printf 'Kill not available for Web\n'"
+}
+
+function web_configuration
+{
+	add_step "printf 'Configuration not available for Web\n'"
+}
+
+function web_flush
+{
+	add_step "printf 'Flush not available for Web\n'"
 }
 
 ###########################
@@ -60,135 +72,287 @@ function web_bounce
 ###########################
 function app_status
 {
-    "$PS_HOME"/bin/psadmin -c sstatus -d "$domain" 2>&1
-    "$PS_HOME"/bin/psadmin -c cstatus -d "$domain" 2>&1
-    "$PS_HOME"/bin/psadmin -c qstatus -d "$domain" 2>&1
-    "$PS_HOME"/bin/psadmin -c pslist -d "$domain" 2>&1
+    domain=$1
+	add_step "\$PS_HOME/bin/psadmin -c sstatus -d $domain"
 }
 
 function app_start
 {
-   "$PS_HOME"/bin/psadmin -c boot -d "$domain" 2>&1
+    domain=$1
+    add_step "\$PS_HOME/bin/psadmin -c boot -d $domain"
 }
 
 function app_stop
 {
-    "$PS_HOME"/bin/psadmin -c shutdown -d "$domain" 2>&1
-}
-
-function app_kill
-{
-    "$PS_HOME"/bin/psadmin -c shutdown! -d "$domain" 2>&1
-}
-
-function app_configure
-{
-    "$PS_HOME"/bin/psadmin -c configure -d "$domain" 2>&1
-}
-
-function app_purge
-{
-    "$PS_HOME"/bin/psadmin -c purge -d "$domain" 2>&1
-    echo "$domain cache purged."
-}
-
-function app_flush
-{
-    "$PS_HOME"/bin/psadmin -c cleanipc -d "$domain" 2>&1
+    domain=$1
+    add_step "\$PS_HOME/bin/psadmin -c shutdown -d $domain"
 }
 
 function app_restart
 {
-	"$PS_HOME"/bin/psadmin -c shutdown -d "$domain" 2>&1
-    "$PS_HOME"/bin/psadmin -c boot -d "$domain" 2>&1
+    domain=$1
+	app_stop $domain
+	app_start $domain
+}
+
+function app_purge
+{
+	domain=$1
+    add_step "\$PS_HOME/bin/psadmin -c purge -d $domain"
 }
 
 function app_bounce
 {
-    "$PS_HOME"/bin/psadmin -c shutdown -d "$domain" 2>&1
-    "$PS_HOME"/bin/psadmin -c cleanipc -d "$domain" 2>&1
-    "$PS_HOME"/bin/psadmin -c purge -d "$domain" 2>&1
-    "$PS_HOME"/bin/psadmin -c configure -d "$domain" 2>&1
-    "$PS_HOME"/bin/psadmin -c boot -d "$domain" 2>&1
+	domain=$1
+	app_stop $domain
+	app_flush $domain
+	app_purge $domain
+	app_configure $domain
+	app_start $domain
 }
+
+function app_kill
+{
+    domain=$1
+	add_step "\$PS_HOME/bin/psadmin -c shutdown! -d $domain"
+}
+
+function app_configure
+{
+	domain=$1
+    add_step "\$PS_HOME/bin/psadmin -c configure -d $domain"
+}
+
+function app_flush
+{
+	domain=$1
+    add_step "\$PS_HOME/bin/psadmin -c cleanipc -d $domain"
+}
+
 
 ########################
 ### PRCS
 ########################
 function prcs_status
 {
-    "$PS_HOME"/bin/psadmin -p status -d "$domain" 2>&1
+	domain=$1
+    add_step "\$PS_HOME/bin/psadmin -p status -d $domain"
 }
 
 function prcs_start
 {
-    "$PS_HOME"/bin/psadmin -p start -d "$domain" 2>&1
+    domain=$1
+    add_step "\$PS_HOME/bin/psadmin -p start -d $domain"
 }
 
 function prcs_stop
 {
-    "$PS_HOME"/bin/psadmin -p stop -d "$domain" 2>&1
-}
-
-function prcs_kill
-{
-    "$PS_HOME"/bin/psadmin -p kill -d "$domain" 2>&1
-}
-
-function prcs_configure
-{
-    "$PS_HOME"/bin/psadmin -p configure -d "$domain" 2>&1
-}
-
-function prcs_flush
-{
-    "$PS_HOME"/bin/psadmin -p cleanipc -d "$domain" 2>&1
+    domain=$1
+    add_step "\$PS_HOME/bin/psadmin -p stop -d $domain"
 }
 
 function prcs_restart
 {
-    "$PS_HOME"/bin/psadmin -p stop -d "$domain" 2>&1
-    "$PS_HOME"/bin/psadmin -p start -d "$domain" 2>&1
+    domain=$1
+	prcs_stop $domain
+	prcs_start $domain
+}
+
+function prcs_purge
+{
+	add_step "printf 'Purge not available for Prcs\n'"
 }
 
 function prcs_bounce
 {
-    "$PS_HOME"/bin/psadmin -p stop -d "$domain" 2>&1
-    "$PS_HOME"/bin/psadmin -p cleanipc -d "$domain" 2>&1
-    "$PS_HOME"/bin/psadmin -p configure -d "$domain" 2>&1
-    "$PS_HOME"/bin/psadmin -p start -d "$domain" 2>&1
+	domain=$1
+	prcs_stop $domain
+	prcs_flush $domain
+	prcs_configure $domain
+	prcs_start $domain
 }
 
-function prcs_compile
+function prcs_kill
 {
-    if [[ -f $PS_HOME/setup/pscbl.mak ]]; then
-      echoinfo "Recompiling COBOL"
-      cd "$PS_HOME"/setup && ./pscbl.mak
-      cd "$PS_HOME"/setup && ./pscbl.mak
-    else
-      echoerror "Could not find the file $PS_HOME/setup/pscbl.mak"
-      exit 1
-    fi
+	domain=$1
+    add_step "\$PS_HOME/bin/psadmin -p kill -d $domain"
 }
 
-function prcs_link
+function prcs_configure
 {
-    if [[ -f $PS_HOME/setup/psrun.mak ]]; then
-      echoinfo "Linking COBOL"
-      cd "$PS_HOME"/setup && ./psrun.mak
-    else
-      echoerror "Could not find the file $PS_HOME/setup/psrun.mak"
-      exit 1
-    fi
+	domain=$1
+    add_step "\$PS_HOME/bin/psadmin -p configure -d $domain" 
 }
 
-### OTHER
-function set_editor
-{	
-	if [ -z "$EDITOR" ]; then
-		EDITOR=vim
+function prcs_flush
+{
+    domain=$1
+	add_step "\$PS_HOME/bin/psadmin -p cleanipc -d $domain"
+}
+
+#TODO
+#function prcs_compile
+#{
+#    if [[ -f $PS_HOME/setup/pscbl.mak ]]; then
+#      echoinfo "Recompiling COBOL"
+#      cd "$PS_HOME"/setup && ./pscbl.mak
+#      cd "$PS_HOME"/setup && ./pscbl.mak
+#    else
+#      echoerror "Could not find the file $PS_HOME/setup/pscbl.mak"
+#      exit 1
+#    fi
+#}
+
+#TODO
+#function prcs_link
+#{
+#    if [[ -f $PS_HOME/setup/psrun.mak ]]; then
+#      echoinfo "Linking COBOL"
+#      cd "$PS_HOME"/setup && ./psrun.mak
+#    else
+#      echoerror "Could not find the file $PS_HOME/setup/psrun.mak"
+#      exit 1
+#    fi
+#}
+
+
+###########################
+### Menus   
+###########################
+
+function main_menu 
+{
+	cd $PSCFGHOMES_DIR
+    cfghomes=(*)
+	
+	option=0
+	cfgs=() 
+	types=()
+		
+	until [ "$option" = "q" ]; do
+	print_header
+	echo " 0 - Multi" 
+	for ((i=0; i<${#cfghomes[*]}; i++));
+	do
+		print_menu_item $((i+1)) ${cfghomes[i]}
+	done
+
+	echo "   - "
+	echo " q - Quit"
+	echo -e "\n"
+	echo -n "Enter choice: "
+	read option
+	echo ""
+	case $option in
+		0 ) multi_menu;;
+		q ) clear; exit ;;
+		* ) cfgs=(${cfghomes[$((option-1))]}); types=('web' 'app' 'prcs'); action_menu;;
+	esac	
+	done
+}
+
+function multi_menu 
+{
+    option=0
+
+    until [ "$option" = "q" ]; do
+	cfgs=() 	
+	types=()
+    print_header
+
+	echo " 1 - Select Domains"
+	echo " 2 - All Domains"
+	echo " 3 - Web Domains"
+	echo " 4 - App Domains"
+	echo " 5 - Prcs Domains"
+	echo "   - "
+	echo " q - Quit"
+	echo -e "\n"
+	echo -n "Enter choice: "
+	
+	read option
+	echo ""
+	case $option in
+		1 ) cfgs=('todo'); types=('todo'); action_menu;;
+		2 ) get_cfgs_web; get_cfgs_app; get_cfgs_prcs; types=('web' 'app' 'prcs'); action_menu;;
+		3 ) get_cfgs_web; types=('web'); action_menu;;
+		4 ) get_cfgs_app; types=('app'); action_menu;;
+		5 ) get_cfgs_prcs; types=('prcs'); action_menu;;
+		q ) clear; main_menu ;;
+		* ) echo "ya messed up, yo";;
+	esac
+	done
+}
+
+function action_menu
+{
+    option=0
+
+    until [ "$option" = "q" ]; do
+	print_header
+
+	echo " 1 - Status     6 - Bounce    "
+	echo " 2 - Start      7 - Kill      "
+	echo " 3 - Stop       8 - Configure "
+	echo " 4 - Restart    9 - Flush     "
+	echo " 5 - Purge"
+	# not multi select?
+	if [ ${#cfgs[@]} -eq 1 ]; then
+		echo " ----------------- "
+		echo " 01 - psadmin"
+		set_cfgfile
+		echo " 02 - ${cfgfile}"
 	fi
+	echo "   - "
+	echo " q - Quit"
+	echo -e "\n"
+	echo -n "Enter choice: "
+	
+	read option
+	echo ""
+	case $option in
+		1 ) call_action "status";;
+		2 ) call_action "start" ;;
+		3 ) call_action "stop";;
+		4 ) call_action "restart";;
+		5 ) call_action "purge";;
+		6 ) call_action "bounce";;
+		7 ) call_action "kill";;
+		8 ) call_action "configure";;
+		9 ) call_action "flush";;
+		01 ) call_psadmin;;
+		02 ) call_psconfig;;
+		q ) clear; main_menu ;;
+		* ) echo "ya messed up, yo";;
+	esac
+	done
 }
+
+function print_header
+{
+	clear
+	echo "+-------------------------------------------------+" 
+	echo "| $(echo_color $title "lblue")   host: $(echo_color $host "lgreen") "	
+	echo "|                cfgs: $(echo_color "${cfgs[*]}" "lgreen") "
+	echo "|               types: $(echo_color "${types[*]}" "lgreen") "
+	echo "+-------------------------------------------------+"
+}
+
+function print_menu_item
+{
+	item=$1
+    	cfg=$2
+	
+	echo -n " $item - $cfg [" 
+	check_web $cfg 
+	check_app $cfg
+	check_prcs $cfg
+	echo "]"
+}
+
+###########################
+### Misc   
+###########################
 
 function validate_vars
 {
@@ -302,14 +466,82 @@ function set_cfgfile
 	cfgfile="psconfig.${cfgtmp}.sh"
 }
 
+function set_domains
+{	
+	case $type in
+	#TODO PS_CFG_HOME
+		web )  dirs=($PS_CFG_HOME/webserv/*);;
+		app ) dirs=($PS_CFG_HOME/appserv/*);;
+		prcs ) dirs=($PS_CFG_HOME/appserv/prcs/*);;
+		* ) echo "something went wrong setting domains";;
+	esac
+	
+	doms=()
+	shopt -s nullglob # handles empty dirs
+	for dir in "${dirs[@]}"
+	do
+		if [ -d "$dir" ]
+		then
+			dirname=${dir##*/} # strip fullpath
+			if [[ "$dirname" != "Search" && "$dirname" != "prcs" ]]
+			then
+				doms+=($dirname) 
+			fi
+		fi
+	done
+}
+
+function add_step
+{
+	step=$1
+	echo "$step" >> $PSAPLUS_WRK
+	#script=$step
+}
+
+function call_action
+{
+	act=$1
+	# loop cfg
+	for ((i=0; i<${#cfgs[*]}; i++));
+	do
+		cfg=${cfg[i]}
+		cd $PSCONFIGS_DIR #TODO
+    	. $cfgfile #TODO
+		# loop type
+		add_step "printf '\n========== cfg: $cfg ============\n'"
+		add_step "cd $PSCONFIGS_DIR #TODO"
+    	add_step ". $cfgfile #TODO"
+    	for ((j=0; j<${#types[*]}; j++));
+		do
+			type=${types[j]}
+			# loop domains
+			add_step "printf '\n    ========== type: $type ============\n'"
+			set_domains #$cfg $type
+			for ((k=0; k<${#doms[*]}; k++));			
+			do				
+				dom=${doms[k]}
+				add_step "printf '\n        ========== domain: $dom ============\n\n'"
+				# call function by dynamic name
+				${type}_${act} $dom 
+				add_step "printf '\n        ====================================\n'"
+			done
+			add_step "printf '\n    ====================================\n'"
+		done
+		add_step "printf '\n====================================\n'"
+	done
+	#TODO
+	. $PSAPLUS_WRK
+	#TODO eval $script
+	read -rsp $'\nPress any key to continue...\n' -n1 key
+}
 
 function call_psadmin
 { 
 	set_cfgfile
 	clear
 	cd $PSCONFIGS_DIR
-	. ./$cfgfile
-	psadmin
+	. $cfgfile 
+	"$PS_HOME"/bin/psadmin
 }
 
 function call_psconfig
@@ -317,30 +549,9 @@ function call_psconfig
 	set_cfgfile
     clear
     cd $PSCONFIGS_DIR
-    $EDITOR $cfgfile
+    $EDITOR $cfgfile #TODO
 }
 
-function print_header
-{
-	clear
-	echo "+-------------------------------------------------+" 
-	echo "| $(echo_color $title "lblue")   host: $(echo_color $host "lgreen") "	
-	echo "|                cfgs: $(echo_color "${cfgs[*]}" "lgreen") "
-	echo "|               modes: $(echo_color "${modes[*]}" "lgreen") "
-	echo "+-------------------------------------------------+"
-}
-
-function print_menu_item
-{
-	item=$1
-    	cfg=$2
-	
-	echo -n " $item - $cfg [" 
-	check_web $cfg 
-	check_app $cfg
-	check_prcs $cfg
-	echo "]"
-}
 
 function add_cfgs
 { 	
@@ -398,106 +609,30 @@ function get_cfgs_prcs
 	cfgs=($(printf "%s\n" "${cfgs[@]}" | sort -u))	
 }
 
-function action_menu
-{
-    option=0
+###########################
+### Main   
+###########################
+#PSCFGHOMES_DIR=
+#PSCONFIGS_DIR=
+#PSAPLUS_WRK=
+PS_PIA_HOME=$PS_CFG_HOME
+title=psadmin-plus
+host=$(hostname)
+required_vars=( PSCFGHOMES_DIR PSCONFIGS_DIR )
 
-    until [ "$option" = "q" ]; do
-	print_header
+# set workfile
+if [ -z "$PSAPLUS_WRK" ]; then
+	PSAPLUS_WRK="$HOME/.psadmin-plus.wrk"
+fi
+> $PSAPLUS_WRK # clear file
+add_step "#!/bin/bash"
+add_step "# Generated by $(whoami) $(date '+%d/%m/%Y %H:%M:%S')"
 
-	echo " 1 - Status"
-	echo " 2 - Start"
-	echo " 3 - Stop"
-	# not multi select?
-	if [ ${#cfgs[@]} -eq 1 ]; then
-		echo " 4 - psadmin"
-		set_cfgfile
-		echo " 5 - ${cfgfile}"
-	fi
-	echo "   - "
-	echo " q - Quit"
-	echo -e "\n"
-	echo -n "Enter choice: "
-	
-	read option
-	echo ""
-	case $option in
-		1 ) echo 'todo' ; press_enter;;
-		2 ) echo 'todo' ; press_enter;;
-		3 ) echo 'todo' ; press_enter;;
-		4 ) call_psadmin; press_enter;;
-		5 ) call_psconfig; press_enter;;
-		q ) clear; main_menu ;;
-		* ) echo "ya messed up, yo"; press_enter ;;
-	esac
-	done
-}
+# set editor
+if [ -z "$EDITOR" ]; then
+	EDITOR='vim'
+fi
 
-function multi_menu 
-{
-    option=0
-
-    until [ "$option" = "q" ]; do
-	cfgs=() 	
-	modes=()
-    print_header
-
-	echo " 1 - Select Domains"
-	echo " 2 - All Domains"
-	echo " 3 - Web Domains"
-	echo " 4 - App Domains"
-	echo " 5 - Prcs Domains"
-	echo "   - "
-	echo " q - Quit"
-	echo -e "\n"
-	echo -n "Enter choice: "
-	
-	read option
-	echo ""
-	case $option in
-		1 ) cfgs=('todo'); modes=('todo'); action_menu; press_enter;;
-		2 ) get_cfgs_web; get_cfgs_app; get_cfgs_prcs; modes=('web' 'app' 'prcs'); action_menu; press_enter;;
-		3 ) get_cfgs_web; modes=('web'); action_menu; press_enter;;
-		4 ) get_cfgs_app; modes=('app'); action_menu; press_enter;;
-		5 ) get_cfgs_prcs; modes=('prcs'); action_menu; press_enter;;
-		q ) clear; main_menu ;;
-		* ) echo "ya messed up, yo"; press_enter ;;
-	esac
-	done
-}
-
-function main_menu 
-{
-	cd $PSCFGHOMES_DIR
-    cfghomes=(*)
-	
-	option=0
-	cfgs=() 
-	modes=()
-		
-	until [ "$option" = "q" ]; do
-	print_header
-	echo " 0 - Multi" 
-	for ((i=0; i<${#cfghomes[*]}; i++));
-	do
-		print_menu_item $((i+1)) ${cfghomes[i]}
-	done
-
-	echo "   - "
-	echo " q - Quit"
-	echo -e "\n"
-	echo -n "Enter choice: "
-	read option
-	echo ""
-	case $option in
-		0 ) multi_menu; press_enter ;;
-		q ) clear; exit ;;
-		* ) cfgs=(${cfghomes[$((option-1))]}); modes=('web' 'app' 'prcs'); action_menu; press_enter ;;
-	esac	
-	done
-}
-
-# main
 validate_vars
 main_menu
 

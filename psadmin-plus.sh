@@ -296,14 +296,13 @@ function action_menu
 	echo " 3 - Stop       8 - Configure "
 	echo " 4 - Restart    9 - Flush     "
 	echo " 5 - Purge"
+	echo "   - "
 	# not multi select?
 	if [ ${#cfgs[@]} -eq 1 ]; then
-		echo " ----------------- "
-		echo " 01 - psadmin"
-		set_cfgfile $cfgs[0]
-		echo " 02 - $cfgfile"
+		echo " p - psadmin"
+		set_cfgfile ${cfgs[0]}
+		echo " c - $cfgfile"
 	fi
-	echo "   - "
 	echo " q - Quit"
 	echo -e "\n"
 	echo -n "Enter choice: "
@@ -320,8 +319,8 @@ function action_menu
 		7 ) call_action "kill";;
 		8 ) call_action "configure";;
 		9 ) call_action "flush";;
-		01 ) call_psadmin;;
-		02 ) call_psconfig;;
+		p ) call_psadmin;;
+		c ) call_psconfig;;
 		q ) clear; main_menu ;;
 		* ) echo "ya messed up, yo";;
 	esac
@@ -412,7 +411,7 @@ function call_action
 	for ((i=0; i<${#cfgs[*]}; i++));
 	do
 		cfg=${cfgs[i]}
-		source_cfgfile $cfg
+		PS_CFG_HOME="$PSCFGHOMES_DIR/$cfg"
 		# loop type
 		add_step "printf '\n========== cfg: $cfg ============\n'"
 		add_step "cd $PSCONFIGS_DIR #TODO we should have a function adding these steps I think"
@@ -528,7 +527,7 @@ function check_prcs
 function set_cfgfile
 {
 	cfgtmp=$1
-	cfgtmp=$(echo ${cfgtmp} | cut -d'-' -f1)
+	cfgtmp=$(echo $cfgtmp | cut -d'-' -f1)
 	cfgfile="psconfig.${cfgtmp}.sh"
 }
 
@@ -573,16 +572,16 @@ function add_step
 function call_psadmin
 { 
 	clear
-	source_cfgfile $cfgs[0]
+	source_cfgfile ${cfgs[0]}
 	"$PS_HOME"/bin/psadmin
 }
 
 function call_psconfig
 {
-    clear
-	set_cfgfile $cfgs[0]
-    cd $PSCONFIGS_DIR
-    $EDITOR $cfgfile #TODO
+    	clear
+	set_cfgfile ${cfgs[0]}
+	cd $PSCONFIGS_DIR
+    	$EDITOR $cfgfile #TODO
 }
 
 

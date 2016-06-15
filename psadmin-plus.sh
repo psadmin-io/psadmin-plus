@@ -300,8 +300,8 @@ function action_menu
 	if [ ${#cfgs[@]} -eq 1 ]; then
 		echo " ----------------- "
 		echo " 01 - psadmin"
-		set_cfgfile
-		echo " 02 - ${cfgfile}"
+		set_cfgfile $cfgs[0]
+		echo " 02 - $cfgfile"
 	fi
 	echo "   - "
 	echo " q - Quit"
@@ -350,89 +350,6 @@ function print_menu_item
 	echo "]"
 }
 
-###########################
-### Misc   
-###########################
-
-function validate_vars
-{
-	for var in ${required_vars[@]}; do
-    		if [[ `printenv ${var}` = '' ]]; then
-      			echo $(echo_color "${var} is not set.  Please make sure this is set before continuing." "red")
-      			exit 1
-    		fi
-  	done
-}
-
-function is_web_cfg
-{
-	cfg=$1
-	dir=$PSCFGHOMES_DIR/$cfg/webserv/
-	if [ -d "$dir" ]; then
-		subdircount=`find $dir -maxdepth 1 -type d | wc -l`
-		if [ $subdircount -gt 1 ]; then  
-			return 0 #true
-		fi
-	fi
-	return 1 #false
-}
-
-# check if domain type exists
-function check_web
-{
-    cfg=$1
-	if is_web_cfg $cfg; then     
-       	echo -n $(echo_color "w" "lred")
-    else
-		echo -n " "
-    fi
-}
-
-function is_app_cfg
-{
-	cfg=$1
-	dir=$PSCFGHOMES_DIR/$cfg/appserv/
-	if [ -d "$dir" ]; then
-		subdircount=`find $dir -maxdepth 1 -type d | wc -l`
-		if [ $subdircount -gt 3 ]; then
-			return 0 #true
-		fi
-	fi
-	return 1 #false
-}
-function check_app
-{
-    cfg=$1
-	if is_app_cfg $cfg; then
-	    echo -n $(echo_color "a" "lblue")
-	else
-        echo -n " "
-    fi
-}
-
-function is_prcs_cfg
-{
-	cfg=$1
-	dir=$PSCFGHOMES_DIR/$cfg/appserv/prcs/
-	if [ -d "$dir" ]; then
-		subdircount=`find $dir -maxdepth 1 -type d | wc -l`
-		if [ $subdircount -gt 1 ]; then  
-			return 0 #true		
-		fi
-	fi
-	return 1 #false
-}
-
-function check_prcs
-{
-    cfg=$1
-	if is_prcs_cfg $cfg; then        
-		echo -n $(echo_color "p" "lpurple")
-	else
-		echo -n " "
-	fi
-}
-
 # display text in colors
 function echo_color
 {
@@ -460,10 +377,145 @@ function echo_color
 	echo -e "\e[$code$text\e[0m"
 }
 
+function call_action
+{
+	act=$1
+	# loop cfg
+	for ((i=0; i<${#cfgs[*]}; i++));
+	do
+		cfg=${cfgs[i]}
+		source_cfgfile $cfg
+		# loop type
+		add_step "printf '\n========== cfg: $cfg ============\n'"
+		add_step "cd $PSCONFIGS_DIR #TODO we should have a function adding these steps I think"
+    	add_step ". $cfgfile #TODO we should have a function adding these steps I think"
+    	for ((j=0; j<${#types[*]}; j++));
+		do
+			type=${types[j]}
+			# loop domains
+			add_step "printf '\n    ========== type: $type ============\n'"
+			set_domains #$cfg $type
+			for ((k=0; k<${#doms[*]}; k++));			
+			do				
+				dom=${doms[k]}
+				add_step "printf '\n        ========== domain: $dom ============\n\n'"
+				# call function by dynamic name
+				${type}_${act} $dom 
+				add_step "printf '\n        ====================================\n'"
+			done
+			add_step "printf '\n    ====================================\n'"
+		done
+		add_step "printf '\n====================================\n'"
+	done
+	for (( ii = 0; ii < ${#cmds[@]} ; ii++ ))
+	do
+		eval "${cmds[$ii]}"		
+		# echo "${cmds[$ii]}" >> $PSAPLUS_WRK #TODO add option to save to file
+	done
+	#TODO
+	#. $PSAPLUS_WRK add option to save to file
+	cmds=()
+	read -rsp $'\nPress any key to continue...\n' -n1 key
+}
+
+###########################
+### Misc   
+###########################
+
+function validate_vars
+{
+	for var in ${required_vars[@]}; do
+    		if [[ `printenv ${var}` = '' ]]; then
+      			echo $(echo_color "${var} is not set.  Please make sure this is set before continuing." "red")
+      			exit 1
+    		fi
+  	done
+}
+
+function is_web_cfg
+{
+	cfg=$1
+	dir=$PSCFGHOMES_DIR/$cfg/webserv/
+	if [ -d "$dir" ]; then
+		subdircount=`find $dir -maxdepth 1 -type d | wc -l`
+		if [ $subdircount -gt 1 ]; then  
+			return 0 #true
+		fi
+	fi
+	return 1 #false
+}
+
+function is_app_cfg
+{
+	cfg=$1
+	dir=$PSCFGHOMES_DIR/$cfg/appserv/
+	if [ -d "$dir" ]; then
+		subdircount=`find $dir -maxdepth 1 -type d | wc -l`
+		if [ $subdircount -gt 3 ]; then
+			return 0 #true
+		fi
+	fi
+	return 1 #false
+}
+
+function is_prcs_cfg
+{
+	cfg=$1
+	dir=$PSCFGHOMES_DIR/$cfg/appserv/prcs/
+	if [ -d "$dir" ]; then
+		subdircount=`find $dir -maxdepth 1 -type d | wc -l`
+		if [ $subdircount -gt 1 ]; then  
+			return 0 #true		
+		fi
+	fi
+	return 1 #false
+}
+
+######### TODO
+# check if domain type exists
+function check_web
+{
+    cfg=$1
+	if is_web_cfg $cfg; then     
+       	echo -n $(echo_color "w" "lred")
+    else
+		echo -n " "
+    fi
+}
+
+function check_app
+{
+    cfg=$1
+	if is_app_cfg $cfg; then
+	    echo -n $(echo_color "a" "lblue")
+	else
+        echo -n " "
+    fi
+}
+
+function check_prcs
+{
+    cfg=$1
+	if is_prcs_cfg $cfg; then        
+		echo -n $(echo_color "p" "lpurple")
+	else
+		echo -n " "
+	fi
+}
+######### TODO
+
 function set_cfgfile
 {
-	cfgtmp=$(echo ${cfgs[0]} | cut -d'-' -f1)
+	cfgtmp=$1
+	cfgtmp=$(echo ${cfgtmp} | cut -d'-' -f1)
 	cfgfile="psconfig.${cfgtmp}.sh"
+}
+
+function source_cfgfile
+{
+	set_cfgfile $1
+	cd $PSCONFIGS_DIR
+	. $cfgfile
 }
 
 function set_domains
@@ -494,60 +546,20 @@ function set_domains
 function add_step
 {
 	step=$1
-	echo "$step" >> $PSAPLUS_WRK
-	#script=$step
-}
-
-function call_action
-{
-	act=$1
-	# loop cfg
-	for ((i=0; i<${#cfgs[*]}; i++));
-	do
-		cfg=${cfg[i]}
-		cd $PSCONFIGS_DIR #TODO
-    	. $cfgfile #TODO
-		# loop type
-		add_step "printf '\n========== cfg: $cfg ============\n'"
-		add_step "cd $PSCONFIGS_DIR #TODO"
-    	add_step ". $cfgfile #TODO"
-    	for ((j=0; j<${#types[*]}; j++));
-		do
-			type=${types[j]}
-			# loop domains
-			add_step "printf '\n    ========== type: $type ============\n'"
-			set_domains #$cfg $type
-			for ((k=0; k<${#doms[*]}; k++));			
-			do				
-				dom=${doms[k]}
-				add_step "printf '\n        ========== domain: $dom ============\n\n'"
-				# call function by dynamic name
-				${type}_${act} $dom 
-				add_step "printf '\n        ====================================\n'"
-			done
-			add_step "printf '\n    ====================================\n'"
-		done
-		add_step "printf '\n====================================\n'"
-	done
-	#TODO
-	. $PSAPLUS_WRK
-	#TODO eval $script
-	read -rsp $'\nPress any key to continue...\n' -n1 key
+	cmds+=("$step")
 }
 
 function call_psadmin
 { 
-	set_cfgfile
 	clear
-	cd $PSCONFIGS_DIR
-	. $cfgfile 
+	source_cfgfile $cfgs[0]
 	"$PS_HOME"/bin/psadmin
 }
 
 function call_psconfig
 {
-	set_cfgfile
     clear
+	set_cfgfile $cfgs[0]
     cd $PSCONFIGS_DIR
     $EDITOR $cfgfile #TODO
 }

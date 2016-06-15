@@ -360,8 +360,8 @@ function print_header
 	clear
 	echo "+-------------------------------------------------+" 
 	echo "| $(echo_color $title "lblue")   host: $(echo_color $host "lgreen") "	
-	echo "|                cfgs: $(echo_color "${cfgs[*]}" "lgreen") "
-	echo "|               types: $(echo_color "${types[*]}" "lgreen") "
+	echo "|                cfgs: $(echo_color "${cfgs[*]}" "lpurple") "
+	echo "|               types: $(echo_color "${types[*]}" "lcyan") "
 	echo "+-------------------------------------------------+"
 }
 

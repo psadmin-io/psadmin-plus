@@ -535,7 +535,7 @@ function source_cfgfile
 {
 	set_cfgfile $1
 	cd $PSCONFIGS_DIR
-	. $cfgfile
+	. $cfgfile 
 }
 
 function set_domains
@@ -572,8 +572,7 @@ function add_step
 function call_psadmin
 { 
 	clear
-	source_cfgfile ${cfgs[0]}
-	"$PS_HOME"/bin/psadmin
+	(source_cfgfile ${cfgs[0]} ; $PS_HOME/bin/psadmin)
 }
 
 function call_psconfig

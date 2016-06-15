@@ -328,6 +328,33 @@ function action_menu
 	done
 }
 
+function run_menu
+{
+	echo -n "Do you want to run now? [y/n]? "
+	read runopt
+	
+	if [ "$runopt" == "y" ]
+	then	
+		for (( ii = 0; ii < ${#cmds[@]} ; ii++ ))
+		do
+			eval "${cmds[$ii]}"		
+		done
+	else
+		# run later
+		# prompt for filename TODO
+		echo "Script will save to \$PSAPLUS_WRK: $PSAPLUS_WRK"
+		# validate file TODO
+		# create script file		
+		for (( ii = 0; ii < ${#cmds[@]} ; ii++ ))
+		do
+			echo "${cmds[$ii]}" >> $PSAPLUS_WRK
+		done
+	fi
+	
+	cmds=()
+	read -rsp $'\nDone.\n' -n1 key
+}
+
 function print_header
 {
 	clear
@@ -407,15 +434,8 @@ function call_action
 		done
 		add_step "printf '\n====================================\n'"
 	done
-	for (( ii = 0; ii < ${#cmds[@]} ; ii++ ))
-	do
-		eval "${cmds[$ii]}"		
-		# echo "${cmds[$ii]}" >> $PSAPLUS_WRK #TODO add option to save to file
-	done
-	#TODO
-	#. $PSAPLUS_WRK add option to save to file
-	cmds=()
-	read -rsp $'\nPress any key to continue...\n' -n1 key
+		
+	run_menu
 }
 
 ###########################

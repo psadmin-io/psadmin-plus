@@ -336,8 +336,9 @@ function run_menu
 	then	
 		for (( ii = 0; ii < ${#cmds[@]} ; ii++ ))
 		do
-			eval "${cmds[$ii]}"		
+			echo "${cmds[$ii]}" >> $PSAPLUS_WRK
 		done
+		$PSAPLUS_WRK
 	else
 		# run later
 		# prompt for filename TODO

@@ -412,11 +412,14 @@ function call_action
 	do
 		cfg=${cfgs[i]}
 		PS_CFG_HOME="$PSCFGHOMES_DIR/$cfg"
+		set_cfgfile $cfg
 		# loop type
-		add_step "printf '\n========== cfg: $cfg ============\n'"
-		add_step "cd $PSCONFIGS_DIR #TODO we should have a function adding these steps I think"
-    	add_step ". $cfgfile #TODO we should have a function adding these steps I think"
-    	for ((j=0; j<${#types[*]}; j++));
+		add_step "printf '\n========== cfg: $cfg ============\n'"	
+		add_step "("
+		#TODO we should have a function adding these steps I think"
+		add_step "cd $PSCONFIGS_DIR" 
+    		add_step ". $cfgfile "
+    		for ((j=0; j<${#types[*]}; j++));
 		do
 			type=${types[j]}
 			# loop domains
@@ -432,6 +435,7 @@ function call_action
 			done
 			add_step "printf '\n    ====================================\n'"
 		done
+		add_step ")"
 		add_step "printf '\n====================================\n'"
 	done
 		

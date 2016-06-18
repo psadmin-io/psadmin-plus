@@ -647,11 +647,10 @@ function get_cfgs_prcs
 }
 
 ###########################
-### Main   
+### Main  
 ###########################
-#PSCFGHOMES_DIR=
-#PSCONFIGS_DIR=
-#PSAPLUS_WRK=
+#PSCFGHOMES_DIR="$HOME/pscfghomes"
+#PSCONFIGS_DIR="$HOME/psconfigs"
 PS_PIA_HOME=$PS_CFG_HOME
 title=psadmin-plus
 host=$(hostname)

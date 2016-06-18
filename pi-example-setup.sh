@@ -90,7 +90,7 @@ do
 	piprcscfg="$PS_PI_CFG_HOME/appserv/prcs/$piprcsdom/psprcs.cfg"
 	prcscfg="$PSCFGHOMES_DIR/$cfg/appserv/prcs/$prcsdom/psprcs.cfg"
 
-	# WEB
+	# WEB 
 	#####
 	echo "Importing $cfg-web"
 	psadmin -w import $PS_PI_CFG_HOME -d peoplesoft -n peoplesoft -r

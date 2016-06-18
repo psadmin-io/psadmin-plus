@@ -647,7 +647,7 @@ function get_cfgs_prcs
 }
 
 ###########################
-### Main  
+### Main 
 ###########################
 #PSCFGHOMES_DIR="$HOME/pscfghomes"
 #PSCONFIGS_DIR="$HOME/psconfigs"

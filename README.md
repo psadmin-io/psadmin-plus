@@ -17,7 +17,7 @@ git clone git://github.com/psadmin-io/psadmin-plus
 * PSCONFIGS_DIR
     * Directory that contains all psconfig.sh files
 * PSAPLUS_WRK
-    *Default file used for generating scripts
+    * Default file used for generating scripts
 
 ## PeopleTools Support
 This has been tested using:

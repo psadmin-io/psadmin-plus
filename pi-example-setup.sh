@@ -75,8 +75,7 @@ do
 	. $PSCONFIGS_DIR/psconfig.$cfg.sh	
         webport="80$seqnbr"
 	jolthost="localhost"
-	joltport="180$seqnbr"
-	pijoltport="9033"
+	joltport="100$seqnbr"
 	webuser="PS"
 	webpw="PS"
 	psreports=" "
@@ -85,7 +84,6 @@ do
 	appdom="$piappdom"
 	piprcsdom="PRCSDOM"
 	prcsdom="$piprcsdom"
-	piprcsname="PRCS7623"
 	prcsname="PSUNX$seqnbr"
 	piappcfg="$PS_PI_CFG_HOME/appserv/$piappdom/psappsrv.cfg"
 	appcfg="$PSCFGHOMES_DIR/$cfg/appserv/$appdom/psappsrv.cfg"
@@ -109,7 +107,7 @@ do
 	psadmin -c import $piappcfg -n $appdom -r
 	echo "Reconfig $cfg-app domain"
 	# change cfg file directly, no config option like web
-	sed -i -e "s/Port=$pijoltport/Port=$joltport/" $appcfg
+	sed -i -e "s/Port=.*/Port=$joltport/" $appcfg
 	psadmin -c configure -d $appdom
 
 	# PRCS
@@ -118,7 +116,7 @@ do
 	psadmin -p import $piprcscfg -n $prcsdom -r
 	echo "Reconfig $cfg-prcs domain"
 	# change cfg file directly, no config option like web
-	sed -i -e "s/PrcsServerName=$piprcsname/PrcsServerName=$prcsname/" $prcscfg
+	sed -i -e "s/PrcsServerName=.*/PrcsServerName=$prcsname/" $prcscfg
 	psadmin -p configure -d $prcsdom
 	)
 done

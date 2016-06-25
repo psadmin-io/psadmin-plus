@@ -447,10 +447,10 @@ function call_action
 function validate_vars
 {
 	for var in ${required_vars[@]}; do
-    		if [[ `printenv ${var}` = '' ]]; then
-      			echo $(echo_color "${var} is not set.  Please make sure this is set before continuing." "red")
-      			exit 1
-    		fi
+        if [[ `printenv ${var}` = '' ]]; then
+      		echo $(echo_color "${var} is not set.  Please make sure this is set before continuing." "red")
+      		exit 1
+      	fi
   	done
 }
 
@@ -493,7 +493,6 @@ function is_prcs_cfg
 	return 1 #false
 }
 
-######### TODO
 # check if domain type exists
 function check_web
 {
@@ -524,7 +523,6 @@ function check_prcs
 		echo -n " "
 	fi
 }
-######### TODO
 
 function set_cfgfile
 {
@@ -543,7 +541,6 @@ function source_cfgfile
 function set_domains
 {	
 	case $type in
-	#TODO PS_CFG_HOME
 		web )  dirs=($PS_CFG_HOME/webserv/*);;
 		app ) dirs=($PS_CFG_HOME/appserv/*);;
 		prcs ) dirs=($PS_CFG_HOME/appserv/prcs/*);;
@@ -579,12 +576,11 @@ function call_psadmin
 
 function call_psconfig
 {
-    	clear
+    clear
 	set_cfgfile ${cfgs[0]}
 	cd $PSCONFIGS_DIR
-    	$EDITOR $cfgfile #TODO
+    $EDITOR $cfgfile
 }
-
 
 function add_cfgs
 { 	
@@ -668,4 +664,3 @@ fi
 
 validate_vars
 main_menu
-

@@ -4,10 +4,6 @@
 # psadmin-plus                               #
 # https://github.com/psadmin-io/psadmin-plus #
 #--------------------------------------------#
-# TODO caps please
-# TODO fix tabs please
-########################################### TODO select only dirs for get_domains ##
-
 
 ###########################
 ###  WEB

@@ -11,7 +11,7 @@
 function web_status
 {    
     domain=$1
-	add_step "\$PS_HOME/bin/psadmin -w status -d $domain" 
+    add_step "\$PS_HOME/bin/psadmin -w status -d $domain" 
 }
 
 function web_start
@@ -269,8 +269,8 @@ function select_menu
 	read option
 	echo ""
 	case $option in
-		1 ) read -rsp $'Sorry, this feature is not working yet...\n' -n1 key;; #TODO
-		2 ) get_cfgs_web; get_cfgs_app; get_cfgs_prcs; types=('web' 'app' 'prcs'); action_menu;;
+		1 ) select2_menu;; 
+        2 ) get_cfgs_web; get_cfgs_app; get_cfgs_prcs; types=('web' 'app' 'prcs'); action_menu;;
 		3 ) get_cfgs_web; types=('web'); action_menu;;
 		4 ) get_cfgs_app; types=('app'); action_menu;;
 		5 ) get_cfgs_prcs; types=('prcs'); action_menu;;
@@ -282,23 +282,58 @@ function select_menu
 
 function select2_menu
 {
-	#TODO
-	set=()
-	until [ "$option" = "q" ]; do
-		        set=($(printf "%s\n" "${set[@]}" | sort -u))
-			        echo "set ${set[*]}"
-				        echo "1"
-					        echo "2"
-						        echo "3"
-							        read option
-								        echo ""
-									        case $option in
-											                1 ) set+=("one");;
-													                2 ) set+=("two");;
-															                3 ) set+=("three");;
-																esac
-															done
+	#TODO	
+    # select cfg
+    option=""
+    cfgs=()
+    until [ "$option" = "d" ]; do
+        print_header
+        for ((i=0; i<${#cfghomes[*]}; i++));
+	    do
+		    echo " $((i+1)) -  ${cfghomes[i]}"
+	    done
+        echo "   - " 
+        echo " d - Done "
+        echo " q - Quit "
+        echo -e "\n"
+        echo -n "Enter choice: "
 
+        read option
+		echo ""
+		case $option in
+			d ) ;;
+            q ) clear; select_menu;;
+            * ) cfgs+=(${cfghomes[$((option-1))]});;
+		esac
+	    cfgs=($(printf "%s\n" "${cfgs[@]}" | sort -u))
+	done
+
+    #select type
+    option=""
+    types=()
+    until [ "$option" = "q" ]; do
+        print_header
+        echo " 1 - web "
+        echo " 2 - app "
+        echo " 3 - prcs "
+        echo "   - "
+        echo " d - Done"
+        echo " q - Quit"
+        echo -e "\n"
+        echo -n "Enter choice: "
+
+        read option
+        echo " "
+        case $option in
+            1 ) types+=("web");;
+            2 ) types+=("app");;
+            3 ) types+=("prcs");;
+            d ) action_menu;;
+            q ) clear; select_menu;;
+            * ) ;;
+        esac
+    	types=($(printf "%s\n" "${types[@]}" | sort -u))
+    done
 }
 
 function action_menu
@@ -387,7 +422,7 @@ function print_header
 function print_menu_item
 {
 	item=$1
-    	cfg=$2
+    cfg=$2
 	
 	echo -n " $item - $cfg [" 
 	check_web $cfg 

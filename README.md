@@ -27,7 +27,7 @@ The psadmin-plus script is a helper menu that can be used to interact with `psad
 
 ## PeopleTools Support
 This has been tested using:
-* 8.55.04
+* 8.55
 
 ## Example Setup
 There is an example setup script you can run against a PeoplSoft Image(PI) for testing. This script will create a few extra `PS_CFG_HOMEs` and domains to play with using psadmin-plus. Run this with a user besides `psadm2`, most likly a user you created and not delivered with the PI.

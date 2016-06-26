@@ -280,6 +280,27 @@ function select_menu
 	done
 }
 
+function select2_menu
+{
+	#TODO
+	set=()
+	until [ "$option" = "q" ]; do
+		        set=($(printf "%s\n" "${set[@]}" | sort -u))
+			        echo "set ${set[*]}"
+				        echo "1"
+					        echo "2"
+						        echo "3"
+							        read option
+								        echo ""
+									        case $option in
+											                1 ) set+=("one");;
+													                2 ) set+=("two");;
+															                3 ) set+=("three");;
+																esac
+															done
+
+}
+
 function action_menu
 {
     option=0

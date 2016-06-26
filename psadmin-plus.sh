@@ -269,7 +269,7 @@ function select_menu
 	read option
 	echo ""
 	case $option in
-		1 ) select2_menu;; 
+		1 ) selectdoms_menu;; 
         2 ) get_cfgs_web; get_cfgs_app; get_cfgs_prcs; types=('web' 'app' 'prcs'); action_menu;;
 		3 ) get_cfgs_web; types=('web'); action_menu;;
 		4 ) get_cfgs_app; types=('app'); action_menu;;
@@ -280,7 +280,7 @@ function select_menu
 	done
 }
 
-function select2_menu
+function selectdoms_menu
 {
 	#TODO	
     # select cfg

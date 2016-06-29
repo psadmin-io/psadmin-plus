@@ -25,6 +25,12 @@ The psadmin-plus script is a helper menu that can be used to interact with `psad
 * `PSAPLUS_WRK`
     * Default file used for generating scripts
 
+## Assumptions
+* All directories under `$PSCFGHOMES_DIR` are `PS_CFG_HOMEs`
+* All `PS_CFG_HOMEs` have their own environment variables file for sourcing, found at `$PSCONFIGS_DIR/psconfig.[cfg-name].sh`
+* If you have more than 1 domain per `PS_CFG_HOME` and type, actions will be applied to all.
+    * Example: If the `dev` cfg has 2 app domains [`APPDOM1`,`APPDOM2`], the `start` action will be applied to both `APPDOM1` and `APPDOM2`.
+
 ## PeopleTools Support
 This has been tested using:
 * 8.55

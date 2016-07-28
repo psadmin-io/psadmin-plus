@@ -43,3 +43,4 @@ cd ~/
 git clone git://github.com/psadmin-io/psadmin-plus
 ~/psadmin-plus/pi-example-setup.sh
 ```
+

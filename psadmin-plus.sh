@@ -351,6 +351,7 @@ function action_menu
 	echo "   - "
 	# not multi select?
 	if [ ${#cfgs[@]} -eq 1 ]; then
+		echo " s - status"
 		echo " p - psadmin"
 		set_cfgfile ${cfgs[0]}
 		echo " c - $cfgfile"
@@ -371,6 +372,7 @@ function action_menu
 		7 ) call_action "kill";;
 		8 ) call_action "configure";;
 		9 ) call_action "flush";;
+		s ) call_status;;
 		p ) call_psadmin;;
 		c ) call_psconfig;;
 		q ) clear; main_menu ;;
@@ -622,6 +624,13 @@ function add_step
 {
 	step=$1
 	cmds+=("$step")
+}
+
+function call_status
+{ 
+	clear
+	(source_cfgfile ${cfgs[0]} ; $PS_HOME/bin/psadmin -envsummary)
+	read -rsp $'\nPress any key...\n' -n1 key
 }
 
 function call_psadmin

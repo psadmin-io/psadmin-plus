@@ -6,213 +6,6 @@
 #--------------------------------------------#
 
 ###########################
-###  WEB
-###########################
-function web_status
-{    
-    domain=$1
-    add_step "\$PS_HOME/bin/psadmin -w status -d $domain" 
-}
-
-function web_start
-{
-    domain=$1
-	add_step "\$PS_HOME/bin/psadmin -w start -d $domain"
-}
-
-function web_stop
-{
-    domain=$1
-	add_step "\$PS_HOME/bin/psadmin -w shutdown -d $domain"
-}
-
-function web_restart
-{
-	domain=$1
-    web_stop $domain
-    web_start $domain
-}
-
-function web_purge
-{
-	domain=$1
-	add_step "rm -rfv $PS_PIA_HOME/webserv/$domain/applications/peoplesoft/PORTAL*/*/cache"
-}
-
-function web_bounce
-{
-	domain=$1
-    web_stop $domain
-    web_purge $domain
-    web_start $domain
-}
-
-function web_kill
-{
-
-	add_step "printf 'Kill not available for Web\n'"
-}
-
-function web_configuration
-{
-	add_step "printf 'Configuration not available for Web\n'"
-}
-
-function web_flush
-{
-	add_step "printf 'Flush not available for Web\n'"
-}
-
-###########################
-###  APP
-###########################
-function app_status
-{
-    domain=$1
-	add_step "\$PS_HOME/bin/psadmin -c sstatus -d $domain"
-}
-
-function app_start
-{
-    domain=$1
-    add_step "\$PS_HOME/bin/psadmin -c boot -d $domain"
-}
-
-function app_stop
-{
-    domain=$1
-    add_step "\$PS_HOME/bin/psadmin -c shutdown -d $domain"
-}
-
-function app_restart
-{
-    domain=$1
-	app_stop $domain
-	app_start $domain
-}
-
-function app_purge
-{
-	domain=$1
-    add_step "\$PS_HOME/bin/psadmin -c purge -d $domain"
-}
-
-function app_bounce
-{
-	domain=$1
-	app_stop $domain
-	app_flush $domain
-	app_purge $domain
-	app_configure $domain
-	app_start $domain
-}
-
-function app_kill
-{
-    domain=$1
-	add_step "\$PS_HOME/bin/psadmin -c shutdown! -d $domain"
-}
-
-function app_configure
-{
-	domain=$1
-    add_step "\$PS_HOME/bin/psadmin -c configure -d $domain"
-}
-
-function app_flush
-{
-	domain=$1
-    add_step "\$PS_HOME/bin/psadmin -c cleanipc -d $domain"
-}
-
-
-########################
-### PRCS
-########################
-function prcs_status
-{
-	domain=$1
-    add_step "\$PS_HOME/bin/psadmin -p status -d $domain"
-}
-
-function prcs_start
-{
-    domain=$1
-    add_step "\$PS_HOME/bin/psadmin -p start -d $domain"
-}
-
-function prcs_stop
-{
-    domain=$1
-    add_step "\$PS_HOME/bin/psadmin -p stop -d $domain"
-}
-
-function prcs_restart
-{
-    domain=$1
-	prcs_stop $domain
-	prcs_start $domain
-}
-
-function prcs_purge
-{
-	add_step "printf 'Purge not available for Prcs\n'"
-}
-
-function prcs_bounce
-{
-	domain=$1
-	prcs_stop $domain
-	prcs_flush $domain
-	prcs_configure $domain
-	prcs_start $domain
-}
-
-function prcs_kill
-{
-	domain=$1
-    add_step "\$PS_HOME/bin/psadmin -p kill -d $domain"
-}
-
-function prcs_configure
-{
-	domain=$1
-    add_step "\$PS_HOME/bin/psadmin -p configure -d $domain" 
-}
-
-function prcs_flush
-{
-    domain=$1
-	add_step "\$PS_HOME/bin/psadmin -p cleanipc -d $domain"
-}
-
-#TODO
-#function prcs_compile
-#{
-#    if [[ -f $PS_HOME/setup/pscbl.mak ]]; then
-#      echoinfo "Recompiling COBOL"
-#      cd "$PS_HOME"/setup && ./pscbl.mak
-#      cd "$PS_HOME"/setup && ./pscbl.mak
-#    else
-#      echoerror "Could not find the file $PS_HOME/setup/pscbl.mak"
-#      exit 1
-#    fi
-#}
-
-#TODO
-#function prcs_link
-#{
-#    if [[ -f $PS_HOME/setup/psrun.mak ]]; then
-#      echoinfo "Linking COBOL"
-#      cd "$PS_HOME"/setup && ./psrun.mak
-#    else
-#      echoerror "Could not find the file $PS_HOME/setup/psrun.mak"
-#      exit 1
-#    fi
-#}
-
-
-###########################
 ### Menus   
 ###########################
 
@@ -468,25 +261,20 @@ function call_action
 	do
 		cfg=${cfgs[i]}
 		PS_CFG_HOME="$PSCFGHOMES_DIR/$cfg"
-		set_cfgfile $cfg
 		# loop type
 		add_step "printf '\n========== cfg: $cfg ============\n'"	
 		add_step "("
-		#TODO we should have a function adding these steps I think"
-		add_step "cd $PSCONFIGS_DIR" 
-    		add_step ". $cfgfile "
-    		for ((j=0; j<${#types[*]}; j++));
+    	for ((j=0; j<${#types[*]}; j++));
 		do
 			type=${types[j]}
 			# loop domains
 			add_step "printf '\n    ========== type: $type ============\n'"
-			set_domains #$cfg $type
+			set_domains 
 			for ((k=0; k<${#doms[*]}; k++));			
 			do				
 				dom=${doms[k]}
-				add_step "printf '\n        ========== domain: $dom ============\n\n'"
-				# call function by dynamic name
-				${type}_${act} $dom 
+				add_step "printf '\n        ========== domain: $dom ============\n\n'"				
+				add_step "$DIR/psadmin-plus.sh $type $act $cfg $dom "
 				add_step "printf '\n        ====================================\n'"
 			done
 			add_step "printf '\n    ====================================\n'"
@@ -706,8 +494,12 @@ function get_cfgs_prcs
 ###########################
 ### Main 
 ###########################
-#PSCFGHOMES_DIR="$HOME/pscfghomes"
-#PSCONFIGS_DIR="$HOME/psconfigs"
+inType=$1
+params="${@:2}"
+#TODO move to .profile
+export PSCFGHOMES_DIR=/u01/app/psoftcfg
+export PSCONFIGS_DIR=/libDFS/psconfigs
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PS_PIA_HOME=$PS_CFG_HOME
 title=psadmin-plus
 host=$(hostname)
@@ -728,4 +520,12 @@ if [ -z "$EDITOR" ]; then
 fi
 
 validate_vars
-main_menu
+
+case $inType in
+		all ) echo "TODO: do action on app\prcs\web for domain.";;
+		list ) echo "TODO: do action on domains listed in file.";;
+		app ) $DIR/.psadmin-plus-app.sh $params;;
+        prcs ) $DIR/.psadmin-plus-prcs.sh $params;;
+		web ) $DIR/.psadmin-plus-web.sh $params;;
+		* ) main_menu;;
+esac

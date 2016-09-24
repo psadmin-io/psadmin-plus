@@ -1,5 +1,5 @@
 # psadmin-plus 
-The psadmin-plus script is a helper menu that can be used to interact with `psadmin`. It will build a dynamic menu including all `PS_CFG_HOMEs` found on a system. Based on your `PS_CFG_HOME` selections, you can run psadmin directly or run actions like start, stop, status, etc. When an action is selected from the menu, the `PS_CFG_HOME` specfic psconfig.sh file will be sourced automatically. Depending on the action selected, there is the option to `Run Now` or `Run Later` via a generated script.
+The `psadmin-plus` script is a wrapper for `psadmin`. Using an interactive menu, or passing parameters via command line, you can run psadmin actions like start, stop, status, etc. All `PS_CFG_HOME`s will be discovered and `psconfig.sh` files will be sourced automatically.
 
 ![demo](http://g.recordit.co/3UKuOWFsk9.gif)
 
@@ -17,17 +17,16 @@ The psadmin-plus script is a helper menu that can be used to interact with `psad
 * `psconfig` - edit psconfig.sh for environment
 
 ## Environment Variables
-* `PSCFGHOMES_DIR`
-    * Directory that contains all PS_CFG_HOMEs
-    * Current assumption is that all sub-directories are PS_CFG_HOMEs
-* `PSCONFIGS_DIR`
-    * Directory that contains all psconfig.sh files
-* `PSAPLUS_WRK`
-    * Default file used for generating scripts
+* `PS_CFG_HOME_DIR`
+    * Directory that contains all `PS_CFG_HOMEs`
+    * Current assumption is that all sub-directories are `PS_CFG_HOMEs`
+* `PS_CUST_HOME_DIR`
+    * Directory that contains all `PS_CUST_HOMEs`.
+	* Current assumption is that custom `psconfig.sh` files are stored under `PS_CUST_HOME\[env]`
 
 ## Assumptions
-* All directories under `$PSCFGHOMES_DIR` are `PS_CFG_HOMEs`
-* All `PS_CFG_HOMEs` have their own environment variables file for sourcing, found at `$PSCONFIGS_DIR/psconfig.[cfg-name].sh`
+* All directories under `$PS_CFG_HOME_DIR` are `PS_CFG_HOMEs`
+* All `PS_CFG_HOMEs` have their own environment variables file for sourcing, found at `$PS_CUST_HOME/[env]/psconfig.sh`
 * If you have more than 1 domain per `PS_CFG_HOME` and type, actions will be applied to all.
     * Example: If the `dev` cfg has 2 app domains [`APPDOM1`,`APPDOM2`], the `start` action will be applied to both `APPDOM1` and `APPDOM2`.
 

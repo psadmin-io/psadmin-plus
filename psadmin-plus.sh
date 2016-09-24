@@ -215,7 +215,7 @@ function main_menu
 	done
 
 	echo "   - "
-	echo " s - Select" 
+	echo " s - Select" 	
 	echo " q - Quit"
 	echo -e "\n"
 	echo -n "Enter choice: "
@@ -336,6 +336,7 @@ function action_menu
 		echo " s - summary"
 		echo " p - psadmin"
 		echo " e - edit psconfig.sh"
+		echo " h - help"
 	fi
 	echo " q - Quit"
 	echo -e "\n"
@@ -356,6 +357,7 @@ function action_menu
 		s ) call_summary;;
 		p ) call_psadmin;;
 		e ) edit_psconfig;;
+		h ) print_help;;
 		q ) clear; main_menu ;;
 		* ) echo "ya messed up, yo";;
 	esac
@@ -370,6 +372,25 @@ function print_header
 	echo "|                cfgs: $(echo_color "${cfgs[*]}" "lpurple") "
 	echo "|               types: $(echo_color "${types[*]}" "lcyan") "
 	echo "+-------------------------------------------------+"
+}
+
+function print_help
+{
+	echo " "
+	echo ". help ......................."
+	echo ". "
+	echo ". status - status of the domain"
+	echo ". start - start the domain"
+	echo ". stop - stop the domain"
+	echo ". restart - stop and start the domain"
+	echo ". purge - clear domain cache"
+	echo ". bounce - stop, flush, purge, configure and start the domain"
+	echo ". kill - force stop the domain"
+	echo ". configure - configure the domain"
+	echo ". flush - clear domain IPC"
+	echo " "
+	
+	read -rsp $'\nPress any key...\n' -n1 key
 }
 
 function print_menu_item

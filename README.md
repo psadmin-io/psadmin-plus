@@ -17,7 +17,7 @@ The `psadmin-plus` script is a wrapper for `psadmin`. Using an interactive menu,
 * `psconfig` - edit psconfig.sh for environment
 
 ## Command Line 
-* `psadmin-plus.sh [action] [cfg] [domain] [type]`
+* `psadmin-plus [action] [cfg] [domain] [type]`
     * action - same as availiable in menu
 	* type - app, prcs, web, all
 

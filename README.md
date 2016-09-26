@@ -27,11 +27,11 @@ The `psadmin-plus` script is a wrapper for `psadmin`. Using an interactive menu,
     * Current assumption is that all sub-directories are `PS_CFG_HOMEs`
 * `PS_CUST_HOME_DIR`
     * Directory that contains all `PS_CUST_HOMEs`.
-	* Current assumption is that custom `psconfig.sh` files are stored under `PS_CUST_HOME\[env]`
+	* Current assumption is that custom `psconfig.sh` files are stored under `PS_CUST_HOME\[cfg]`
 
 ## Assumptions
 * All directories under `$PS_CFG_HOME_DIR` are `PS_CFG_HOMEs`
-* All `PS_CFG_HOMEs` have their own environment variables file for sourcing, found at `$PS_CUST_HOME/[env]/psconfig.sh`
+* All `PS_CFG_HOMEs` have their own environment variables file for sourcing, found at `$PS_CUST_HOME/[cfg]/psconfig.sh`
 * If you have more than 1 domain per `PS_CFG_HOME` and type, actions will be applied to all.
     * Example: If the `dev` cfg has 2 app domains [`APPDOM1`,`APPDOM2`], the `start` action will be applied to both `APPDOM1` and `APPDOM2`.
 

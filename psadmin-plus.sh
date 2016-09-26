@@ -561,14 +561,30 @@ function call_psadmin
 function source_cfgfile
 {
 	file_psconfig=$PS_CUST_HOME_DIR/$cfg/psconfig.sh
-	file_arch=$PS_CUST_HOME_DIR/$cfg/archive/psconfig.sh
+	file_arch_dir=$PS_CUST_HOME_DIR/$cfg/archive
+	file_arch=$file_arch_dir/psconfig.sh
 
-	#archive
+	
+	# check psconfig
+	if [ ! -f "$file_psconfig" ]; then
+		echo "No psconfig.sh found!"
+		exit		
+	fi
+	# check arch dir
+	if [ ! -d "$file_arch_dir" ]; then
+		mkdir $file_arch_dir
+	fi
+	# check psconfig arch
+	if [ ! -f "$file_arch" ]; then
+		cp $file_psconfig $file_arch
+	fi
+	
+	# archive	
 	if [ $file_psconfig -nt $file_arch ]
 	then
-        	echo "Archiving psconfig.sh, since it has changed."
+        echo "Archiving psconfig.sh, since it has changed."
 		mv $file_arch $file_arch.$(date +%Y%m%d%H%M)
-        	cp $file_psconfig $file_arch
+        cp $file_psconfig $file_arch
 	fi
 
 	# source

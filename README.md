@@ -16,6 +16,11 @@ The `psadmin-plus` script is a wrapper for `psadmin`. Using an interactive menu,
 * `psadmin` - source psconfig.sh and run psadmin
 * `psconfig` - edit psconfig.sh for environment
 
+## Command Line 
+* `psadmin-plus.sh [action] [cfg] [domain] [type]`
+    * action - same as availiable in menu
+	* type - app, prcs, web, all
+
 ## Environment Variables
 * `PS_CFG_HOME_DIR`
     * Directory that contains all `PS_CFG_HOMEs`

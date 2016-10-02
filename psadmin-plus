@@ -164,31 +164,32 @@ function action_web
 function action_menu_call
 {
 	act=$1
+	echo "                       "
+	
 	# loop cfg
 	for ((i=0; i<${#cfgs[*]}; i++));
 	do
 		cfg=${cfgs[i]}
 		source_cfgfile; 
-		# loop type
-		printf "\n========== cfg: $cfg ============\n"
+		# loop type	
 		(
     	for ((j=0; j<${#types[*]}; j++));
 		do
 			type=${types[j]}
-			# loop domains
-			printf "\n    ========== type: $type ============\n"
+			# loop domains		
 			set_domains 
 			for ((k=0; k<${#doms[*]}; k++));			
 			do				
-				dom=${doms[k]}
-				printf "\n        ========== domain: $dom ============\n\n"
-				action_${type} #dynamic function call
-				printf "\n        ====================================\n"
+				dom=${doms[k]}	
+				echo ""	
+				echo "$(echo_color "+--------------------------------------------------------------------+" "brown")"	
+				echo "  $(echo_color "Action:" "brown") $(echo_color "$act" "lred") | $(echo_color "PS_CFG_HOME:" "brown") $(echo_color "$cfg" "lpurple") | $(echo_color "Domain:" "brown") $(echo_color "$dom" "lgreen") | $(echo_color "Type:" "brown") $(echo_color "$type" "lcyan")  "			
+				echo "$(echo_color "+--------------------------------------------------------------------+" "brown")"	
+				echo ""
+				action_${type} #daynamic function call
 			done
-			printf "\n    ====================================\n"
 		done
 		)
-		printf "\n====================================\n"
 	done	
 
 	read -rsp $'\nDone.\n' -n1 key	
@@ -264,7 +265,6 @@ function select_menu
 
 function selectdoms_menu
 {
-	#TODO	
     # select cfg
     option=""
     cfgs=()

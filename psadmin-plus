@@ -142,7 +142,8 @@ function action_web
 		;;
 		purge)
 			echo "Purging webserver cache"
-			rm -rfv "$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*"
+			echo "rm -rfv $PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
+			rm -rfv "$PS_CFG_HOME"/webserv/"$dom"/applications/peoplesoft/PORTAL*/*/cache*/
 		;;
 		restart)
 			echo "Stopping webserver"
@@ -154,7 +155,8 @@ function action_web
 			echo "Stopping webserver"
 			"$PS_HOME"/bin/psadmin -w shutdown -d "$dom"
 			echo "Purging webserver cache"
-			rm -rfv "$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*"
+			echo "rm -rfv $PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
+			rm -rfv "$PS_CFG_HOME"/webserv/"$dom"/applications/peoplesoft/PORTAL*/*/cache*/
 			echo "Starting webserver"
 			"$PS_HOME"/bin/psadmin -w start -d "$dom"
 		;;

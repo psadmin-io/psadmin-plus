@@ -111,7 +111,7 @@ function action_prcs
 #            exit 1
 #        fi
 #    ;;
-#
+
 #    link)
 #        if [[ -f $PS_HOME/setup/psrun.mak ]]; then
 #            echo "Linking COBOL"
@@ -142,7 +142,7 @@ function action_web
         ;;
         purge)
             echo "Purging webserver cache"
-            rm -rfv "$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*"
+			rm -rfv "$PS_CFG_HOME"/webserv/"$dom"/applications/peoplesoft/PORTAL*/*/cache*/
         ;;
         restart)
             echo "Stopping webserver"
@@ -154,7 +154,7 @@ function action_web
             echo "Stopping webserver"
             "$PS_HOME"/bin/psadmin -w shutdown -d "$dom"
             echo "Purging webserver cache"
-            rm -rfv "$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*"
+			rm -rfv "$PS_CFG_HOME"/webserv/"$dom"/applications/peoplesoft/PORTAL*/*/cache*/
             echo "Starting webserver"
             "$PS_HOME"/bin/psadmin -w start -d "$dom"
         ;;
@@ -707,4 +707,3 @@ else
         * ) echo "invalid type!";;
     esac
 fi
-

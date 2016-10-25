@@ -575,7 +575,7 @@ function call_summary
 function call_psadmin
 { 
     clear
-    cfgtmp=${cfgs[0]} 
+    cfg=${cfgs[0]} 
     (source_cfgfile; $PS_HOME/bin/psadmin)
 }
 

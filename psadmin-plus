@@ -229,8 +229,8 @@ function print_help
 	echo ". prcs"
 	echo ". web"
     echo " "
-	
-    read -rsp $'\nPress any key...\n' -n1 key
+
+    read -rsp $'\nPress any key to run psadmin...\n' -n1 key_ 
 }
 
 # display text in colors
@@ -299,9 +299,18 @@ function call_summary
 
 function call_psadmin
 { 
-    clear
-    cfg=${cfgs[0]} 
-    (source_cfgfile; $PS_HOME/bin/psadmin)
+	clear
+	set_runtime_user
+	echo " Running psadmin as $PS_RUNTIME_USER ..."
+	(sudo su - $PS_RUNTIME_USER -c '$PS_HOME/bin/psadmin')
+}
+
+function set_runtime_user
+{
+	if [ -z $PS_RUNTIME_USER ] ; then
+		echo "Environment variable PS_RUNTIME_USER is not set. Using 'psadm2'."
+		PS_RUNTIME_USER="psadm2"
+	fi
 }
 
 ###########################
@@ -320,8 +329,9 @@ required_vars=( PS_CFG_HOME_DIR PS_CUST_HOME_DIR )
 # if no action set, run menu
 if [ -z "$act" ]
 then
-    print_header
+	print_header
 	print_help
+	call_psadmin
 else	
     case $type in
         app ) print_action_info; action_app;;

@@ -161,35 +161,29 @@ function action_web
     esac
 }
 
-function action_menu_call
-{
-    act=$1
-    echo "                       "
-
-    # loop cfg
-    for ((i=0; i<${#cfgs[*]}; i++));
-    do
-        cfg=${cfgs[i]}
-        source_cfgfile; 
-        # loop type	
-        (
-        for ((j=0; j<${#types[*]}; j++));
-        do
-            type=${types[j]}
-            # loop domains		
-            set_domains 
-            for ((k=0; k<${#doms[*]}; k++));			
-            do				
-                dom=${doms[k]}	
-                print_action_info
-                action_${type} #daynamic function call
-            done
-        done
-        )
-    done	
-
-    read -rsp $'\nDone.\n' -n1 key	
-}
+###function action_menu_call
+###{
+###    act=$1
+###    echo "                       "
+###
+###   # loop type	
+###	(
+###	for ((j=0; j<${#types[*]}; j++));
+###	do
+###		type=${types[j]}
+###		# loop domains		
+###		set_domains 
+###		for ((k=0; k<${#doms[*]}; k++));			
+###		do				
+###			dom=${doms[k]}	
+###			print_action_info
+###			action_${type} #dynamic function call
+###		done
+###	done
+###	)
+###
+###    read -rsp $'\nDone.\n' -n1 key	
+###}
 
 function print_action_info
 {
@@ -204,183 +198,11 @@ function print_action_info
 ### Menus   
 ###########################
 
-function main_menu 
-{
-    cd $PS_CFG_HOME_DIR
-    cfghomes=(*)
-	
-    option=0
-    cfgs=() 
-    types=()
-		
-    until [ "$option" = "q" ]
-    do
-        print_header
-        for ((i=0; i<${#cfghomes[*]}; i++));
-        do
-            print_menu_item $((i+1)) ${cfghomes[i]}
-        done
-
-        echo "   - "
-        echo " s - Select" 	
-        echo " q - Quit"
-        echo -e "\n"
-        echo -n "Enter choice: "
-        read option
-        echo ""
-        case $option in
-            s ) select_menu;;
-            q ) clear; exit ;;
-            * ) cfgs=(${cfghomes[$((option-1))]}); types=('web' 'app' 'prcs'); action_menu;;
-        esac	
-        done
-}
-
-function select_menu 
-{
-    option=0
-
-    until [ "$option" = "q" ]
-    do
-        cfgs=() 	
-        types=()
-        print_header
-
-        echo " 1 - Select Domains"
-        echo " 2 - All Domains"
-        echo " 3 - Web Domains"
-        echo " 4 - App Domains"
-        echo " 5 - Prcs Domains"
-        echo "   - "
-        echo " q - Quit"
-        echo -e "\n"
-        echo -n "Enter choice: "
-        
-        read option
-        echo ""
-        case $option in
-            1 ) selectdoms_menu;;
-            2 ) get_cfgs_web; get_cfgs_app; get_cfgs_prcs; types=('web' 'app' 'prcs'); action_menu;;
-            3 ) get_cfgs_web; types=('web'); action_menu;;
-            4 ) get_cfgs_app; types=('app'); action_menu;;
-            5 ) get_cfgs_prcs; types=('prcs'); action_menu;;
-            q ) clear; main_menu ;;
-            * ) echo "ya messed up, yo";;
-        esac
-    done
-}
-
-function selectdoms_menu
-{
-    # select cfg
-    option=""
-    cfgs=()
-    until [ "$option" = "d" ]
-    do
-        print_header
-        for ((i=0; i<${#cfghomes[*]}; i++))
-        do
-            echo " $((i+1)) -  ${cfghomes[i]}"
-        done
-        echo "   - " 
-        echo " d - Done "
-        echo " q - Quit "
-        echo -e "\n"
-        echo -n "Enter choice: "
-
-        read option
-        echo ""
-        case $option in
-            d ) ;;
-            q ) clear; select_menu;;
-            * ) cfgs+=(${cfghomes[$((option-1))]});;
-        esac
-        cfgs=($(printf "%s\n" "${cfgs[@]}" | sort -u))
-    done
-
-    #select type
-    option=""
-    types=()
-    until [ "$option" = "q" ]
-    do
-        print_header
-        echo " 1 - web "
-        echo " 2 - app "
-        echo " 3 - prcs "
-        echo "   - "
-        echo " d - Done"
-        echo " q - Quit"
-        echo -e "\n"
-        echo -n "Enter choice: "
-
-        read option
-        echo " "
-        case $option in
-            1 ) types+=("web");;
-            2 ) types+=("app");;
-            3 ) types+=("prcs");;
-            d ) action_menu;;
-            q ) clear; select_menu;;
-            * ) ;;
-        esac
-        types=($(printf "%s\n" "${types[@]}" | sort -u))
-    done
-}
-
-function action_menu
-{
-    option=0
-
-    until [ "$option" = "q" ]
-    do
-        print_header
-
-        echo " 1 - Status     6 - Bounce    "
-        echo " 2 - Start      7 - Kill      "
-        echo " 3 - Stop       8 - Configure "
-        echo " 4 - Restart    9 - Flush     "
-        echo " 5 - Purge"
-        echo "   - "
-        # not multi select?
-        if [ ${#cfgs[@]} -eq 1 ]; then
-            echo " s - summary"
-            echo " p - psadmin"
-            echo " e - edit psconfig.sh"
-            echo " h - help"
-        fi
-        echo " q - Quit"
-        echo -e "\n"
-        echo -n "Enter choice: "
-	
-        read option
-        echo ""
-        case $option in
-            1 ) action_menu_call "status";;
-            2 ) action_menu_call "start" ;;
-            3 ) action_menu_call "stop";;
-            4 ) action_menu_call "restart";;
-            5 ) action_menu_call "purge";;
-            6 ) action_menu_call "bounce";;
-            7 ) action_menu_call "kill";;
-            8 ) action_menu_call "configure";;
-            9 ) action_menu_call "flush";;
-            s ) call_summary;;
-            p ) call_psadmin;;
-            e ) edit_psconfig;;
-            h ) print_help;;
-            q ) clear; main_menu ;;
-            * ) echo "ya messed up, yo";;
-        esac
-    done
-}
-
 function print_header
 {
     clear
     echo "+-------------------------------------------------+" 
     echo "| $(echo_color $title "lblue")   host: $(echo_color $host "lgreen") "	
-    echo "|                cfgs: $(echo_color "${cfgs[*]}" "lpurple") "
-    echo "|               types: $(echo_color "${types[*]}" "lcyan") "
     echo "+-------------------------------------------------+"
 }
 
@@ -388,7 +210,10 @@ function print_help
 {
     echo " "
     echo ". help ......................."
+    echo ". There is no menu currently, just command line"
+    echo ". example: psadmin-plus [action] [type] [domain]"
     echo ". "
+    echo ". actions ...................."
     echo ". status - status of the domain"
     echo ". start - start the domain"
     echo ". stop - stop the domain"
@@ -398,21 +223,14 @@ function print_help
     echo ". kill - force stop the domain"
     echo ". configure - configure the domain"
     echo ". flush - clear domain IPC"
+	echo ". "
+    echo ". types ......................"
+	echo ". app"
+	echo ". prcs"
+	echo ". web"
     echo " "
 	
     read -rsp $'\nPress any key...\n' -n1 key
-}
-
-function print_menu_item
-{
-    item=$1
-    cfg=$2
-	
-    echo -n " $item - $cfg [" 
-    check_web $cfg 
-    check_app $cfg
-    check_prcs $cfg
-    echo "]"
 }
 
 # display text in colors
@@ -446,123 +264,30 @@ function echo_color
 ### Misc   
 ###########################
 
-function validate_vars
-{
-    for var in ${required_vars[@]}
-    do
-        if [[ `printenv ${var}` = '' ]]
-        then
-            echo $(echo_color "${var} is not set.  Please make sure this is set before continuing." "red")
-            echo $(echo_color "Example: export PS_CFG_HOME_DIR=/u01/psoft/cfg" "red")
-            echo $(echo_color "Example: export PS_CUST_HOME_DIR=/u01/psoft/cust" "red")
-            exit 1
-        fi
-    done
-}
-
-function is_web_cfg
-{
-    cfg=$1
-    dir=$PS_CFG_HOME_DIR/$cfg/webserv/
-    if [ -d "$dir" ]
-    then
-        subdircount=`find $dir -maxdepth 1 -type d | wc -l`
-        if [ $subdircount -gt 1 ]
-        then  
-            return 0 #true
-        fi
-    fi
-    return 1 #false
-}
-
-function is_app_cfg
-{
-    cfg=$1
-    dir=$PS_CFG_HOME_DIR/$cfg/appserv/
-    if [ -d "$dir" ]
-    then
-        subdircount=`find $dir -maxdepth 1 -type d | wc -l`
-        if [ $subdircount -gt 3 ]
-        then
-            return 0 #true
-	fi
-    fi
-    return 1 #false
-}
-
-function is_prcs_cfg
-{
-    cfg=$1
-    dir=$PS_CFG_HOME_DIR/$cfg/appserv/prcs/
-    if [ -d "$dir" ]
-    then
-        subdircount=`find $dir -maxdepth 1 -type d | wc -l`
-        if [ $subdircount -gt 1 ]
-        then  
-            return 0 #true		
-        fi
-    fi
-    return 1 #false
-}
-
-# check if domain type exists
-function check_web
-{
-    cfg=$1
-    if is_web_cfg $cfg
-    then     
-        echo -n $(echo_color "w" "lred")
-    else
-        echo -n " "
-    fi
-}
-
-function check_app
-{
-    cfg=$1
-    if is_app_cfg $cfg
-    then
-        echo -n $(echo_color "a" "lblue")
-    else
-        echo -n " "
-    fi
-}
-
-function check_prcs
-{
-    cfg=$1
-    if is_prcs_cfg $cfg
-    then        
-        echo -n $(echo_color "p" "lpurple")
-    else
-        echo -n " "
-    fi
-}
-
-function set_domains
-{	
-    PS_CFG_HOME=$PS_CFG_HOME_DIR/$cfg
-    case $type in
-        web )  dirs=($PS_CFG_HOME/webserv/*);;
-        app ) dirs=($PS_CFG_HOME/appserv/*);;
-        prcs ) dirs=($PS_CFG_HOME/appserv/prcs/*);;
-        * ) echo "something went wrong setting domains";;
-    esac
-	
-    doms=()
-    shopt -s nullglob # handles empty dirs
-    for dir in "${dirs[@]}"
-    do
-        if [ -d "$dir" ]
-        then
-            dirname=${dir##*/} # strip fullpath
-            if [[ "$dirname" != "Search" && "$dirname" != "prcs" ]]
-	    then
-                doms+=($dirname) 
-            fi
-        fi
-    done
-}
+###function set_domains
+###{	
+###    PS_CFG_HOME=$PS_CFG_HOME_DIR/$cfg
+###    case $type in
+###        web )  dirs=($PS_CFG_HOME/webserv/*);;
+###        app ) dirs=($PS_CFG_HOME/appserv/*);;
+###        prcs ) dirs=($PS_CFG_HOME/appserv/prcs/*);;
+###        * ) echo "something went wrong setting domains";;
+###    esac
+###	
+###    doms=()
+###    shopt -s nullglob # handles empty dirs
+###    for dir in "${dirs[@]}"
+###    do
+###        if [ -d "$dir" ]
+###        then
+###            dirname=${dir##*/} # strip fullpath
+###            if [[ "$dirname" != "Search" && "$dirname" != "prcs" ]]
+###	    then
+###                doms+=($dirname) 
+###            fi
+###        fi
+###    done
+###}
 
 function call_summary
 { 
@@ -579,126 +304,25 @@ function call_psadmin
     (source_cfgfile; $PS_HOME/bin/psadmin)
 }
 
-function source_cfgfile
-{
-    file_psconfig=$PS_CUST_HOME_DIR/$cfg/psconfig.sh
-    file_arch_dir=$PS_CUST_HOME_DIR/$cfg/archive
-    file_arch=$file_arch_dir/psconfig.sh
-
-    # check psconfig
-    if [ ! -f "$file_psconfig" ]
-    then
-        echo "No psconfig.sh found!"
-        exit		
-    fi
-    # check arch dir
-    if [ ! -d "$file_arch_dir" ]
-    then
-        mkdir $file_arch_dir
-    fi
-    # check psconfig arch
-    if [ ! -f "$file_arch" ]
-    then
-        cp $file_psconfig $file_arch
-    fi
-	
-    # archive	
-    if [ $file_psconfig -nt $file_arch ]
-    then
-        echo "Archiving psconfig.sh, since it has changed."
-        mv $file_arch $file_arch.$(date +%Y%m%d%H%M)
-        cp $file_psconfig $file_arch
-    fi
-
-    # source
-    . $file_psconfig
-}
-
-function edit_psconfig
-{
-    clear
-    $EDITOR $PS_CUST_HOME_DIR/${cfgs[0]}/psconfig.sh
-}
-
-function get_cfgs_all
-{ 	
-    cfgs=${#cfghomes[*]}
-    # strip dups
-    # cfgs=($(printf "%s\n" "${cfgs[@]}" | sort -u))
-}
-
-function get_cfgs_web
-{ 
-    for ((i=0; i<${#cfghomes[*]}; i++))
-    do
-        cfgtmp=${cfghomes[i]}
-        if is_web_cfg $cfgtmp
-        then
-            cfgs+=($cfgtmp)
-    fi
-    done
-    # strip dups
-    cfgs=($(printf "%s\n" "${cfgs[@]}" | sort -u))
-}
-
-function get_cfgs_app
-{ 
-    for ((i=0; i<${#cfghomes[*]}; i++))
-    do
-        cfgtmp=${cfghomes[i]}
-        if is_app_cfg $cfgtmp
-        then
-            cfgs+=($cfgtmp)
-        fi
-    done
-    # strip dups	
-    cfgs=($(printf "%s\n" "${cfgs[@]}" | sort -u))
-}
-
-function get_cfgs_prcs
-{ 
-    for ((i=0; i<${#cfghomes[*]}; i++))
-    do
-        cfgtmp=${cfghomes[i]}
-        if is_prcs_cfg $cfgtmp
-        then
-            cfgs+=($cfgtmp)
-        fi
-    done
-    # strip dups
-    cfgs=($(printf "%s\n" "${cfgs[@]}" | sort -u))	
-}
-
 ###########################
 ### Main 
 ###########################
 act=$1
-cfg=$2
+type=$2
 dom=$3
-type=$4
-
-# source in login profile
-#export PS_CFG_HOME_DIR=/u01/psoft/cfg
-#export PS_CUST_HOME_DIR=/u01/psoft/cust
 
 title=psadmin-plus
 host=$(hostname)
 required_vars=( PS_CFG_HOME_DIR PS_CUST_HOME_DIR )
 
-# set editor
-if [ -z "$EDITOR" ]
-then
-    EDITOR='vim'
-fi
-
-validate_vars
+#validate_vars
 
 # if no action set, run menu
 if [ -z "$act" ]
 then
-    main_menu
+    print_header
+	print_help
 else	
-    source_cfgfile 
     case $type in
         app ) print_action_info; action_app;;
         prcs ) print_action_info; action_prcs;;

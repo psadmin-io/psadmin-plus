@@ -302,7 +302,11 @@ function call_psadmin
 	clear
 	set_runtime_user
 	echo " Running psadmin as $PS_RUNTIME_USER ..."
-	(sudo su - $PS_RUNTIME_USER -c '$PS_HOME/bin/psadmin')
+	if [ "$USER" = "$PS_RUNTIME_USER" ]; then
+		$PS_HOME/bin/psadmin	
+	else
+		(sudo su - $PS_RUNTIME_USER -c "$PS_HOME/bin/psadmin")
+	fi
 }
 
 function set_runtime_user

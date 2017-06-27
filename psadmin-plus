@@ -14,51 +14,52 @@ function action_app
     case $act in
 
     status)
-        "$PS_HOME"/bin/psadmin -c sstatus -d "$dom" 2>&1
-        "$PS_HOME"/bin/psadmin -c cstatus -d "$dom" 2>&1
-        "$PS_HOME"/bin/psadmin -c qstatus -d "$dom" 2>&1
-        "$PS_HOME"/bin/psadmin -c pslist -d "$dom" 2>&1
+        exec_cmd "psadmin -c sstatus -d $dom" 2>&1
+	exec_cmd "psadmin -c cstatus -d $dom" 2>&1
+        exec_cmd "psadmin -c qstatus -d $dom" 2>&1
+        exec_cmd "psadmin -c pslist -d $dom" 2>&1
     ;;
 
     start)
-        "$PS_HOME"/bin/psadmin -c boot -d "$dom" 2>&1
+        exec_cmd "psadmin -c boot -d $dom" 2>&1
     ;;
 
     stop)
-        "$PS_HOME"/bin/psadmin -c shutdown -d "$dom" 2>&1
+        exec_cmd "psadmin -c shutdown -d $dom" 2>&1
     ;;
 
     kill)
-        "$PS_HOME"/bin/psadmin -c shutdown! -d "$dom" 2>&1
+        exec_cmd "psadmin -c shutdown! -d $dom" 2>&1
     ;;
 
     configure)
-        "$PS_HOME"/bin/psadmin -c configure -d "$dom" 2>&1
+        exec_cmd "psadmin -c configure -d $dom" 2>&1
     ;;
 
     purge)    
-        "$PS_HOME"/bin/psadmin -c purge -d "$dom" 2>&1
+        exec_cmd "psadmin -c purge -d $dom" 2>&1
         echo "$domain cache purged."
     ;;
 
     flush)
-        "$PS_HOME"/bin/psadmin -c cleanipc -d "$dom" 2>&1
+        exec_cmd "psadmin -c cleanipc -d $dom" 2>&1
     ;;
 
     restart)
-        "$PS_HOME"/bin/psadmin -c shutdown -d "$dom" 2>&1
-        "$PS_HOME"/bin/psadmin -c boot -d "$dom" 2>&1
+        exec_cmd "psadmin -c shutdown -d $dom" 2>&1
+        exec_cmd "psadmin -c boot -d $dom" 2>&1
     ;;
 
     bounce)
-        "$PS_HOME"/bin/psadmin -c shutdown -d "$dom" 2>&1
-        "$PS_HOME"/bin/psadmin -c cleanipc -d "$dom" 2>&1
-        "$PS_HOME"/bin/psadmin -c purge -d "$dom" 2>&1
-        "$PS_HOME"/bin/psadmin -c configure -d "$dom" 2>&1
-        "$PS_HOME"/bin/psadmin -c boot -d "$dom" 2>&1
+        exec_cmd "psadmin -c shutdown -d $dom" 2>&1
+        exec_cmd "psadmin -c cleanipc -d $dom" 2>&1
+        exec_cmd "psadmin -c purge -d $dom" 2>&1
+        exec_cmd "psadmin -c configure -d $dom" 2>&1
+        exec_cmd "psadmin -c boot -d $dom" 2>&1
     ;;
 
     esac
+    echo ""
 }
 
 function action_prcs
@@ -66,39 +67,39 @@ function action_prcs
     case $act in
 
     status)
-        "$PS_HOME"/bin/psadmin -p status -d "$dom" 2>&1
+        exec_cmd "psadmin -p status -d $dom" 2>&1
     ;;
 
     start)
-        "$PS_HOME"/bin/psadmin -p start -d "$dom" 2>&1
+        exec_cmd "psadmin -p start -d $dom" 2>&1
     ;;
 
     stop)
-        "$PS_HOME"/bin/psadmin -p stop -d "$dom" 2>&1
+        exec_cmd "psadmin -p stop -d $dom" 2>&1
     ;;
 
     kill)
-        "$PS_HOME"/bin/psadmin -p kill -d "$dom" 2>&1
+        exec_cmd "psadmin -p kill -d $dom" 2>&1
     ;;
 
     configure)
-        "$PS_HOME"/bin/psadmin -p configure -d "$dom" 2>&1
+        exec_cmd "psadmin -p configure -d $dom" 2>&1
     ;;
 
     flush)
-        "$PS_HOME"/bin/psadmin -p cleanipc -d "$dom" 2>&1
+        exec_cmd "psadmin -p cleanipc -d $dom" 2>&1
     ;;
 
     restart)
-        "$PS_HOME"/bin/psadmin -p stop -d "$dom" 2>&1
-        "$PS_HOME"/bin/psadmin -p start -d "$dom" 2>&1
+        exec_cmd "psadmin -p stop -d $dom" 2>&1
+        exec_cmd "psadmin -p start -d $dom" 2>&1
     ;;
 
     bounce)
-        "$PS_HOME"/bin/psadmin -p stop -d "$dom" 2>&1
-        "$PS_HOME"/bin/psadmin -p cleanipc -d "$dom" 2>&1
-        "$PS_HOME"/bin/psadmin -p configure -d "$dom" 2>&1
-        "$PS_HOME"/bin/psadmin -p start -d "$dom" 2>&1
+        exec_cmd "psadmin -p stop -d $dom" 2>&1
+        exec_cmd "psadmin -p cleanipc -d $dom" 2>&1
+        exec_cmd "psadmin -p configure -d $dom" 2>&1
+        exec_cmd "psadmin -p start -d $dom" 2>&1
     ;;
 
 #    compile)
@@ -130,33 +131,33 @@ function action_web
     case $act in
         status)
             echo "Webserver status"
-            "$PS_HOME"/bin/psadmin -w status -d "$dom"
+            exec_cmd "psadmin -w status -d $dom"
         ;;
         start)
             echo "Starting webserver"
-            "$PS_HOME"/bin/psadmin -w start -d "$dom"
+            exec_cmd "psadmin -w start -d $dom"
         ;;
         stop)
             echo "Stopping webserver"
-            "$PS_HOME"/bin/psadmin -w shutdown -d "$dom"
+            exec_cmd "psadmin -w shutdown -d $dom"
         ;;
         purge)
             echo "Purging webserver cache"
-			rm -rfv "$PS_CFG_HOME"/webserv/"$dom"/applications/peoplesoft/PORTAL*/*/cache*/
+          exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
         ;;
         restart)
             echo "Stopping webserver"
-            "$PS_HOME"/bin/psadmin -w shutdown -d "$dom"
+            exec_cmd "psadmin -w shutdown -d $dom"
             echo "Starting webserver"
-            "$PS_HOME"/bin/psadmin -w start -d "$dom"
+            exec_cmd "psadmin -w start -d $dom"
         ;;
         bounce)
             echo "Stopping webserver"
-            "$PS_HOME"/bin/psadmin -w shutdown -d "$dom"
+            exec_cmd "psadmin -w shutdown -d $dom"
             echo "Purging webserver cache"
-			rm -rfv "$PS_CFG_HOME"/webserv/"$dom"/applications/peoplesoft/PORTAL*/*/cache*/
+	    exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
             echo "Starting webserver"
-            "$PS_HOME"/bin/psadmin -w start -d "$dom"
+            exec_cmd "psadmin -w start -d $dom"
         ;;
     esac
 }
@@ -189,7 +190,7 @@ function print_action_info
 {
     echo ""	
     echo "$(echo_color "+--------------------------------------------------------------------+" "brown")"	
-    echo "  $(echo_color "Action:" "brown") $(echo_color "$act" "lred") | $(echo_color "PS_CFG_HOME:" "brown") $(echo_color "$cfg" "lpurple") | $(echo_color "Domain:" "brown") $(echo_color "$dom" "lgreen") | $(echo_color "Type:" "brown") $(echo_color "$type" "lcyan")  "			
+    echo "  $(echo_color "Action:" "brown") $(echo_color "$act" "lred") | $(echo_color "Type:" "brown") $(echo_color "$type" "lcyan") | $(echo_color "Domain:" "brown") $(echo_color "$dom" "lgreen")"			
     echo "$(echo_color "+--------------------------------------------------------------------+" "brown")"	
     echo ""
 }
@@ -289,24 +290,11 @@ function echo_color
 ###    done
 ###}
 
-function call_summary
-{ 
-    clear
-    cfg=${cfgs[0]} 
-    (source_cfgfile; $PS_HOME/bin/psadmin -envsummary)
-    read -rsp $'\nPress any key...\n' -n1 key
-}
-
 function call_psadmin
 { 
 	clear
-	set_runtime_user
 	echo " Running psadmin as $PS_RUNTIME_USER ..."
-	if [ "$USER" = "$PS_RUNTIME_USER" ]; then
-		$PS_HOME/bin/psadmin	
-	else
-		(sudo su - $PS_RUNTIME_USER -c "$PS_HOME/bin/psadmin")
-	fi
+	exec_cmd "psadmin"	
 }
 
 function set_runtime_user
@@ -314,6 +302,16 @@ function set_runtime_user
 	if [ -z $PS_RUNTIME_USER ] ; then
 		echo "Environment variable PS_RUNTIME_USER is not set. Using 'psadm2'."
 		PS_RUNTIME_USER="psadm2"
+	fi
+}
+
+function exec_cmd
+{
+	cmd=$1
+	if [ "$USER" = "$PS_RUNTIME_USER" ]; then
+		$cmd	
+	else
+		sudo su - $PS_RUNTIME_USER -c "$cmd"
 	fi
 }
 
@@ -329,6 +327,7 @@ host=$(hostname)
 required_vars=( PS_CFG_HOME_DIR PS_CUST_HOME_DIR )
 
 #validate_vars
+set_runtime_user
 
 # if no action set, run menu
 if [ -z "$act" ]

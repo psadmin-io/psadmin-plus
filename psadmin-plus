@@ -340,7 +340,7 @@ else
         app ) print_action_info; action_app;;
         prcs ) print_action_info; action_prcs;;
         web )  print_action_info; action_web;;
-        all )  print_action_info; action_app; print_action_info; action_prcs; print_action_info; action_web;;
+        all )  type=app; print_action_info; action_app; type=prcs; print_action_info; action_prcs; type=web; print_action_info; action_web;;
         * ) echo "invalid type!";;
     esac
 fi

@@ -224,6 +224,7 @@ function print_help
     echo ". example: psadmin-plus [action] [type] [domain]"
     echo ". "
     echo ". actions ...................."
+    echo ". summary - PS_CFG_HOME summary, no type or domain needed"
     echo ". status - status of the domain"
     echo ". start - start the domain"
     echo ". stop - stop the domain"
@@ -233,12 +234,16 @@ function print_help
     echo ". kill - force stop the domain"
     echo ". configure - configure the domain"
     echo ". flush - clear domain IPC"
-	echo ". "
+    echo ". "
     echo ". types ......................"
-	echo ". app"
-	echo ". prcs"
-	echo ". web"
-    echo " "
+    echo ". app"
+    echo ". prcs"
+    echo ". web"
+    echo ". all"
+    echo ". "
+    echo ". domains....................."
+    echo ". domain name"
+    echo ". all"
 
     read -rsp $'\nPress any key to run psadmin...\n' -n1 key_ 
 }
@@ -323,6 +328,13 @@ function set_domains
     done
 }
 
+function call_summary
+{ 
+    clear
+    exec_cmd "psadmin -envsummary"
+    read -rsp $'\nPress any key...\n' -n1 key
+}
+
 function call_psadmin
 { 
 	clear
@@ -357,7 +369,6 @@ domparam=$3
 
 title=psadmin-plus
 host=$(hostname)
-required_vars=( PS_CFG_HOME_DIR PS_CUST_HOME_DIR )
 
 #validate_vars
 set_runtime_user
@@ -369,12 +380,16 @@ then
 	print_help
 	call_psadmin
 else	
-    set_domains
-    case $type in
-        app ) action_app;;
-        prcs ) action_prcs;;
-        web )  action_web;;
-        all )  action_app; action_prcs; action_web;;
-        * ) echo "invalid type!";;
-    esac
+    if [ $act = "summary" ]; then
+        call_summary
+    else
+        set_domains
+        case $type in
+            app ) action_app;;
+            prcs ) action_prcs;;
+            web )  action_web;;
+            all )  action_app; action_prcs; action_web;;
+            * ) echo "invalid type!";;
+        esac
+    fi
 fi

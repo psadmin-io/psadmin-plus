@@ -11,186 +11,195 @@
     
 function action_app
 {
-    case $act in
+    if [ $domparam = "all" ] ; then
+        list=("${app_doms[@]}")
+    else
+        list=($domparam)
+    fi
+    
+    for dom in "${list[@]}"
+    do
+        act_type=app
+        print_action_info
+        case $act in
 
-    status)
-        exec_cmd "psadmin -c sstatus -d $dom" 2>&1
-	exec_cmd "psadmin -c cstatus -d $dom" 2>&1
-        exec_cmd "psadmin -c qstatus -d $dom" 2>&1
-        exec_cmd "psadmin -c pslist -d $dom" 2>&1
-    ;;
+        status)
+            exec_cmd "psadmin -c sstatus -d $dom" 2>&1
+            exec_cmd "psadmin -c cstatus -d $dom" 2>&1
+            exec_cmd "psadmin -c qstatus -d $dom" 2>&1
+            exec_cmd "psadmin -c pslist -d $dom" 2>&1
+        ;;
 
-    start)
-        exec_cmd "psadmin -c boot -d $dom" 2>&1
-    ;;
+        start)
+            exec_cmd "psadmin -c boot -d $dom" 2>&1
+        ;;
 
-    stop)
-        exec_cmd "psadmin -c shutdown -d $dom" 2>&1
-    ;;
+        stop)
+            exec_cmd "psadmin -c shutdown -d $dom" 2>&1
+        ;;
 
-    kill)
-        exec_cmd "psadmin -c shutdown! -d $dom" 2>&1
-    ;;
+        kill)
+            exec_cmd "psadmin -c shutdown! -d $dom" 2>&1
+        ;;
 
-    configure)
-        exec_cmd "psadmin -c configure -d $dom" 2>&1
-    ;;
+        configure)
+            exec_cmd "psadmin -c configure -d $dom" 2>&1
+        ;;
 
-    purge)    
-        exec_cmd "psadmin -c purge -d $dom" 2>&1
-        echo "$domain cache purged."
-    ;;
+        purge)    
+            exec_cmd "psadmin -c purge -d $dom" 2>&1
+            echo "$domain cache purged."
+        ;;
 
-    flush)
-        exec_cmd "psadmin -c cleanipc -d $dom" 2>&1
-    ;;
+        flush)
+            exec_cmd "psadmin -c cleanipc -d $dom" 2>&1
+        ;;
 
-    restart)
-        exec_cmd "psadmin -c shutdown -d $dom" 2>&1
-        exec_cmd "psadmin -c boot -d $dom" 2>&1
-    ;;
+        restart)
+            exec_cmd "psadmin -c shutdown -d $dom" 2>&1
+            exec_cmd "psadmin -c boot -d $dom" 2>&1
+        ;;
 
-    bounce)
-        exec_cmd "psadmin -c shutdown -d $dom" 2>&1
-        exec_cmd "psadmin -c cleanipc -d $dom" 2>&1
-        exec_cmd "psadmin -c purge -d $dom" 2>&1
-        exec_cmd "psadmin -c configure -d $dom" 2>&1
-        exec_cmd "psadmin -c boot -d $dom" 2>&1
-    ;;
+        bounce)
+            exec_cmd "psadmin -c shutdown -d $dom" 2>&1
+            exec_cmd "psadmin -c cleanipc -d $dom" 2>&1
+            exec_cmd "psadmin -c purge -d $dom" 2>&1
+            exec_cmd "psadmin -c configure -d $dom" 2>&1
+            exec_cmd "psadmin -c boot -d $dom" 2>&1
+        ;;
 
-    esac
+        esac
+    done    
     echo ""
 }
 
 function action_prcs
 {
-    case $act in
+    if [ $domparam = "all" ] ; then
+        list=("${prcs_doms[@]}")
+    else
+        list=($domparam)
+    fi
+    
+    for dom in "${list[@]}"
+    do
+        act_type=prcs
+        print_action_info
+        case $act in
 
-    status)
-        exec_cmd "psadmin -p status -d $dom" 2>&1
-    ;;
+        status)
+            exec_cmd "psadmin -p status -d $dom" 2>&1
+        ;;
 
-    start)
-        exec_cmd "psadmin -p start -d $dom" 2>&1
-    ;;
+        start)
+            exec_cmd "psadmin -p start -d $dom" 2>&1
+        ;;
 
-    stop)
-        exec_cmd "psadmin -p stop -d $dom" 2>&1
-    ;;
+        stop)
+            exec_cmd "psadmin -p stop -d $dom" 2>&1
+        ;;
 
-    kill)
-        exec_cmd "psadmin -p kill -d $dom" 2>&1
-    ;;
+        kill)
+            exec_cmd "psadmin -p kill -d $dom" 2>&1
+        ;;
 
-    configure)
-        exec_cmd "psadmin -p configure -d $dom" 2>&1
-    ;;
+        configure)
+            exec_cmd "psadmin -p configure -d $dom" 2>&1
+        ;;
 
-    flush)
-        exec_cmd "psadmin -p cleanipc -d $dom" 2>&1
-    ;;
+        flush)
+            exec_cmd "psadmin -p cleanipc -d $dom" 2>&1
+        ;;
 
-    restart)
-        exec_cmd "psadmin -p stop -d $dom" 2>&1
-        exec_cmd "psadmin -p start -d $dom" 2>&1
-    ;;
+        restart)
+            exec_cmd "psadmin -p stop -d $dom" 2>&1
+            exec_cmd "psadmin -p start -d $dom" 2>&1
+        ;;
 
-    bounce)
-        exec_cmd "psadmin -p stop -d $dom" 2>&1
-        exec_cmd "psadmin -p cleanipc -d $dom" 2>&1
-        exec_cmd "psadmin -p configure -d $dom" 2>&1
-        exec_cmd "psadmin -p start -d $dom" 2>&1
-    ;;
+        bounce)
+            exec_cmd "psadmin -p stop -d $dom" 2>&1
+            exec_cmd "psadmin -p cleanipc -d $dom" 2>&1
+            exec_cmd "psadmin -p configure -d $dom" 2>&1
+            exec_cmd "psadmin -p start -d $dom" 2>&1
+        ;;
 
-#    compile)
-#        if [[ -f $PS_HOME/setup/pscbl.mak ]]; then
-#            echo "Recompiling COBOL"
-#            cd "$PS_HOME"/setup && ./pscbl.mak
-#            cd "$PS_HOME"/setup && ./pscbl.mak
-#        else
-#            echoerror "Could not find the file $PS_HOME/setup/pscbl.mak"
-#            exit 1
-#        fi
-#    ;;
+    #    compile)
+    #        if [[ -f $PS_HOME/setup/pscbl.mak ]]; then
+    #            echo "Recompiling COBOL"
+    #            cd "$PS_HOME"/setup && ./pscbl.mak
+    #            cd "$PS_HOME"/setup && ./pscbl.mak
+    #        else
+    #            echoerror "Could not find the file $PS_HOME/setup/pscbl.mak"
+    #            exit 1
+    #        fi
+    #    ;;
 
-#    link)
-#        if [[ -f $PS_HOME/setup/psrun.mak ]]; then
-#            echo "Linking COBOL"
-#            cd "$PS_HOME"/setup && ./psrun.mak
-#        else
-#            echoerror "Could not find the file $PS_HOME/setup/psrun.mak"
-#            exit 1
-#        fi
-#    ;;
+    #    link)
+    #        if [[ -f $PS_HOME/setup/psrun.mak ]]; then
+    #            echo "Linking COBOL"
+    #            cd "$PS_HOME"/setup && ./psrun.mak
+    #        else
+    #            echoerror "Could not find the file $PS_HOME/setup/psrun.mak"
+    #            exit 1
+    #        fi
+    #    ;;
 
-    esac
+        esac
+    done
 }
 
 function action_web
 {	
-    case $act in
-        status)
-            echo "Webserver status"
-            exec_cmd "psadmin -w status -d $dom"
-        ;;
-        start)
-            echo "Starting webserver"
-            exec_cmd "psadmin -w start -d $dom"
-        ;;
-        stop)
-            echo "Stopping webserver"
-            exec_cmd "psadmin -w shutdown -d $dom"
-        ;;
-        purge)
-            echo "Purging webserver cache"
-          exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
-        ;;
-        restart)
-            echo "Stopping webserver"
-            exec_cmd "psadmin -w shutdown -d $dom"
-            echo "Starting webserver"
-            exec_cmd "psadmin -w start -d $dom"
-        ;;
-        bounce)
-            echo "Stopping webserver"
-            exec_cmd "psadmin -w shutdown -d $dom"
-            echo "Purging webserver cache"
-	    exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
-            echo "Starting webserver"
-            exec_cmd "psadmin -w start -d $dom"
-        ;;
-    esac
+    if [ $domparam = "all" ] ; then
+        list=("${web_doms[@]}")
+    else
+        list=($domparam)
+    fi
+    
+    for dom in "${list[@]}"
+    do
+        act_type=web
+        print_action_info
+        case $act in
+            status)
+                echo "Webserver status $dom"
+                exec_cmd "psadmin -w status -d $dom"
+            ;;
+            start)
+                echo "Starting webserver"
+                exec_cmd "psadmin -w start -d $dom"
+            ;;
+            stop)
+                echo "Stopping webserver"
+                exec_cmd "psadmin -w shutdown -d $dom"
+            ;;
+            purge)
+                echo "Purging webserver cache"
+              exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
+            ;;
+            restart)
+                echo "Stopping webserver"
+                exec_cmd "psadmin -w shutdown -d $dom"
+                echo "Starting webserver"
+                exec_cmd "psadmin -w start -d $dom"
+            ;;
+            bounce)
+                echo "Stopping webserver"
+                exec_cmd "psadmin -w shutdown -d $dom"
+                echo "Purging webserver cache"
+	        exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
+                echo "Starting webserver"
+                exec_cmd "psadmin -w start -d $dom"
+            ;;
+        esac
+    done
 }
-
-###function action_menu_call
-###{
-###    act=$1
-###    echo "                       "
-###
-###   # loop type	
-###	(
-###	for ((j=0; j<${#types[*]}; j++));
-###	do
-###		type=${types[j]}
-###		# loop domains		
-###		set_domains 
-###		for ((k=0; k<${#doms[*]}; k++));			
-###		do				
-###			dom=${doms[k]}	
-###			print_action_info
-###			action_${type} #dynamic function call
-###		done
-###	done
-###	)
-###
-###    read -rsp $'\nDone.\n' -n1 key	
-###}
 
 function print_action_info
 {
     echo ""	
     echo "$(echo_color "+--------------------------------------------------------------------+" "brown")"	
-    echo "  $(echo_color "Action:" "brown") $(echo_color "$act" "lred") | $(echo_color "Type:" "brown") $(echo_color "$type" "lcyan") | $(echo_color "Domain:" "brown") $(echo_color "$dom" "lgreen")"			
+    echo "  $(echo_color "Action:" "brown") $(echo_color "$act" "lred") | $(echo_color "Type:" "brown") $(echo_color "$act_type" "lcyan") | $(echo_color "Domain:" "brown") $(echo_color "$dom" "lgreen")"			
     echo "$(echo_color "+--------------------------------------------------------------------+" "brown")"	
     echo ""
 }
@@ -265,30 +274,54 @@ function echo_color
 ### Misc   
 ###########################
 
-###function set_domains
-###{	
-###    PS_CFG_HOME=$PS_CFG_HOME_DIR/$cfg
-###    case $type in
-###        web )  dirs=($PS_CFG_HOME/webserv/*);;
-###        app ) dirs=($PS_CFG_HOME/appserv/*);;
-###        prcs ) dirs=($PS_CFG_HOME/appserv/prcs/*);;
-###        * ) echo "something went wrong setting domains";;
-###    esac
-###	
-###    doms=()
-###    shopt -s nullglob # handles empty dirs
-###    for dir in "${dirs[@]}"
-###    do
-###        if [ -d "$dir" ]
-###        then
-###            dirname=${dir##*/} # strip fullpath
-###            if [[ "$dirname" != "Search" && "$dirname" != "prcs" ]]
-###	    then
-###                doms+=($dirname) 
-###            fi
-###        fi
-###    done
-###}
+function set_domains
+{	
+    web_dirs=($PS_CFG_HOME/webserv/*)
+    app_dirs=($PS_CFG_HOME/appserv/*)
+    prcs_dirs=($PS_CFG_HOME/appserv/prcs/*)
+	
+    web_doms=()
+    shopt -s nullglob # handles empty dirs
+    for dir in "${web_dirs[@]}"
+    do
+        if [ -d "$dir" ]
+        then
+            dirname=${dir##*/} # strip fullpath
+            if [[ "$dirname" != "Search" && "$dirname" != "prcs" ]]
+	    then
+                web_doms+=($dirname) 
+            fi
+        fi
+    done
+	
+    app_doms=()
+    shopt -s nullglob # handles empty dirs
+    for dir in "${app_dirs[@]}"
+    do
+        if [ -d "$dir" ]
+        then
+            dirname=${dir##*/} # strip fullpath
+            if [[ "$dirname" != "Search" && "$dirname" != "prcs" ]]
+	    then
+                app_doms+=($dirname) 
+            fi
+        fi
+    done
+	
+    prcs_doms=()
+    shopt -s nullglob # handles empty dirs
+    for dir in "${prcs_dirs[@]}"
+    do
+        if [ -d "$dir" ]
+        then
+            dirname=${dir##*/} # strip fullpath
+            if [[ "$dirname" != "Search" && "$dirname" != "prcs" ]]
+	    then
+               prcs_doms+=($dirname) 
+            fi
+        fi
+    done
+}
 
 function call_psadmin
 { 
@@ -320,7 +353,7 @@ function exec_cmd
 ###########################
 act=$1
 type=$2
-dom=$3
+domparam=$3
 
 title=psadmin-plus
 host=$(hostname)
@@ -336,11 +369,12 @@ then
 	print_help
 	call_psadmin
 else	
+    set_domains
     case $type in
-        app ) print_action_info; action_app;;
-        prcs ) print_action_info; action_prcs;;
-        web )  print_action_info; action_web;;
-        all )  type=app; print_action_info; action_app; type=prcs; print_action_info; action_prcs; type=web; print_action_info; action_web;;
+        app ) action_app;;
+        prcs ) action_prcs;;
+        web )  action_web;;
+        all )  action_app; action_prcs; action_web;;
         * ) echo "invalid type!";;
     esac
 fi

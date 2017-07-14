@@ -52,63 +52,65 @@ $DEBUG = "true"
 # Actions
 ##########################
     
-function action_app
-{<#
-    if [ $domparam = "all" ] ; then
-        list=("${app_doms[@]}")
-    else
-        list=($domparam)
-    fi
+Function ActionApp($Domain, $Action)
+{
+    $psadmin = "$env:PS_HOME\appserv\psadmin"
+    if ($DEBUG -eq "true") {Write-Host "Action App - Domain: $Domain Action: $Action"}
+
+    if ( $Domain -eq "all" ) {
+        if ($DEBUG -eq "true") {Write-Host "Acting on ALL domains found"}
+        #$DomainList=( TODO - find all prcs domains)
+    } else {
+        $DomainList=($Domain)
+    }     
     
-    for dom in "${list[@]}"
-    do
-        act_type=app
-        print_action_info
-        case $act in
-        "status" {
-                        Invoke-Expression "$Env:PS_HOME\psadmin -c sstatus -d $dom"
-                        Invoke-Expression "psadmin -c cstatus -d $dom"
-                        Invoke-Expression "psadmin -c qstatus -d $dom"
-                        Invoke-Expression "psadmin -c pslist -d $dom"
-        ;;
-        start)
-            exec_cmd "psadmin -c boot -d $dom" 2>&1
-        ;;
-        stop)
-            exec_cmd "psadmin -c shutdown -d $dom" 2>&1
-        ;;
-        kill)
-            exec_cmd "psadmin -c shutdown! -d $dom" 2>&1
-        ;;
-        configure)
-            exec_cmd "psadmin -c configure -d $dom" 2>&1
-        ;;
-        purge)    
-            exec_cmd "psadmin -c purge -d $dom" 2>&1
-            echo "$domain cache purged."
-        ;;
-        flush)
-            exec_cmd "psadmin -c cleanipc -d $dom" 2>&1
-        ;;
-        restart)
-            exec_cmd "psadmin -c shutdown -d $dom" 2>&1
-            exec_cmd "psadmin -c boot -d $dom" 2>&1
-        ;;
-        bounce)
-            exec_cmd "psadmin -c shutdown -d $dom" 2>&1
-            exec_cmd "psadmin -c cleanipc -d $dom" 2>&1
-            exec_cmd "psadmin -c purge -d $dom" 2>&1
-            exec_cmd "psadmin -c configure -d $dom" 2>&1
-            exec_cmd "psadmin -c boot -d $dom" 2>&1
-        ;;
-        esac
-    done    
-    echo ""
-    #>
+    ForEach ($dom in $DomainList) {
+        PrintActionInfo
+        switch ($Action) {
+            "status" {
+                        Write-Host "Appserver status $dom"
+                        Invoke-Expression "$psadmin -c sstatus -d $dom *>&1"
+                       # Invoke-Expression "$psadmin -c cstatus -d $dom 2>&1"
+                       # Invoke-Expression "$psadmin -c qstatus -d $dom 2>&1"
+                       # Invoke-Expression "$psadmin -c pslist -d $dom 2>&1"
+                     }
+            "start"  {
+                        Invoke-Expression "$psadmin -c boot -d $dom 2>&1"
+                     }
+            "stop"   {
+                        Invoke-Expression "$psadmin -c shutdown -d $dom 2>&1"
+                     }
+            "kill"   {
+                        Invoke-Expression "$psadmin -c shutdown! -d $dom" 2>&1
+                     }
+            "configure" {
+                        Invoke-Expression "$psadmin -c configure -d $dom" 2>&1
+                     }
+            "purge"  {
+                        Invoke-Expression "$psadmin -c purge -d $dom" 2>&1
+                        #echo "$domain cache purged."
+                     }
+            "flush"  {
+                        Invoke-Expression "$psadmin -c cleanipc -d $dom" 2>&1
+                     }
+            "restart" {
+                        Invoke-Expression "$psadmin -c shutdown -d $dom" 2>&1
+                        Invoke-Expression "$psadmin -c boot -d $dom" 2>&1
+                     }
+            "bounce" {
+                        Invoke-Expression "$psadmin -c shutdown -d $dom" 2>&1
+                        Invoke-Expression "$psadmin -c cleanipc -d $dom" 2>&1
+                        Invoke-Expression "$psadmin -c purge -d $dom" 2>&1
+                        Invoke-Expression "$psadmin -c configure -d $dom" 2>&1
+                        Invoke-Expression "$psadmin -c boot -d $dom" 2>&1
+                     }
+        }
+    }    
 }
 
 
 Function ActionPrcs($Domain, $Action) {
+    $psadmin = "$env:PS_HOME\appserv\psadmin.exe"
     if ($DEBUG -eq "true") {Write-Host "Action Prcs - Domain: $Domain Action: $Action"}
 
     if ( $Domain -eq "all" ) {
@@ -120,35 +122,34 @@ Function ActionPrcs($Domain, $Action) {
      
     ForEach ($dom in $DomainList) {
         PrintActionInfo
-        $psadmin = "$env:PS_HOME\appserv\psadmin.exe"
         switch ($Action) {
             "status" {
                         Invoke-Expression "$psadmin -p status -d $dom *>&1"
                      }
             "start"  {
-                        Invoke-Expression "$psadmin -p start -d $dom"
+                        Invoke-Expression "$psadmin -p start -d $dom *>&1"
                      }
             "stop"   {
-                        Invoke-Expression "$psadmin -p stop -d $dom"
+                        Invoke-Expression "$psadmin -p stop -d $dom *>&1"
                      }
             "kill"   {
-                        Invoke-Expression "$psadmin -p kill -d $dom"
+                        Invoke-Expression "$psadmin -p kill -d $dom *>&1"
                      }
             "configure" {
-                        Invoke-Expression "$psadmin -p configure -d $dom"
+                        Invoke-Expression "$psadmin -p configure -d $dom *>&1"
                      }
             "flush"  {
-                        Invoke-Expression "$psadmin -p cleanipc -d $dom"
+                        Invoke-Expression "$psadmin -p cleanipc -d $dom *>&1"
                      }
             "restart"{
-                        Invoke-Expression "$psadmin -p stop -d $dom"
-                        Invoke-Expression "$psadmin -p start -d $dom"
+                        Invoke-Expression "$psadmin -p stop -d $dom *>&1"
+                        Invoke-Expression "$psadmin -p start -d $dom *>&1"
                      }
             "bounce" {
-                        Invoke-Expression "$psadmin -p stop -d $dom" 
-                        Invoke-Expression "$psadmin -p cleanipc -d $dom" 
-                        Invoke-Expression "$psadmin -p configure -d $dom" 
-                        Invoke-Expression "$psadmin -p start -d $dom"
+                        Invoke-Expression "$psadmin -p stop -d $dom *>&1"
+                        Invoke-Expression "$psadmin -p cleanipc -d $dom *>&1"
+                        Invoke-Expression "$psadmin -p configure -d $dom *>&1"
+                        Invoke-Expression "$psadmin -p start -d $dom *>&1"
                      }
     #    compile)
     #        if [[ -f $Env:PS_HOME/setup/pscbl.mak ]]; then
@@ -176,11 +177,15 @@ Function ActionPrcs($Domain, $Action) {
 }
 
 Function ActionWeb() {	
+    $psadmin = "$env:PS_HOME\appserv\psadmin.exe"
+    if ($DEBUG -eq "true") {Write-Host "Action Web - Domain: $Domain Action: $Action"}
+
     if ( $Domain -eq "all" ) {
-        #$DomainList = ("${web_doms[@]}")
+        if ($DEBUG -eq "true") {Write-Host "Acting on ALL domains found"}
+        #$DomainList=( TODO - find all prcs domains)
     } else {
-        #$DomainList = ($domparam)
-    }
+        $DomainList=($Domain)
+    }     
     
     ForEach ($dom in $DomainList) {
         #act_type=web
@@ -188,15 +193,15 @@ Function ActionWeb() {
         switch ($Action) {
             "status" {
                         Write-Host "Webserver status $dom"
-                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -w status -d $dom"
+                        Invoke-Expression "$psadmin -w status -d $dom *>&1"
                      }
             "start"  {
                         Write-Host "Starting webserver"
-                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -w start -d $dom"
+                        Invoke-Expression "$psadmin -w start -d $dom *>&1"
                      }
             "stop"   {
                         Write-Host "Stopping webserver"
-                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -w shutdown -d $dom"
+                        Invoke-Expression "$psadmin -w shutdown -d $dom *>&1"
                      }
             #"purge"  {
             #            Write-Host "Purging webserver cache"
@@ -204,17 +209,17 @@ Function ActionWeb() {
             #         }
             "restart" {
                             Write-Host "Stopping webserver"
-                            Invoke-Expression "$Env:PS_HOME\bin\psadmin -w shutdown -d $dom"
+                            Invoke-Expression "$psadmin -w shutdown -d $dom *>&1"
                             Write-Host "Starting webserver"
-                            Invoke-Expression "$Env:PS_HOME\bin\psadmin -w start -d $dom"
+                            Invoke-Expression "$psadmin -w start -d $dom *>&1"
                       }
             "bounce"  {
                             Write-Host "Stopping webserver"
-                            Invoke-Expression "$Env:PS_HOME\bin\psadmin -w shutdown -d $dom"
+                            Invoke-Expression "$psadmin -w shutdown -d $dom *>&1"
                             Write-Host "Purging webserver cache"
 	                        #Invoke-Expression "rm -rf $Env:PS_CFG_HOME\webserv\$dom\applications\peoplesoft\PORTAL*\*\cache*\"
                             Write-Host "Starting webserver"
-                            Invoke-Expression "$Env:PS_HOME\bin\psadmin -w start -d $dom"
+                            Invoke-Expression "$psadmin -w start -d $dom *>&1"
                       }
         }
     }
@@ -329,14 +334,16 @@ Function SetDomains() {
 }
 
 Function CallSummary() { 
+    $psadmin = "$env:PS_HOME\appserv\psadmin.exe"
     Clear
-	Invoke-Expression "$Env:PS_HOME\bin\psadmin -envsummary"
+	Invoke-Expression "$psadmin -envsummary *>&1"
     #read -rsp $'\nPress any key...\n' -n1 key
 }
 
 Function CallPSAdmin() { 
+    $psadmin = "$env:PS_HOME\appserv\psadmin.exe"
 	Clear
-	Invoke-Expression "$Env:PS_HOME\bin\psadmin"	
+	Invoke-Expression "$psadmin"	
 }
 
 #-----------------------------------------------------------[Execution]-----------------------------------------------------------
@@ -347,10 +354,10 @@ $Title = "psadmin-plus"
 if ($DEBUG -eq "true") {Write-Host "Action: $Action Type: $Type Domain: $Domain"}
 
 # if no action set, run menu
-if (!$Action) {
+if ( $Action -eq "none") {
 	#print_header
 	#print_help
-	CallPSAdmin
+	PrintHelp
 } else {	
     if ( $Action -eq "summary" ) {
         CallSummary

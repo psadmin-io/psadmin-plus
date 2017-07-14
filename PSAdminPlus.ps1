@@ -120,35 +120,35 @@ Function ActionPrcs($Domain, $Action) {
      
     ForEach ($dom in $DomainList) {
         PrintActionInfo
+        $psadmin = "$env:PS_HOME\appserv\psadmin.exe"
         switch ($Action) {
             "status" {
-                        & "$Env:PS_HOME\appserv\psadmin.exe" # -ArgumentList "-p status -d $dom"
-                        #Start-Process -FilePath "$Env:PS_HOME\appserv\psadmin.exe" -ArgumentList "-p status -d $dom"
+                        Invoke-Expression "$psadmin -p status -d $dom *>&1"
                      }
             "start"  {
-                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p start -d $dom"
+                        Invoke-Expression "$psadmin -p start -d $dom"
                      }
             "stop"   {
-                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p stop -d $dom"
+                        Invoke-Expression "$psadmin -p stop -d $dom"
                      }
             "kill"   {
-                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p kill -d $dom"
+                        Invoke-Expression "$psadmin -p kill -d $dom"
                      }
             "configure" {
-                        Invoke-Expression "$Env:PS_HOME\bin\exec_cmd psadmin -p configure -d $dom"
+                        Invoke-Expression "$psadmin -p configure -d $dom"
                      }
             "flush"  {
-                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p cleanipc -d $dom"
+                        Invoke-Expression "$psadmin -p cleanipc -d $dom"
                      }
             "restart"{
-                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p stop -d $dom"
-                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p start -d $dom"
+                        Invoke-Expression "$psadmin -p stop -d $dom"
+                        Invoke-Expression "$psadmin -p start -d $dom"
                      }
             "bounce" {
-                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p stop -d $dom" 
-                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p cleanipc -d $dom" 
-                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p configure -d $dom" 
-                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p start -d $dom"
+                        Invoke-Expression "$psadmin -p stop -d $dom" 
+                        Invoke-Expression "$psadmin -p cleanipc -d $dom" 
+                        Invoke-Expression "$psadmin -p configure -d $dom" 
+                        Invoke-Expression "$psadmin -p start -d $dom"
                      }
     #    compile)
     #        if [[ -f $Env:PS_HOME/setup/pscbl.mak ]]; then

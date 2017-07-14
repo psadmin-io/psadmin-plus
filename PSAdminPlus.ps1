@@ -1,5 +1,4 @@
-
-#Requires -Version 5
+#Requires -Version 1
 
 <#PSScriptInfo
     .VERSION 0.1
@@ -42,16 +41,19 @@ $VerbosePreference = "SilentlyContinue"
 
 #------------------------------------------------------------[Variables]----------------------------------------------------------
 
-$DEBUG = "false"
+If ( $Env:PS_HOME -eq '' ) { Write-Host "PS_HOME must be specified with `$env:PS_HOME" }
+If ( $Env:PS_CFG_HOME -eq '' ) { Write-Host "PS_CFG_HOME must be specified with `$env:PS_HOME" }
+
+$DEBUG = "true"
 
 #-----------------------------------------------------------[Functions]-----------------------------------------------------------
 
 ##########################
 # Actions
 ##########################
-    <#
+    
 function action_app
-{
+{<#
     if [ $domparam = "all" ] ; then
         list=("${app_doms[@]}")
     else
@@ -63,44 +65,35 @@ function action_app
         act_type=app
         print_action_info
         case $act in
-
         "status" {
-                        Invoke-Expression "$PS_HOME\psadmin -c sstatus -d $dom"
+                        Invoke-Expression "$Env:PS_HOME\psadmin -c sstatus -d $dom"
                         Invoke-Expression "psadmin -c cstatus -d $dom"
                         Invoke-Expression "psadmin -c qstatus -d $dom"
                         Invoke-Expression "psadmin -c pslist -d $dom"
         ;;
-
         start)
             exec_cmd "psadmin -c boot -d $dom" 2>&1
         ;;
-
         stop)
             exec_cmd "psadmin -c shutdown -d $dom" 2>&1
         ;;
-
         kill)
             exec_cmd "psadmin -c shutdown! -d $dom" 2>&1
         ;;
-
         configure)
             exec_cmd "psadmin -c configure -d $dom" 2>&1
         ;;
-
         purge)    
             exec_cmd "psadmin -c purge -d $dom" 2>&1
             echo "$domain cache purged."
         ;;
-
         flush)
             exec_cmd "psadmin -c cleanipc -d $dom" 2>&1
         ;;
-
         restart)
             exec_cmd "psadmin -c shutdown -d $dom" 2>&1
             exec_cmd "psadmin -c boot -d $dom" 2>&1
         ;;
-
         bounce)
             exec_cmd "psadmin -c shutdown -d $dom" 2>&1
             exec_cmd "psadmin -c cleanipc -d $dom" 2>&1
@@ -108,69 +101,72 @@ function action_app
             exec_cmd "psadmin -c configure -d $dom" 2>&1
             exec_cmd "psadmin -c boot -d $dom" 2>&1
         ;;
-
         esac
     done    
     echo ""
+    #>
 }
-#>
 
-Function ActionPrcs() {
+
+Function ActionPrcs($Domain, $Action) {
+    if ($DEBUG -eq "true") {Write-Host "Action Prcs - Domain: $Domain Action: $Action"}
+
     if ( $Domain -eq "all" ) {
-        #$DomainList=("${prcs_doms[@]}")
+        if ($DEBUG -eq "true") {Write-Host "Acting on ALL domains found"}
+        #$DomainList=( TODO - find all prcs domains)
     } else {
-        #$DomainList=($domparam)
+        $DomainList=($Domain)
     }
-    
+     
     ForEach ($dom in $DomainList) {
-        #act_type=prcs
         PrintActionInfo
         switch ($Action) {
             "status" {
-                        Invoke-Expression "$PS_HOME\bin\psadmin -p status -d $dom"
+                        & "$Env:PS_HOME\appserv\psadmin.exe" # -ArgumentList "-p status -d $dom"
+                        #Start-Process -FilePath "$Env:PS_HOME\appserv\psadmin.exe" -ArgumentList "-p status -d $dom"
                      }
             "start"  {
-                        Invoke-Expression "$PS_HOME\bin\psadmin -p start -d $dom"
+                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p start -d $dom"
                      }
             "stop"   {
-                        Invoke-Expression "$PS_HOME\bin\psadmin -p stop -d $dom"
+                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p stop -d $dom"
                      }
             "kill"   {
-                        Invoke-Expression "$PS_HOME\bin\psadmin -p kill -d $dom"
+                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p kill -d $dom"
                      }
             "configure" {
-                        Invoke-Expression "$PS_HOME\bin\exec_cmd psadmin -p configure -d $dom"
+                        Invoke-Expression "$Env:PS_HOME\bin\exec_cmd psadmin -p configure -d $dom"
                      }
             "flush"  {
-                        Invoke-Expression "$PS_HOME\bin\psadmin -p cleanipc -d $dom"
+                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p cleanipc -d $dom"
                      }
             "restart"{
-                        Invoke-Expression "$PS_HOME\bin\psadmin -p stop -d $dom"
-                        Invoke-Expression "$PS_HOME\bin\psadmin -p start -d $dom"
+                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p stop -d $dom"
+                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p start -d $dom"
                      }
             "bounce" {
-                        Invoke-Expression "$PS_HOME\bin\psadmin -p stop -d $dom" 
-                        Invoke-Expression "$PS_HOME\bin\psadmin -p cleanipc -d $dom" 
-                        Invoke-Expression "$PS_HOME\bin\psadmin -p configure -d $dom" 
-                        Invoke-Expression "$PS_HOME\bin\psadmin -p start -d $dom"
+                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p stop -d $dom" 
+                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p cleanipc -d $dom" 
+                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p configure -d $dom" 
+                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -p start -d $dom"
                      }
     #    compile)
-    #        if [[ -f $PS_HOME/setup/pscbl.mak ]]; then
+    #        if [[ -f $Env:PS_HOME/setup/pscbl.mak ]]; then
     #            echo "Recompiling COBOL"
-    #            cd "$PS_HOME"/setup && ./pscbl.mak
-    #            cd "$PS_HOME"/setup && ./pscbl.mak
+    #            cd "$Env:PS_HOME"/setup && ./pscbl.mak
+    #            cd "$Env:PS_HOME"/setup && ./pscbl.mak
     #        else
-    #            echoerror "Could not find the file $PS_HOME/setup/pscbl.mak"
+    #            echoerror "Could not find the file $Env:PS_HOME/setup/pscbl.mak"
     #            exit 1
     #        fi
     #    ;;
 
     #    link)
-    #        if [[ -f $PS_HOME/setup/psrun.mak ]]; then
+    #        if [[ -f $Env:PS_HOME/setup/psrun.mak ]]; then
     #            echo "Linking COBOL"
-    #            cd "$PS_HOME"/setup && ./psrun.mak
+    #            cd "$Env:PS_HOME"/setup && ./psrun.mak
     #        else
-    #            echoerror "Could not find the file $PS_HOME/setup/psrun.mak"
+    #            echoerror "Could not find the file $Env:PS_HOME/setup/psrun.mak"
     #            exit 1
     #        fi
     #    ;;
@@ -192,33 +188,33 @@ Function ActionWeb() {
         switch ($Action) {
             "status" {
                         Write-Host "Webserver status $dom"
-                        Invoke-Expression "$PS_HOME\bin\psadmin -w status -d $dom"
+                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -w status -d $dom"
                      }
             "start"  {
                         Write-Host "Starting webserver"
-                        Invoke-Expression "$PS_HOME\bin\psadmin -w start -d $dom"
+                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -w start -d $dom"
                      }
             "stop"   {
                         Write-Host "Stopping webserver"
-                        Invoke-Expression "$PS_HOME\bin\psadmin -w shutdown -d $dom"
+                        Invoke-Expression "$Env:PS_HOME\bin\psadmin -w shutdown -d $dom"
                      }
             #"purge"  {
             #            Write-Host "Purging webserver cache"
-            #            Invoke-Expression "rm -rf $PS_CFG_HOME\webserv\$dom\applications\peoplesoft\PORTAL*\*\cache*\"
+            #            Invoke-Expression "rm -rf $Env:PS_CFG_HOME\webserv\$dom\applications\peoplesoft\PORTAL*\*\cache*\"
             #         }
             "restart" {
                             Write-Host "Stopping webserver"
-                            Invoke-Expression "$PS_HOME\bin\psadmin -w shutdown -d $dom"
+                            Invoke-Expression "$Env:PS_HOME\bin\psadmin -w shutdown -d $dom"
                             Write-Host "Starting webserver"
-                            Invoke-Expression "$PS_HOME\bin\psadmin -w start -d $dom"
+                            Invoke-Expression "$Env:PS_HOME\bin\psadmin -w start -d $dom"
                       }
             "bounce"  {
                             Write-Host "Stopping webserver"
-                            Invoke-Expression "$PS_HOME\bin\psadmin -w shutdown -d $dom"
+                            Invoke-Expression "$Env:PS_HOME\bin\psadmin -w shutdown -d $dom"
                             Write-Host "Purging webserver cache"
-	                        #Invoke-Expression "rm -rf $PS_CFG_HOME\webserv\$dom\applications\peoplesoft\PORTAL*\*\cache*\"
+	                        #Invoke-Expression "rm -rf $Env:PS_CFG_HOME\webserv\$dom\applications\peoplesoft\PORTAL*\*\cache*\"
                             Write-Host "Starting webserver"
-                            Invoke-Expression "$PS_HOME\bin\psadmin -w start -d $dom"
+                            Invoke-Expression "$Env:PS_HOME\bin\psadmin -w start -d $dom"
                       }
         }
     }
@@ -284,9 +280,9 @@ Function PrintHelp{
 Function SetDomains() {	
     Write-Host "setting domains"
     <#
-    web_dirs=($PS_CFG_HOME/webserv/*)
-    app_dirs=($PS_CFG_HOME/appserv/*)
-    prcs_dirs=($PS_CFG_HOME/appserv/prcs/*)
+    web_dirs=($Env:PS_CFG_HOME/webserv/*)
+    app_dirs=($Env:PS_CFG_HOME/appserv/*)
+    prcs_dirs=($Env:PS_CFG_HOME/appserv/prcs/*)
 	
     web_doms=()
     shopt -s nullglob # handles empty dirs
@@ -334,13 +330,13 @@ Function SetDomains() {
 
 Function CallSummary() { 
     Clear
-	Invoke-Expression "$PS_HOME\bin\psadmin -envsummary"
+	Invoke-Expression "$Env:PS_HOME\bin\psadmin -envsummary"
     #read -rsp $'\nPress any key...\n' -n1 key
 }
 
 Function CallPSAdmin() { 
 	Clear
-	Invoke-Expression "$PS_HOME\bin\psadmin"	
+	Invoke-Expression "$Env:PS_HOME\bin\psadmin"	
 }
 
 #-----------------------------------------------------------[Execution]-----------------------------------------------------------
@@ -348,6 +344,7 @@ Function CallPSAdmin() {
 $Title = "psadmin-plus"
 # $Host = $(hostname)
 
+if ($DEBUG -eq "true") {Write-Host "Action: $Action Type: $Type Domain: $Domain"}
 
 # if no action set, run menu
 if (!$Action) {
@@ -358,12 +355,12 @@ if (!$Action) {
     if ( $Action -eq "summary" ) {
         CallSummary
     } Else {
-        SetDomains
+        #SetDomains TODO
         switch ($Type) {
-            "app"  {ActionApp}
-            "prcs" {ActionPrcs}
-            "web"  {ActionWeb}
-            "all"  {ActionApp; ActionPrcs; ActionWeb}
+            "app"  {ActionApp  $Domain $Action}
+            "prcs" {ActionPrcs $Domain $Action}
+            "web"  {ActionWeb  $Domain $Action}
+            "all"  {ActionApp  $Domain $Action; ActionPrcs $Domain $Action; ActionWeb $Domain $Action}
             #* ) echo "invalid type!";;
         }
     }

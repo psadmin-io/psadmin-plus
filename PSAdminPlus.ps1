@@ -1,19 +1,55 @@
+
+#Requires -Version 5
+
+<#PSScriptInfo
+    .VERSION 0.1
+    .GUID TODO
+    .AUTHOR psadmin.io
+    .SYNOPSIS
+        psadmin wrapper script
+    .DESCRIPTION
+        Wrapper script for psadmin utility.
+    .PARAMETER Action
+        Action verb to be performed
+    .PARAMETER Type
+        Type of domain to take action on
+    .PARAMETER Domain
+        Name of the domain to take action on
+    .EXAMPLE
+        PSAdminPlus stop app psftdb
+#>
+
 #--------------------------------------------#
 # psadmin-plus                               #
 # https://github.com/psadmin-io/psadmin-plus #
 #--------------------------------------------#
 
+#-----------------------------------------------------------[Parameters]----------------------------------------------------------
+
 [CmdletBinding()]
-Param (
-  [String]$Action = $null
-  [String]$Type = null
-  [String]$Domain = null
+Param(
+  [String]$Action = "none",
+  [String]$Type   = "none",
+  [String]$Domain = "none"
 )
+
+#---------------------------------------------------------[Initialization]--------------------------------------------------------
+
+# Valid values: "Stop", "Inquire", "Continue", "Suspend", "SilentlyContinue"
+$ErrorActionPreference = "Stop"
+$DebugPreference = "SilentlyContinue"
+$VerbosePreference = "SilentlyContinue"
+
+#------------------------------------------------------------[Variables]----------------------------------------------------------
+
+$DEBUG = "false"
+
+#-----------------------------------------------------------[Functions]-----------------------------------------------------------
 
 ##########################
 # Actions
 ##########################
-    
+    <#
 function action_app
 {
     if [ $domparam = "all" ] ; then
@@ -28,11 +64,11 @@ function action_app
         print_action_info
         case $act in
 
-        status)
-            exec_cmd "psadmin -c sstatus -d $dom" 2>&1
-            exec_cmd "psadmin -c cstatus -d $dom" 2>&1
-            exec_cmd "psadmin -c qstatus -d $dom" 2>&1
-            exec_cmd "psadmin -c pslist -d $dom" 2>&1
+        "status" {
+                        Invoke-Expression "$PS_HOME\psadmin -c sstatus -d $dom"
+                        Invoke-Expression "psadmin -c cstatus -d $dom"
+                        Invoke-Expression "psadmin -c qstatus -d $dom"
+                        Invoke-Expression "psadmin -c pslist -d $dom"
         ;;
 
         start)
@@ -77,6 +113,7 @@ function action_app
     done    
     echo ""
 }
+#>
 
 Function ActionPrcs() {
     if ( $Domain -eq "all" ) {
@@ -188,7 +225,7 @@ Function ActionWeb() {
 }
 
 Function PrintActionInfo() {
-    #echo ""	
+    Write-Host "printactioninfo"	
     #echo "$(echo_color "+--------------------------------------------------------------------+" "brown")"	
     #echo "  $(echo_color "Action:" "brown") $(echo_color "$act" "lred") | $(echo_color "Type:" "brown") $(echo_color "$act_type" "lcyan") | $(echo_color "Domain:" "brown") $(echo_color "$dom" "lgreen")"			
     #echo "$(echo_color "+--------------------------------------------------------------------+" "brown")"	
@@ -201,12 +238,14 @@ Function PrintActionInfo() {
 
 Function PrintHeader() {
     clear
+    Write-Host "header"
     #echo "+-------------------------------------------------+" 
     #echo "| $(echo_color $title "lblue")   host: $(echo_color $host "lgreen") "	
     #echo "+-------------------------------------------------+"
 }
 
 Function PrintHelp{
+    Write-Host "help"
   #  echo " "
   #  echo ". help ......................."
   #  echo ". There is no menu currently, just command line"
@@ -243,6 +282,8 @@ Function PrintHelp{
 ###########################
 
 Function SetDomains() {	
+    Write-Host "setting domains"
+    <#
     web_dirs=($PS_CFG_HOME/webserv/*)
     app_dirs=($PS_CFG_HOME/appserv/*)
     prcs_dirs=($PS_CFG_HOME/appserv/prcs/*)
@@ -288,6 +329,7 @@ Function SetDomains() {
             fi
         fi
     done
+    #>
 }
 
 Function CallSummary() { 
@@ -301,9 +343,7 @@ Function CallPSAdmin() {
 	Invoke-Expression "$PS_HOME\bin\psadmin"	
 }
 
-###########################
-### Main 
-###########################
+#-----------------------------------------------------------[Execution]-----------------------------------------------------------
 
 $Title = "psadmin-plus"
 # $Host = $(hostname)
@@ -317,14 +357,14 @@ if (!$Action) {
 } else {	
     if ( $Action -eq "summary" ) {
         CallSummary
-    } else {
-        set_domains
-        case $type in
-            app ) action_app;;
-            prcs ) action_prcs;;
-            web )  action_web;;
-            all )  action_app; action_prcs; action_web;;
-            * ) echo "invalid type!";;
-        esac
+    } Else {
+        SetDomains
+        switch ($Type) {
+            "app"  {ActionApp}
+            "prcs" {ActionPrcs}
+            "web"  {ActionWeb}
+            "all"  {ActionApp; ActionPrcs; ActionWeb}
+            #* ) echo "invalid type!";;
+        }
     }
 }

@@ -27,7 +27,7 @@
 
 [CmdletBinding()]
 Param(
-  [String]$Action = "none",
+  [String]$Action = "help",
   [String]$Type   = "none",
   [String]$Domain = "none"
 )
@@ -59,17 +59,17 @@ Function ActionApp($Domain, $Action)
 
     if ( $Domain -eq "all" ) {
         if ($DEBUG -eq "true") {Write-Host "Acting on ALL domains found"}
-        #$DomainList=( TODO - find all prcs domains)
+		$DomainList=(Get-ChildItem $Env:PS_CFG_HOME/appserv/prcs | ?{ $_.PSIsContainer })
     } else {
         $DomainList=($Domain)
     }     
     
     ForEach ($dom in $DomainList) {
-        PrintActionInfo
+        PrintActionInfo "$Action" "app" "$dom"
         switch ($Action) {
             "status" {
                         Write-Host "Appserver status $dom"
-                        Invoke-Expression "$psadmin -c sstatus -d $dom *>&1"
+                        Invoke-Expression "$psadmin -c sstatus -d $dom 2>&1"
                        # Invoke-Expression "$psadmin -c cstatus -d $dom 2>&1"
                        # Invoke-Expression "$psadmin -c qstatus -d $dom 2>&1"
                        # Invoke-Expression "$psadmin -c pslist -d $dom 2>&1"
@@ -81,28 +81,28 @@ Function ActionApp($Domain, $Action)
                         Invoke-Expression "$psadmin -c shutdown -d $dom 2>&1"
                      }
             "kill"   {
-                        Invoke-Expression "$psadmin -c shutdown! -d $dom" 2>&1
+                        Invoke-Expression "$psadmin -c shutdown! -d $dom 2>&1"
                      }
             "configure" {
-                        Invoke-Expression "$psadmin -c configure -d $dom" 2>&1
+                        Invoke-Expression "$psadmin -c configure -d $dom 2>&1"
                      }
             "purge"  {
-                        Invoke-Expression "$psadmin -c purge -d $dom" 2>&1
+                        Invoke-Expression "$psadmin -c purge -d $dom 2>&1"
                         #echo "$domain cache purged."
                      }
             "flush"  {
-                        Invoke-Expression "$psadmin -c cleanipc -d $dom" 2>&1
+                        Invoke-Expression "$psadmin -c cleanipc -d $dom 2>&1"
                      }
             "restart" {
-                        Invoke-Expression "$psadmin -c shutdown -d $dom" 2>&1
-                        Invoke-Expression "$psadmin -c boot -d $dom" 2>&1
+                        Invoke-Expression "$psadmin -c shutdown -d $dom *>&1"
+                        Invoke-Expression "$psadmin -c boot -d $dom *>&1"
                      }
             "bounce" {
-                        Invoke-Expression "$psadmin -c shutdown -d $dom" 2>&1
-                        Invoke-Expression "$psadmin -c cleanipc -d $dom" 2>&1
-                        Invoke-Expression "$psadmin -c purge -d $dom" 2>&1
-                        Invoke-Expression "$psadmin -c configure -d $dom" 2>&1
-                        Invoke-Expression "$psadmin -c boot -d $dom" 2>&1
+                        Invoke-Expression "$psadmin -c shutdown -d $dom 2>&1"
+                        Invoke-Expression "$psadmin -c cleanipc -d $dom 2>&1"
+                        Invoke-Expression "$psadmin -c purge -d $dom 2>&1"
+                        Invoke-Expression "$psadmin -c configure -d $dom 2>&1"
+                        Invoke-Expression "$psadmin -c boot -d $dom 2>&1"
                      }
         }
     }    
@@ -115,13 +115,13 @@ Function ActionPrcs($Domain, $Action) {
 
     if ( $Domain -eq "all" ) {
         if ($DEBUG -eq "true") {Write-Host "Acting on ALL domains found"}
-        #$DomainList=( TODO - find all prcs domains)
+		$DomainList=(Get-ChildItem $Env:PS_CFG_HOME/appserv | ?{ $_.PSIsContainer } | Where-Object {$_.name -ne "Search" -and $_.name -ne "prcs"})
     } else {
         $DomainList=($Domain)
     }
      
     ForEach ($dom in $DomainList) {
-        PrintActionInfo
+        PrintActionInfo "$Action" "prcs" "$dom"
         switch ($Action) {
             "status" {
                         Invoke-Expression "$psadmin -p status -d $dom *>&1"
@@ -183,14 +183,13 @@ Function ActionWeb() {
 
     if ( $Domain -eq "all" ) {
         if ($DEBUG -eq "true") {Write-Host "Acting on ALL domains found"}
-        #$DomainList=( TODO - find all prcs domains)
+		$DomainList=(Get-ChildItem $Env:PS_CFG_HOME/webserv | ?{ $_.PSIsContainer })
     } else {
         $DomainList=($Domain)
     }     
     
     ForEach ($dom in $DomainList) {
-        #act_type=web
-        PrintAtionInfo
+        PrintActionInfo "$Action" "web" "$dom"
         switch ($Action) {
             "status" {
                         Write-Host "Webserver status $dom"
@@ -226,27 +225,16 @@ Function ActionWeb() {
     }
 }
 
-Function PrintActionInfo() {
+Function PrintActionInfo($Action_, $Type_, $Domain_) {
+	Write-Host ""
     Write-Host "+--------------------------------------------------------------------+" -foregroundcolor "green"
     Write-Host "  Action: " -NoNewLine -foregroundcolor "white"
-	Write-Host "$Action " -NoNewLine -foregroundcolor "cyan"
+	Write-Host "$Action_ " -NoNewLine -foregroundcolor "cyan"
 	Write-Host "| Type: " -NoNewLine -foregroundcolor "white"
-	Write-Host "$Type " -NoNewLine -foregroundcolor "cyan"
+	Write-Host "$Type_ " -NoNewLine -foregroundcolor "cyan"
 	Write-Host "| Domain: " -NoNewLine -foregroundcolor "white"
-	Write-Host "$Domain " -foregroundcolor "cyan"
+	Write-Host "$Domain_ " -foregroundcolor "cyan"
     Write-Host "+--------------------------------------------------------------------+" -foregroundcolor "green"
-}
-
-###########################
-### Menus   
-###########################
-
-Function PrintHeader() {
-    clear
-    Write-Host "header"
-    #echo "+-------------------------------------------------+" 
-    #echo "| $(echo_color $title "lblue")   host: $(echo_color $host "lgreen") "	
-    #echo "+-------------------------------------------------+"
 }
 
 Function PrintHelp{
@@ -278,62 +266,6 @@ Function PrintHelp{
   Write-Host ". all"
 }
 
-
-###########################
-### Misc   
-###########################
-
-Function SetDomains() {	
-    Write-Host "setting domains"
-    <#
-    web_dirs=($Env:PS_CFG_HOME/webserv/*)
-    app_dirs=($Env:PS_CFG_HOME/appserv/*)
-    prcs_dirs=($Env:PS_CFG_HOME/appserv/prcs/*)
-	
-    web_doms=()
-    shopt -s nullglob # handles empty dirs
-    for dir in "${web_dirs[@]}"
-    do
-        if [ -d "$dir" ]
-        then
-            dirname=${dir##*/} # strip fullpath
-            if [[ "$dirname" != "Search" && "$dirname" != "prcs" ]]
-	    then
-                web_doms+=($dirname) 
-            fi
-        fi
-    done
-	
-    app_doms=()
-    shopt -s nullglob # handles empty dirs
-    for dir in "${app_dirs[@]}"
-    do
-        if [ -d "$dir" ]
-        then
-            dirname=${dir##*/} # strip fullpath
-            if [[ "$dirname" != "Search" && "$dirname" != "prcs" ]]
-	    then
-                app_doms+=($dirname) 
-            fi
-        fi
-    done
-	
-    prcs_doms=()
-    shopt -s nullglob # handles empty dirs
-    for dir in "${prcs_dirs[@]}"
-    do
-        if [ -d "$dir" ]
-        then
-            dirname=${dir##*/} # strip fullpath
-            if [[ "$dirname" != "Search" && "$dirname" != "prcs" ]]
-	    then
-               prcs_doms+=($dirname) 
-            fi
-        fi
-    done
-    #>
-}
-
 Function CallSummary() { 
     $psadmin = "$env:PS_HOME\appserv\psadmin.exe"
     Clear
@@ -349,21 +281,14 @@ Function CallPSAdmin() {
 
 #-----------------------------------------------------------[Execution]-----------------------------------------------------------
 
-$Title = "psadmin-plus"
-# $Host = $(hostname)
-
 if ($DEBUG -eq "true") {Write-Host "Action: $Action Type: $Type Domain: $Domain"}
 
-# if no action set, run menu
-if ( $Action -eq "none") {
-	#print_header
-	#print_help
+if ( $Action -eq "help") {
 	PrintHelp
 } else {	
     if ( $Action -eq "summary" ) {
         CallSummary
     } Else {
-        #SetDomains TODO
         switch ($Type) {
             "app"  {ActionApp  $Domain $Action}
             "prcs" {ActionPrcs $Domain $Action}

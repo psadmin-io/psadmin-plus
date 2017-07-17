@@ -44,7 +44,7 @@ $VerbosePreference = "SilentlyContinue"
 If ( $Env:PS_HOME -eq '' ) { Write-Host "PS_HOME must be specified with `$env:PS_HOME" }
 If ( $Env:PS_CFG_HOME -eq '' ) { Write-Host "PS_CFG_HOME must be specified with `$env:PS_HOME" }
 
-$DEBUG = "true"
+$DEBUG = "false"
 
 #-----------------------------------------------------------[Functions]-----------------------------------------------------------
 
@@ -174,6 +174,7 @@ Function ActionPrcs($Domain, $Action) {
 
         }
     }
+	Write-Host ""
 }
 
 Function ActionWeb() {	
@@ -226,11 +227,14 @@ Function ActionWeb() {
 }
 
 Function PrintActionInfo() {
-    Write-Host "printactioninfo"	
-    #echo "$(echo_color "+--------------------------------------------------------------------+" "brown")"	
-    #echo "  $(echo_color "Action:" "brown") $(echo_color "$act" "lred") | $(echo_color "Type:" "brown") $(echo_color "$act_type" "lcyan") | $(echo_color "Domain:" "brown") $(echo_color "$dom" "lgreen")"			
-    #echo "$(echo_color "+--------------------------------------------------------------------+" "brown")"	
-    #echo ""
+    Write-Host "+--------------------------------------------------------------------+" -foregroundcolor "green"
+    Write-Host "  Action: " -NoNewLine -foregroundcolor "white"
+	Write-Host "$Action " -NoNewLine -foregroundcolor "cyan"
+	Write-Host "| Type: " -NoNewLine -foregroundcolor "white"
+	Write-Host "$Type " -NoNewLine -foregroundcolor "cyan"
+	Write-Host "| Domain: " -NoNewLine -foregroundcolor "white"
+	Write-Host "$Domain " -foregroundcolor "cyan"
+    Write-Host "+--------------------------------------------------------------------+" -foregroundcolor "green"
 }
 
 ###########################

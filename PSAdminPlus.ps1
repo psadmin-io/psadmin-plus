@@ -264,6 +264,7 @@ Function PrintHelp{
   Write-Host ". domains....................."
   Write-Host ". domain name"
   Write-Host ". all"
+  Write-Host ""
 }
 
 Function CallSummary() { 
@@ -285,6 +286,9 @@ if ($DEBUG -eq "true") {Write-Host "Action: $Action Type: $Type Domain: $Domain"
 
 if ( $Action -eq "help") {
 	PrintHelp
+	Write-Host -NoNewLine 'Press any key to launch psadmin...';
+	$null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
+	CallPSAdmin
 } else {	
     if ( $Action -eq "summary" ) {
         CallSummary

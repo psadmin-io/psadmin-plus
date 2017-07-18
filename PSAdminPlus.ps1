@@ -59,7 +59,7 @@ Function ActionApp($Domain, $Action)
 
     if ( $Domain -eq "all" ) {
         if ($DEBUG -eq "true") {Write-Host "Acting on ALL domains found"}
-		$DomainList=(Get-ChildItem $Env:PS_CFG_HOME/appserv/prcs | ?{ $_.PSIsContainer })
+		$DomainList=(Get-ChildItem $Env:PS_CFG_HOME/appserv | ?{ $_.PSIsContainer } | ?{ $_.PSIsContainer } | Where-Object {$_.name -ne "Search" -and $_.name -ne "prcs"})
     } else {
         $DomainList=($Domain)
     }     
@@ -115,7 +115,7 @@ Function ActionPrcs($Domain, $Action) {
 
     if ( $Domain -eq "all" ) {
         if ($DEBUG -eq "true") {Write-Host "Acting on ALL domains found"}
-		$DomainList=(Get-ChildItem $Env:PS_CFG_HOME/appserv | ?{ $_.PSIsContainer } | Where-Object {$_.name -ne "Search" -and $_.name -ne "prcs"})
+		$DomainList=(Get-ChildItem $Env:PS_CFG_HOME/appserv/prcs )
     } else {
         $DomainList=($Domain)
     }

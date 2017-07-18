@@ -28,8 +28,8 @@
 [CmdletBinding()]
 Param(
   [String]$Action = "help",
-  [String]$Type   = "none",
-  [String]$Domain = "none"
+  [String]$Type   = "all",
+  [String]$Domain = "all"
 )
 
 #---------------------------------------------------------[Initialization]--------------------------------------------------------

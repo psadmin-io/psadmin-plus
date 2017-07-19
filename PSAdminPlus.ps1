@@ -264,12 +264,11 @@ Function PrintDomainList() {
 Function PrintHelp{
   Write-Host " "
   Write-Host ". help ......................."
-  Write-Host ". There is no menu currently, just command line"
+  Write-Host "."
   Write-Host ". example: PSAdminPlus.ps1 [action] [type] [domain]"
   Write-Host ". "
   Write-Host ". actions ...................."
   Write-Host ". summary - PS_CFG_HOME summary, no type or domain needed"
-  Write-Host ". list - list out the damins"
   Write-Host ". status - status of the domain"
   Write-Host ". start - start the domain"
   Write-Host ". stop - stop the domain"

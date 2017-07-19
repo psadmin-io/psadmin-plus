@@ -69,40 +69,40 @@ Function ActionApp($Domain, $Action)
         switch ($Action) {
             "status" {
                         Write-Host "Appserver status $dom"
-                        Invoke-Expression "$psadmin -c sstatus -d $dom 2>&1"
-                       # Invoke-Expression "$psadmin -c cstatus -d $dom 2>&1"
-                       # Invoke-Expression "$psadmin -c qstatus -d $dom 2>&1"
-                       # Invoke-Expression "$psadmin -c pslist -d $dom 2>&1"
+                        Invoke-Expression "$psadmin -c sstatus -d $dom"
+                        Invoke-Expression "$psadmin -c cstatus -d $dom"
+                        Invoke-Expression "$psadmin -c qstatus -d $dom"
+                        Invoke-Expression "$psadmin -c pslist -d $dom"
                      }
             "start"  {
-                        Invoke-Expression "$psadmin -c boot -d $dom 2>&1"
+                        Invoke-Expression "$psadmin -c boot -d $dom"
                      }
             "stop"   {
-                        Invoke-Expression "$psadmin -c shutdown -d $dom 2>&1"
+                        Invoke-Expression "$psadmin -c shutdown -d $dom"
                      }
             "kill"   {
-                        Invoke-Expression "$psadmin -c shutdown! -d $dom 2>&1"
+                        Invoke-Expression "$psadmin -c shutdown! -d $dom"
                      }
             "configure" {
-                        Invoke-Expression "$psadmin -c configure -d $dom 2>&1"
+                        Invoke-Expression "$psadmin -c configure -d $dom"
                      }
             "purge"  {
-                        Invoke-Expression "$psadmin -c purge -d $dom 2>&1"
+                        Invoke-Expression "$psadmin -c purge -d $dom"
                         #echo "$domain cache purged."
                      }
             "flush"  {
-                        Invoke-Expression "$psadmin -c cleanipc -d $dom 2>&1"
+                        Invoke-Expression "$psadmin -c cleanipc -d $dom"
                      }
             "restart" {
                         Invoke-Expression "$psadmin -c shutdown -d $dom *>&1"
                         Invoke-Expression "$psadmin -c boot -d $dom *>&1"
                      }
             "bounce" {
-                        Invoke-Expression "$psadmin -c shutdown -d $dom 2>&1"
-                        Invoke-Expression "$psadmin -c cleanipc -d $dom 2>&1"
-                        Invoke-Expression "$psadmin -c purge -d $dom 2>&1"
-                        Invoke-Expression "$psadmin -c configure -d $dom 2>&1"
-                        Invoke-Expression "$psadmin -c boot -d $dom 2>&1"
+                        Invoke-Expression "$psadmin -c shutdown -d $dom"
+                        Invoke-Expression "$psadmin -c cleanipc -d $dom"
+                        Invoke-Expression "$psadmin -c purge -d $dom"
+                        Invoke-Expression "$psadmin -c configure -d $dom"
+                        Invoke-Expression "$psadmin -c boot -d $dom"
                      }
         }
     }    

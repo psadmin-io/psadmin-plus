@@ -27,7 +27,7 @@
 
 [CmdletBinding()]
 Param(
-  [String]$Action = "help",
+  [String]$Action = "none",
   [String]$Type   = "all",
   [String]$Domain = "all"
 )
@@ -261,34 +261,38 @@ Function PrintDomainList() {
     Write-Host "$(GetDomainsWeb)"
 }
 
-Function PrintHelp{
-  Write-Host " "
-  Write-Host ". help ......................."
-  Write-Host "."
-  Write-Host ". example: PSAdminPlus.ps1 [action] [type] [domain]"
-  Write-Host ". "
-  Write-Host ". actions ...................."
-  Write-Host ". summary - PS_CFG_HOME summary, no type or domain needed"
-  Write-Host ". status - status of the domain"
-  Write-Host ". start - start the domain"
-  Write-Host ". stop - stop the domain"
-  Write-Host ". restart - stop and start the domain"
-  Write-Host ". purge - clear domain cache"
-  Write-Host ". bounce - stop, flush, purge, configure and start the domain"
-  Write-Host ". kill - force stop the domain"
-  Write-Host ". configure - configure the domain"
-  Write-Host ". flush - clear domain IPC"
-  Write-Host ". "
-  Write-Host ". types ......................"
-  Write-Host ". app"
-  Write-Host ". prcs"
-  Write-Host ". web"
-  Write-Host ". all"
-  Write-Host ". "
-  Write-Host ". domains....................."
-  Write-Host ". domain name"
-  Write-Host ". all"
-  Write-Host ""
+Function PrintHelp {
+    Write-Host " "
+    Write-Host "Usage: PSAdminPlus.ps1 <action> [type] [domain]"
+    Write-Host " "
+    Write-Host "Actions:"
+    Write-Host " "
+    Write-Host "    list           list domains"
+    Write-Host "    admin          launch psadmin"
+    Write-Host "    summary        PS_CFG_HOME summary, no type or domain needed"
+    Write-Host "    status         status of the domain"
+    Write-Host "    start          start the domain"
+    Write-Host "    stop           stop the domain"
+    Write-Host "    restart        stop and start the domain"
+    Write-Host "    purge          clear domain cache"
+    Write-Host "    bounce         stop, flush, purge, configure and start the domain"
+    Write-Host "    kill           force stop the domain"
+    Write-Host "    configure      configure the domain"
+    Write-Host "    flush          clear domain IPC"  
+    Write-Host " "
+    Write-Host "Types:"
+    Write-Host " "
+    Write-Host "    app            act on application domains"
+    Write-Host "    prcs           act on process scheduler domains"
+    Write-Host "    web            act on web domains"
+    Write-Host "    all,<blank>    act on all types of domains"
+    Write-Host " "
+    Write-Host "Domains:"
+    Write-Host " "
+    Write-Host "    <name>         act on this domain name"
+    Write-Host "    all,<blank>    act on all domains"
+    Write-Host " "
+    #Write-Host "For help on any individual command run `PSAdminPlus.ps1 ACTION help`"
 }
 
 Function CallSummary() { 
@@ -309,11 +313,13 @@ Function CallPSAdmin() {
 if ($DEBUG -eq "true") {Write-Host "Action: $Action Type: $Type Domain: $Domain"}
 
 switch ($Action) {
-	"help" {PrintHelp;
+	"help" {PrintHelp}
+        "none" {PrintHelp;
                 Write-Host -NoNewLine 'Press any key to launch psadmin...';
 	        $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
 	        CallPSAdmin
                 }
+        "admin"    {CallPSAdmin}
         "summary"  {CallSummary}
         "list"     {PrintDomainList}  
         default    {switch ($Type) {

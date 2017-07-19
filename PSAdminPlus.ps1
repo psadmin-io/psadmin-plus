@@ -15,7 +15,7 @@
     .PARAMETER Domain
         Name of the domain to take action on
     .EXAMPLE
-        PSAdminPlus stop app psftdb
+        PSAdminPlus.ps1 stop app psftdb
 #>
 
 #--------------------------------------------#
@@ -263,7 +263,7 @@ Function PrintDomainList() {
 
 Function PrintHelp {
     Write-Host " "
-    Write-Host "Usage: PSAdminPlus.ps1 <action> [type] [domain]"
+    Write-Host "Usage: PSAdminPlus.ps1 [actions] <type> <domain>"
     Write-Host " "
     Write-Host "Actions:"
     Write-Host " "

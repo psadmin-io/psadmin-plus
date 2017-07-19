@@ -253,14 +253,12 @@ Function PrintActionInfo($Action_, $Type_, $Domain_) {
 }
 
 Function PrintDomainList() {
-    Write-Host ""
     Write-Host "app:  " -NoNewLine -foregroundcolor "cyan"
     Write-Host "$(GetDomainsApp)"  
     Write-Host "prcs: " -NoNewLine -foregroundcolor "cyan"
     Write-Host "$(GetDomainsPrcs)"
     Write-Host "web:  " -NoNewLine -foregroundcolor "cyan"
     Write-Host "$(GetDomainsWeb)"
-    Write-Host ""
 }
 
 Function PrintHelp{

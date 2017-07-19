@@ -52,6 +52,21 @@ $DEBUG = "false"
 # Actions
 ##########################
     
+Function GetDomainsApp()
+{
+    return (Get-ChildItem $Env:PS_CFG_HOME/appserv | ?{ $_.PSIsContainer } | ?{ $_.PSIsContainer } | Where-Object {$_.name -ne "Search" -and $_.name -ne "prcs"})
+}
+
+Function GetDomainsPrcs()
+{
+    return (Get-ChildItem $Env:PS_CFG_HOME/appserv/prcs | ?{ $_.PSIsContainer })
+}
+
+Function GetDomainsWeb()
+{
+    return (Get-ChildItem $Env:PS_CFG_HOME/webserv | ?{ $_.PSIsContainer })
+}
+
 Function ActionApp($Domain, $Action)
 {
     $psadmin = "$env:PS_HOME\appserv\psadmin"
@@ -59,7 +74,7 @@ Function ActionApp($Domain, $Action)
 
     if ( $Domain -eq "all" ) {
         if ($DEBUG -eq "true") {Write-Host "Acting on ALL domains found"}
-		$DomainList=(Get-ChildItem $Env:PS_CFG_HOME/appserv | ?{ $_.PSIsContainer } | ?{ $_.PSIsContainer } | Where-Object {$_.name -ne "Search" -and $_.name -ne "prcs"})
+		$DomainList = GetDomainsApp
     } else {
         $DomainList=($Domain)
     }     
@@ -115,7 +130,7 @@ Function ActionPrcs($Domain, $Action) {
 
     if ( $Domain -eq "all" ) {
         if ($DEBUG -eq "true") {Write-Host "Acting on ALL domains found"}
-		$DomainList=(Get-ChildItem $Env:PS_CFG_HOME/appserv/prcs )
+		$DomainList = GetDomainsPrcs
     } else {
         $DomainList=($Domain)
     }
@@ -183,7 +198,7 @@ Function ActionWeb() {
 
     if ( $Domain -eq "all" ) {
         if ($DEBUG -eq "true") {Write-Host "Acting on ALL domains found"}
-		$DomainList=(Get-ChildItem $Env:PS_CFG_HOME/webserv | ?{ $_.PSIsContainer })
+		$DomainList = GetDomainsWeb
     } else {
         $DomainList=($Domain)
     }     
@@ -226,14 +241,23 @@ Function ActionWeb() {
 }
 
 Function PrintActionInfo($Action_, $Type_, $Domain_) {
-	Write-Host ""
+    Write-Host ""
     Write-Host "+--------------------------------------------------------------------+" -foregroundcolor "green"
     Write-Host "  Action: " -NoNewLine -foregroundcolor "white"
-	Write-Host "$Action_ " -NoNewLine -foregroundcolor "cyan"
-	Write-Host "| Type: " -NoNewLine -foregroundcolor "white"
-	Write-Host "$Type_ " -NoNewLine -foregroundcolor "cyan"
-	Write-Host "| Domain: " -NoNewLine -foregroundcolor "white"
-	Write-Host "$Domain_ " -foregroundcolor "cyan"
+    Write-Host "$Action_ " -NoNewLine -foregroundcolor "cyan"
+    Write-Host "| Type: " -NoNewLine -foregroundcolor "white"
+    Write-Host "$Type_ " -NoNewLine -foregroundcolor "cyan"
+    Write-Host "| Domain: " -NoNewLine -foregroundcolor "white"
+    Write-Host "$Domain_ " -foregroundcolor "cyan"
+    Write-Host "+--------------------------------------------------------------------+" -foregroundcolor "green"
+}
+
+Function PrintDomainList() {
+    Write-Host ""
+    Write-Host "+--------------------------------------------------------------------+" -foregroundcolor "green"
+    Write-Host "app: $(GetDomainsApp)"  -foregroundcolor "cyan"
+    Write-Host "prcs: $(GetDomainsPrcs)"  -foregroundcolor "cyan"
+    Write-Host "web: $(GetDomainsWeb)"  -foregroundcolor "cyan"
     Write-Host "+--------------------------------------------------------------------+" -foregroundcolor "green"
 }
 
@@ -284,21 +308,20 @@ Function CallPSAdmin() {
 
 if ($DEBUG -eq "true") {Write-Host "Action: $Action Type: $Type Domain: $Domain"}
 
-if ( $Action -eq "help") {
-	PrintHelp
-	Write-Host -NoNewLine 'Press any key to launch psadmin...';
-	$null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
-	CallPSAdmin
-} else {	
-    if ( $Action -eq "summary" ) {
-        CallSummary
-    } Else {
-        switch ($Type) {
-            "app"  {ActionApp  $Domain $Action}
-            "prcs" {ActionPrcs $Domain $Action}
-            "web"  {ActionWeb  $Domain $Action}
-            "all"  {ActionApp  $Domain $Action; ActionPrcs $Domain $Action; ActionWeb $Domain $Action}
-            #* ) echo "invalid type!";;
-        }
-    }
+switch ($Action) {
+	"help" {PrintHelp;
+                Write-Host -NoNewLine 'Press any key to launch psadmin...';
+	        $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
+	        CallPSAdmin
+                }
+        "summary"  {CallSummary}
+        "list"     {PrintDomainList}  
+        default    {switch ($Type) {
+                        "app"  {ActionApp  $Domain $Action}
+                        "prcs" {ActionPrcs $Domain $Action}
+                        "web"  {ActionWeb  $Domain $Action}
+                        "all"  {ActionApp  $Domain $Action; ActionPrcs $Domain $Action; ActionWeb $Domain $Action}
+                        default {Write-Host "invalid type!"}
+                        }
+                   }
 }

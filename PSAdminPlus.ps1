@@ -218,10 +218,10 @@ Function ActionWeb() {
                         Write-Host "Stopping webserver"
                         Invoke-Expression "$psadmin -w shutdown -d $dom"
                      }
-            #"purge"  {
-            #            Write-Host "Purging webserver cache"
-            #            Invoke-Expression "rm -rf $Env:PS_CFG_HOME\webserv\$dom\applications\peoplesoft\PORTAL*\*\cache*\"
-            #         }
+            "purge"  {
+                        Write-Host "Purging webserver cache"
+                        Invoke-Expression "Remove-Item $Env:PS_CFG_HOME\webserv\$dom\applications\peoplesoft\PORTAL*\*\cache*\"
+                     }
             "restart" {
                             Write-Host "Stopping webserver"
                             Invoke-Expression "$psadmin -w shutdown -d $dom"
@@ -232,7 +232,7 @@ Function ActionWeb() {
                             Write-Host "Stopping webserver"
                             Invoke-Expression "$psadmin -w shutdown -d $dom"
                             Write-Host "Purging webserver cache"
-	                        #Invoke-Expression "rm -rf $Env:PS_CFG_HOME\webserv\$dom\applications\peoplesoft\PORTAL*\*\cache*\"
+                            Invoke-Expression "Remove-Item $Env:PS_CFG_HOME\webserv\$dom\applications\peoplesoft\PORTAL*\*\cache*\"
                             Write-Host "Starting webserver"
                             Invoke-Expression "$psadmin -w start -d $dom"
                       }

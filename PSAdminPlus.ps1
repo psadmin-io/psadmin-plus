@@ -29,7 +29,7 @@
 Param(
   [String]$Action = "none",
   [String]$Type   = "all",
-  [String]$Domain = "all"
+  [String[]]$Domain = "all"
 )
 
 #---------------------------------------------------------[Initialization]--------------------------------------------------------
@@ -289,7 +289,7 @@ Function PrintHelp {
     Write-Host " "
     Write-Host "Domains:"
     Write-Host " "
-    Write-Host "    <name>         act on this domain name"
+    Write-Host "    x,y,z          act on comma separated list of domains"
     Write-Host "    all,<blank>    act on all domains"
     Write-Host " "
     #Write-Host "For help on any individual command run `PSAdminPlus.ps1 ACTION help`"

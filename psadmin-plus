@@ -382,6 +382,9 @@ act=$1
 typeparam=$2
 domparam=$3
 
+typeparam=${typeparam:-all}
+domparam=${domparam:-all}
+
 title=psadmin-plus
 host=$(hostname)
 

@@ -335,6 +335,16 @@ function call_summary
     read -rsp $'\nPress any key...\n' -n1 key
 }
 
+function call_list
+{
+    echo "app:"
+    printf ' %s\n' "${app_doms[@]}"
+    echo "prcs:"
+    printf ' %s\n' "${prcs_doms[@]}"
+    echo "web:"
+    printf ' %s\n' "${web_doms[@]}"
+}
+
 function call_psadmin
 { 
 	clear
@@ -360,55 +370,38 @@ function exec_cmd
 	fi
 }
 
-function type_param
-{
-    case $1 in
-        -a    ) type=app;;
-        --app ) type=app;;
-        -p    ) type=prcs;;
-        --prcs) type=prcs;;
-        -w    ) type=web;;
-        --web ) type=web;;
-        -A    ) type=all;;
-        --all ) type=all;;
-        *     ) type=$1;;
-    esac
-}
-
 ###########################
 ### Main 
 ###########################
 act=$1
-typeparam=$2
+type=$2
 domparam=$3
 
-typeparam=${typeparam:-all}
+type=${type:-all}
 domparam=${domparam:-all}
 
 title=psadmin-plus
 host=$(hostname)
 
 #validate_vars
-type_param $typeparam
 set_runtime_user
 
-# if no action set, run menu
 if [ -z "$act" ]
 then
 	print_header
 	print_help
 	call_psadmin
 else	
-    if [ $act = "summary" ]; then
-        call_summary
-    else
-        set_domains
-        case $type in
-            app ) action_app;;
-            prcs ) action_prcs;;
-            web )  action_web;;
-            all )  action_app; action_prcs; action_web;;
-            * ) echo "invalid type!";;
-        esac
-    fi
+    set_domains
+    case $act in 
+        summary ) call_summary;;
+        list    ) call_list;;
+        *       ) case $type in
+                      app  ) action_app;;
+                      prcs ) action_prcs;;
+                      web  ) action_web;;
+                      all  ) action_app; action_prcs; action_web;;
+                      *    ) echo "invalid type";;
+                  esac;;              
+    esac
 fi

@@ -20,6 +20,11 @@ git clone https://github.com/psadmin-io/psadmin-plus.git ~/psadmin-plus
     * User that owns `PS_CFG_HOME` and should run `psadmin`
     * If not set, default is `psadm2`
 
+## Profile Suggestions
+Here are some suggested addtions to your bash profile.
+* `export PS_RUNTIME_USER="ps-cfg-home-owner"`
+* `alias psa="/repo/location/psadmin-plus/psadmin-plus"`
+
 ## PeopleTools Support
 This has been tested using:
 * 8.55

@@ -167,28 +167,31 @@ function action_web
             ;;
             start)
                 echo "Starting webserver"
+                #exec_cmd "$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
             stop)
                 echo "Stopping webserver"
-                exec_cmd "psadmin -w shutdown -d $dom"
+                exec_cmd "$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
             ;;
             purge)
                 echo "Purging webserver cache"
-              exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
+                exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
             ;;
             restart)
                 echo "Stopping webserver"
-                exec_cmd "psadmin -w shutdown -d $dom"
+                exec_cmd "$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
                 echo "Starting webserver"
+                #exec_cmd "$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
             bounce)
                 echo "Stopping webserver"
-                exec_cmd "psadmin -w shutdown -d $dom"
+                exec_cmd "$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
                 echo "Purging webserver cache"
 	        exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
                 echo "Starting webserver"
+                #exec_cmd "$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
         esac
@@ -219,33 +222,38 @@ function print_header
 function print_help
 {
     echo " "
-    echo ". help ......................."
-    echo ". There is no menu currently, just command line"
-    echo ". example: psadmin-plus [action] [type] [domain]"
-    echo ". "
-    echo ". actions ...................."
-    echo ". summary - PS_CFG_HOME summary, no type or domain needed"
-    echo ". status - status of the domain"
-    echo ". start - start the domain"
-    echo ". stop - stop the domain"
-    echo ". restart - stop and start the domain"
-    echo ". purge - clear domain cache"
-    echo ". bounce - stop, flush, purge, configure and start the domain"
-    echo ". kill - force stop the domain"
-    echo ". configure - configure the domain"
-    echo ". flush - clear domain IPC"
-    echo ". "
-    echo ". types ......................"
-    echo ". app"
-    echo ". prcs"
-    echo ". web"
-    echo ". all"
-    echo ". "
-    echo ". domains....................."
-    echo ". domain name"
-    echo ". all"
-
-    read -rsp $'\nPress any key to run psadmin...\n' -n1 key_ 
+    echo "Usage: psadmin-plus [actions] <type> <domain>"
+    echo " "
+    echo "Actions:"
+    echo "        "
+    echo "    help           display this help message"
+    echo "    list           list domains"
+    echo "    admin          launch psadmin"
+    echo "    summary        PS_CFG_HOME summary, no type or domain needed"
+    echo "    status         status of the domain"
+    echo "    start          start the domain"
+    echo "    stop           stop the domain"
+    echo "    restart        stop and start the domain"
+    echo "    purge          clear domain cache"
+    echo "    bounce         stop, flush, purge, configure and start the domain"
+    echo "    kill           force stop the domain"
+    echo "    configure      configure the domain"
+    echo "    flush          clear domain IPC"
+    echo "      "
+    echo "Types:"
+    echo "      "
+    echo "    app            act on application domains"
+    echo "    prcs           act on process scheduler domains"
+    echo "    web            act on web domains"
+    echo "    all,<blank>    act on all types of domains"
+    echo "        "
+    echo "Domains:"
+    echo "        "
+    echo "    dom            act on specific domains"
+    echo "    all,<blank>    act on all domains"
+    echo " "
+    
+    read -rsp $'\nPress any key to run psadmin...\n' -n1 key_
 }
 
 # display text in colors
@@ -396,6 +404,7 @@ else
     case $act in 
         summary ) call_summary;;
         list    ) call_list;;
+        help    ) print_help;;
         *       ) case $type in
                       app  ) action_app;;
                       prcs ) action_prcs;;

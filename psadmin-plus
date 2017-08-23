@@ -167,12 +167,12 @@ function action_web
             ;;
             start)
                 echo "Starting webserver"
-                #exec_cmd "$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
+                #exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
             stop)
                 echo "Stopping webserver"
-                exec_cmd "$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
+                exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
             ;;
             purge)
                 echo "Purging webserver cache"
@@ -180,18 +180,18 @@ function action_web
             ;;
             restart)
                 echo "Stopping webserver"
-                exec_cmd "$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
+                exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
                 echo "Starting webserver"
-                #exec_cmd "$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
+                #exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
             bounce)
                 echo "Stopping webserver"
-                exec_cmd "$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
+                exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
                 echo "Purging webserver cache"
 	        exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
                 echo "Starting webserver"
-                #exec_cmd "$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
+                #exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
         esac

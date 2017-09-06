@@ -371,7 +371,7 @@ function set_runtime_user
 function exec_cmd
 {
 	cmd=$1
-	if [ "$USER" = "$PS_RUNTIME_USER" ]; then
+	if [ "`whoami`" = "$PS_RUNTIME_USER" ]; then
 		$cmd	
 	else
 		sudo su - $PS_RUNTIME_USER -c "$cmd"

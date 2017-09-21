@@ -194,8 +194,34 @@ function action_web
                 #exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
+            pooladd)
+                pooladd
+            ;;
+            poolrm)
+                poolrm
+            ;;
         esac
     done
+}
+
+function pooladd
+{
+    # Change this function to match your pool member addtion process 
+    echo "Adding web domain to load balanced pool..."
+    exec_cmd "echo 'true' > \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL.war/$PS_HEALTH_FILE"
+    sleep $PS_HEALTH_TIME
+    echo "...domain added to pool."
+    echo ""
+}
+
+function poolrm
+{
+    # Change this function to match your pool member removal process 
+    echo "Removing domain from load balanced pool..."
+    exec_cmd "rm -f \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL.war/$PS_HEALTH_FILE"
+    sleep $PS_HEALTH_TIME
+    echo "...domain removed from pool."
+    echo ""
 }
 
 function print_action_info
@@ -222,7 +248,7 @@ function print_header
 function print_help
 {
     echo " "
-    echo "Usage: psadmin-plus [actions] <type> <domain>"
+    echo "Usage: psadmin-plus [action] <type> <domain>"
     echo " "
     echo "Actions:"
     echo "        "
@@ -239,6 +265,8 @@ function print_help
     echo "    kill           force stop the domain"
     echo "    configure      configure the domain"
     echo "    flush          clear domain IPC"
+    echo "    poolrm         remove domain from load balanced pool  "
+    echo "    pooladd        add domain to load balanced pool  "
     echo "      "
     echo "Types:"
     echo "      "
@@ -368,6 +396,22 @@ function set_runtime_user
 	fi
 }
 
+function set_health_file
+{
+	if [ -z $PS_HEALTH_FILE ] ; then
+		#echo "Environment variable PS_HEALTH_FILE is not set. Using 'health.html'."
+		PS_HEALTH_FILE="health.html"
+	fi
+}
+
+function set_health_time
+{
+	if [ -z $PS_HEALTH_TIME ] ; then
+		#echo "Environment variable PS_HEALTH_TIME is not set. Using 30 seconds."
+		PS_HEALTH_TIME="30"
+	fi
+}
+
 function exec_cmd
 {
 	cmd=$1
@@ -393,6 +437,8 @@ host=$(hostname)
 
 #validate_vars
 set_runtime_user
+set_health_file
+set_health_time
 
 if [ -z "$act" ]
 then

@@ -168,36 +168,36 @@ function action_web
             start)
                 pooladd
                 echo "Starting webserver"
-                #exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
+                #exec_cmd "\${PS_CFG_HOME?}/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
             stop)
                 poolrm
                 echo "Stopping webserver"
-                exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
+                exec_cmd "\${PS_CFG_HOME?}/webserv/$dom/bin/stopPIA.sh"
             ;;
             purge)
                 echo "Purging webserver cache"
-                exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
+                exec_cmd "rm -rf \${PS_CFG_HOME?}/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
             ;;
             restart)
                 poolrm
                 echo "Stopping webserver"
-                exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
+                exec_cmd "\${PS_CFG_HOME?}/webserv/$dom/bin/stopPIA.sh"
                 pooladd
                 echo "Starting webserver"
-                #exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
+                #exec_cmd "\${PS_CFG_HOME?}/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
             bounce)
                 poolrm 
                 echo "Stopping webserver"
-                exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
+                exec_cmd "\${PS_CFG_HOME?}/webserv/$dom/bin/stopPIA.sh"
                 echo "Purging webserver cache"
-	        exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
+	        exec_cmd "rm -rf \${PS_CFG_HOME?}/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
                 pooladd
                 echo "Starting webserver"
-                #exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
+                #exec_cmd "\${PS_CFG_HOME?}/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
             pooladd)
@@ -217,8 +217,8 @@ function pooladd
     if [ "$PS_POOL_MGMT" = "on" ]; then
         # Change this function to match your pool member addtion process 
         echo "Adding web domain to load balanced pool..."
-        exec_cmd "echo 'true' > \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL.war/$PS_HEALTH_FILE"
-        sleep $PS_HEALTH_TIME
+        exec_cmd "echo 'true' > \${PS_CFG_HOME?}/webserv/$dom/applications/peoplesoft/PORTAL.war/${PS_HEALTH_FILE?}"
+        sleep ${PS_HEALTH_TIME?}
         echo "...domain added to pool."
         echo ""
     else
@@ -231,8 +231,8 @@ function poolrm
     if [ "$PS_POOL_MGMT" = "on" ]; then
         # Change this function to match your pool member removal process 
         echo "Removing domain from load balanced pool..."
-        exec_cmd "rm -f \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL.war/${PS_HEALTH_FILE?}"
-        sleep $PS_HEALTH_TIME
+        exec_cmd "rm -f \${PS_CFG_HOME?}/webserv/$dom/applications/peoplesoft/PORTAL.war/${PS_HEALTH_FILE?}"
+        sleep ${PS_HEALTH_TIME?}
         echo "...domain removed from pool."
         echo ""
     else
@@ -332,9 +332,9 @@ function echo_color
 
 function set_domains
 {	
-    web_dirs=($PS_CFG_HOME/webserv/*)
-    app_dirs=($PS_CFG_HOME/appserv/*)
-    prcs_dirs=($PS_CFG_HOME/appserv/prcs/*)
+    web_dirs=(${PS_CFG_HOME?}/webserv/*)
+    app_dirs=(${PS_CFG_HOME?}/appserv/*)
+    prcs_dirs=(${PS_CFG_HOME?}/appserv/prcs/*)
 	
     web_doms=()
     shopt -s nullglob # handles empty dirs
@@ -430,8 +430,8 @@ function set_health_time
 function set_pool_mgmt
 {
 	if [ -z $PS_POOL_MGMT ] ; then
-		echo "Environment variable PS_POOL_MGMT is not set. Setting to 'on'."
-		PS_POOL_MGMT="on"
+		echo "Environment variable PS_POOL_MGMT is not set. Setting to 'off'."
+		PS_POOL_MGMT="off"
 	fi
 }
 

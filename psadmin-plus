@@ -166,11 +166,13 @@ function action_web
                 exec_cmd "psadmin -w status -d $dom"
             ;;
             start)
+                pooladd
                 echo "Starting webserver"
                 #exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
             stop)
+                poolrm
                 echo "Stopping webserver"
                 exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
             ;;
@@ -179,25 +181,31 @@ function action_web
                 exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
             ;;
             restart)
+                poolrm
                 echo "Stopping webserver"
                 exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
+                pooladd
                 echo "Starting webserver"
                 #exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
             bounce)
+                poolrm 
                 echo "Stopping webserver"
                 exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
                 echo "Purging webserver cache"
 	        exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
+                pooladd
                 echo "Starting webserver"
                 #exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
             pooladd)
+                PS_POOL_MGMT=on
                 pooladd
             ;;
             poolrm)
+                PS_POOL_MGMT=on
                 poolrm
             ;;
         esac
@@ -206,22 +214,30 @@ function action_web
 
 function pooladd
 {
-    # Change this function to match your pool member addtion process 
-    echo "Adding web domain to load balanced pool..."
-    exec_cmd "echo 'true' > \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL.war/$PS_HEALTH_FILE"
-    sleep $PS_HEALTH_TIME
-    echo "...domain added to pool."
-    echo ""
+    if [ "$PS_POOL_MGMT" = "on" ]; then
+        # Change this function to match your pool member addtion process 
+        echo "Adding web domain to load balanced pool..."
+        exec_cmd "echo 'true' > \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL.war/$PS_HEALTH_FILE"
+        sleep $PS_HEALTH_TIME
+        echo "...domain added to pool."
+        echo ""
+    else
+        echo "Skipping pool managment. To enable, set \$PS_POOL_MGMT to 'on'."
+    fi
 }
 
 function poolrm
 {
-    # Change this function to match your pool member removal process 
-    echo "Removing domain from load balanced pool..."
-    exec_cmd "rm -f \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL.war/$PS_HEALTH_FILE"
-    sleep $PS_HEALTH_TIME
-    echo "...domain removed from pool."
-    echo ""
+    if [ "$PS_POOL_MGMT" = "on" ]; then
+        # Change this function to match your pool member removal process 
+        echo "Removing domain from load balanced pool..."
+        exec_cmd "rm -f \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL.war/${PS_HEALTH_FILE?}"
+        sleep $PS_HEALTH_TIME
+        echo "...domain removed from pool."
+        echo ""
+    else
+        echo "Skipping pool managment. To enable, set \$PS_POOL_MGMT to 'on'."
+    fi
 }
 
 function print_action_info
@@ -281,7 +297,6 @@ function print_help
     echo "    all,<blank>    act on all domains"
     echo " "
     
-    read -rsp $'\nPress any key to run psadmin...\n' -n1 key_
 }
 
 # display text in colors
@@ -399,7 +414,7 @@ function set_runtime_user
 function set_health_file
 {
 	if [ -z $PS_HEALTH_FILE ] ; then
-		#echo "Environment variable PS_HEALTH_FILE is not set. Using 'health.html'."
+		echo "Environment variable PS_HEALTH_FILE is not set. Using 'health.html'."
 		PS_HEALTH_FILE="health.html"
 	fi
 }
@@ -407,8 +422,16 @@ function set_health_file
 function set_health_time
 {
 	if [ -z $PS_HEALTH_TIME ] ; then
-		#echo "Environment variable PS_HEALTH_TIME is not set. Using 30 seconds."
+		echo "Environment variable PS_HEALTH_TIME is not set. Using 30 seconds."
 		PS_HEALTH_TIME="30"
+	fi
+}
+
+function set_pool_mgmt
+{
+	if [ -z $PS_POOL_MGMT ] ; then
+		echo "Environment variable PS_POOL_MGMT is not set. Setting to 'on'."
+		PS_POOL_MGMT="on"
 	fi
 }
 
@@ -439,11 +462,13 @@ host=$(hostname)
 set_runtime_user
 set_health_file
 set_health_time
+set_pool_mgmt
 
 if [ -z "$act" ]
 then
 	print_header
 	print_help
+        read -rsp $'\nPress any key to run psadmin...\n' -n1 key_
 	call_psadmin
 else	
     set_domains

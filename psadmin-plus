@@ -389,11 +389,11 @@ function call_summary
 function call_list
 {
     echo "app:"
-    printf ' %s\n' "${app_doms[@]}"
+    printf ' %s\n'    "${app_doms[@]}"
     echo "prcs:"
-    printf ' %s\n' "${prcs_doms[@]}"
+    printf ' %s\n'    "${prcs_doms[@]}"
     echo "web:"
-    printf ' %s\n' "${web_doms[@]}"
+    printf ' %s\n'    "${web_doms[@]}"
 }
 
 function call_psadmin

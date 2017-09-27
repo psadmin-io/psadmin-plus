@@ -389,9 +389,12 @@ function call_summary
 function call_list
 {
     printf '%s\n' "---"
+    printf 'hostname:      %s\n' "$(hostname)"
+    printf 'ps-home:       %s\n' "$PS_HOME"
+    printf 'ps-cfg-home:   %s\n' "$PS_CFG_HOME"
 
     if [ ${#app_doms[@]} -ne 0 ]; then
-        printf '%s\n' "app:"
+        printf '\n%s\n' "app:"
         printf '  - name: %s\n' "${app_doms[@]}"
     fi
 

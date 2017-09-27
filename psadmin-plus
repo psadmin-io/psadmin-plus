@@ -166,36 +166,78 @@ function action_web
                 exec_cmd "psadmin -w status -d $dom"
             ;;
             start)
+                pooladd
                 echo "Starting webserver"
-                #exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
+                #exec_cmd "\${PS_CFG_HOME?}/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
             stop)
+                poolrm
                 echo "Stopping webserver"
-                exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
+                exec_cmd "\${PS_CFG_HOME?}/webserv/$dom/bin/stopPIA.sh"
             ;;
             purge)
                 echo "Purging webserver cache"
-                exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
+                exec_cmd "rm -rf \${PS_CFG_HOME?}/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
             ;;
             restart)
+                poolrm
                 echo "Stopping webserver"
-                exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
+                exec_cmd "\${PS_CFG_HOME?}/webserv/$dom/bin/stopPIA.sh"
+                pooladd
                 echo "Starting webserver"
-                #exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
+                #exec_cmd "\${PS_CFG_HOME?}/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
             ;;
             bounce)
+                poolrm 
                 echo "Stopping webserver"
-                exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/stopPIA.sh"
+                exec_cmd "\${PS_CFG_HOME?}/webserv/$dom/bin/stopPIA.sh"
                 echo "Purging webserver cache"
-	        exec_cmd "rm -rf \$PS_CFG_HOME/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
+	        exec_cmd "rm -rf \${PS_CFG_HOME?}/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/"
+                pooladd
                 echo "Starting webserver"
-                #exec_cmd "\$PS_CFG_HOME/webserv/$dom/bin/startPIA.sh"
+                #exec_cmd "\${PS_CFG_HOME?}/webserv/$dom/bin/startPIA.sh"
                 exec_cmd "psadmin -w start -d $dom"
+            ;;
+            pooladd)
+                PS_POOL_MGMT=on
+                pooladd
+            ;;
+            poolrm)
+                PS_POOL_MGMT=on
+                poolrm
             ;;
         esac
     done
+}
+
+function pooladd
+{
+    if [ "$PS_POOL_MGMT" = "on" ]; then
+        # Change this function to match your pool member addtion process 
+        echo "Adding web domain to load balanced pool..."
+        exec_cmd "echo 'true' > \${PS_CFG_HOME?}/webserv/$dom/applications/peoplesoft/PORTAL.war/${PS_HEALTH_FILE?}"
+        sleep ${PS_HEALTH_TIME?}
+        echo "...domain added to pool."
+        echo ""
+    else
+        echo "Skipping pool managment. To enable, set \$PS_POOL_MGMT to 'on'."
+    fi
+}
+
+function poolrm
+{
+    if [ "$PS_POOL_MGMT" = "on" ]; then
+        # Change this function to match your pool member removal process 
+        echo "Removing domain from load balanced pool..."
+        exec_cmd "rm -f \${PS_CFG_HOME?}/webserv/$dom/applications/peoplesoft/PORTAL.war/${PS_HEALTH_FILE?}"
+        sleep ${PS_HEALTH_TIME?}
+        echo "...domain removed from pool."
+        echo ""
+    else
+        echo "Skipping pool managment. To enable, set \$PS_POOL_MGMT to 'on'."
+    fi
 }
 
 function print_action_info
@@ -222,7 +264,7 @@ function print_header
 function print_help
 {
     echo " "
-    echo "Usage: psadmin-plus [actions] <type> <domain>"
+    echo "Usage: psadmin-plus [action] <type> <domain>"
     echo " "
     echo "Actions:"
     echo "        "
@@ -231,14 +273,16 @@ function print_help
     echo "    admin          launch psadmin"
     echo "    summary        PS_CFG_HOME summary, no type or domain needed"
     echo "    status         status of the domain"
-    echo "    start          start the domain"
-    echo "    stop           stop the domain"
+    echo "    start          pooladd, if enabled, then start the domain"
+    echo "    stop           poolrm, if enabled, stop the domain"
     echo "    restart        stop and start the domain"
     echo "    purge          clear domain cache"
     echo "    bounce         stop, flush, purge, configure and start the domain"
     echo "    kill           force stop the domain"
     echo "    configure      configure the domain"
     echo "    flush          clear domain IPC"
+    echo "    poolrm         remove domain from load balanced pool  "
+    echo "    pooladd        add domain to load balanced pool  "
     echo "      "
     echo "Types:"
     echo "      "
@@ -253,7 +297,6 @@ function print_help
     echo "    all,<blank>    act on all domains"
     echo " "
     
-    read -rsp $'\nPress any key to run psadmin...\n' -n1 key_
 }
 
 # display text in colors
@@ -289,9 +332,9 @@ function echo_color
 
 function set_domains
 {	
-    web_dirs=($PS_CFG_HOME/webserv/*)
-    app_dirs=($PS_CFG_HOME/appserv/*)
-    prcs_dirs=($PS_CFG_HOME/appserv/prcs/*)
+    web_dirs=(${PS_CFG_HOME?}/webserv/*)
+    app_dirs=(${PS_CFG_HOME?}/appserv/*)
+    prcs_dirs=(${PS_CFG_HOME?}/appserv/prcs/*)
 	
     web_doms=()
     shopt -s nullglob # handles empty dirs
@@ -345,12 +388,22 @@ function call_summary
 
 function call_list
 {
-    echo "app:"
-    printf ' %s\n' "${app_doms[@]}"
-    echo "prcs:"
-    printf ' %s\n' "${prcs_doms[@]}"
-    echo "web:"
-    printf ' %s\n' "${web_doms[@]}"
+    printf '%s\n' "---"
+
+    if [ ${#app_doms[@]} -ne 0 ]; then
+        printf '%s\n' "app:"
+        printf '  - name: %s\n' "${app_doms[@]}"
+    fi
+
+    if [ ${#prcs_doms[@]} -ne 0 ]; then
+        printf '\n%s\n' "prcs:"
+        printf '  - name: %s\n' "${prcs_doms[@]}"
+    fi
+    
+    if [ ${#web_doms[@]} -ne 0 ]; then
+        printf '\n%s\n' "web:"
+        printf '  - name: %s\n' "${web_doms[@]}"
+    fi
 }
 
 function call_psadmin
@@ -365,6 +418,30 @@ function set_runtime_user
 	if [ -z $PS_RUNTIME_USER ] ; then
 		echo "Environment variable PS_RUNTIME_USER is not set. Using 'psadm2'."
 		PS_RUNTIME_USER="psadm2"
+	fi
+}
+
+function set_health_file
+{
+	if [ -z $PS_HEALTH_FILE ] ; then
+		echo "Environment variable PS_HEALTH_FILE is not set. Using 'health.html'."
+		PS_HEALTH_FILE="health.html"
+	fi
+}
+
+function set_health_time
+{
+	if [ -z $PS_HEALTH_TIME ] ; then
+		echo "Environment variable PS_HEALTH_TIME is not set. Using 60 seconds."
+		PS_HEALTH_TIME="60"
+	fi
+}
+
+function set_pool_mgmt
+{
+	if [ -z $PS_POOL_MGMT ] ; then
+		echo "Environment variable PS_POOL_MGMT is not set. Setting to 'off'."
+		PS_POOL_MGMT="off"
 	fi
 }
 
@@ -393,11 +470,15 @@ host=$(hostname)
 
 #validate_vars
 set_runtime_user
+set_health_file
+set_health_time
+set_pool_mgmt
 
 if [ -z "$act" ]
 then
 	print_header
 	print_help
+        read -rsp $'\nPress any key to run psadmin...\n' -n1 key_
 	call_psadmin
 else	
     set_domains

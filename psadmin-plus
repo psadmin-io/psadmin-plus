@@ -422,8 +422,8 @@ function set_health_file
 function set_health_time
 {
 	if [ -z $PS_HEALTH_TIME ] ; then
-		echo "Environment variable PS_HEALTH_TIME is not set. Using 30 seconds."
-		PS_HEALTH_TIME="30"
+		echo "Environment variable PS_HEALTH_TIME is not set. Using 60 seconds."
+		PS_HEALTH_TIME="60"
 	fi
 }
 

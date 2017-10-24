@@ -19,6 +19,13 @@ git clone https://github.com/psadmin-io/psadmin-plus.git ~/psadmin-plus
 * `PS_RUNTIME_USER`
     * User that owns `PS_CFG_HOME` and should run `psadmin`
     * If not set, default is `psadm2`
+* `PS_POOL_MGMT`
+    * Enables load balanced pool management
+    * If not set, default is `off`
+* `PS_HEALTH_FILE`
+    * Name of file used by Load Balancer health check
+* `PS_HEALTH_TIME`
+    * Health check timeout duration in seconds
 
 ## Profile Suggestions
 Here are some suggested addtions to your bash profile.

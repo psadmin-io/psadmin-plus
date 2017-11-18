@@ -37,6 +37,11 @@ def do_help
     puts " "
 end
 
+def do_cmd(cmd)
+    cmd = `sudo su - $PS_RUNTIME_USER -c "#{cmd}"`
+    puts cmd
+end
+
 def do_util
     puts "TODO: util"
 end
@@ -52,11 +57,14 @@ end
 def do_status(type, domain)
     case type
     when "app"
-        puts "TODO: status of #{domain} #{type}"
+        do_cmd("psadmin -c sstatus -d #{domain}")
+        do_cmd("psadmin -c cstatus -d #{domain}")
+        do_cmd("psadmin -c qstatus -d #{domain}")
+        do_cmd("psadmin -c pslist -d #{domain}")
     when "prcs"
-        puts "TODO: status of #{domain} #{type}"
+        do_cmd("psadmin -p status -d #{domain}")
     when "web"
-        puts "TODO: status of #{domain} #{type}"
+        do_cmd("psadmin -w status -d #{domain}")
     else
         puts "Invalid type, see psa help"
     end
@@ -189,7 +197,7 @@ commands.each do |c|
             when "summary"
                 do_summary
             when "status"
-                do_staus(t,d)
+                do_status(t,d)
             when "start"
                 do_start(t,d)
             when "stop"

@@ -66,10 +66,30 @@ end
 
 def do_list
     puts "TODO: util"
+    #  printf '%s\n' "---"
+    # printf 'hostname:      %s\n' "$(hostname)"
+    # printf 'ps-home:       %s\n' "$PS_HOME"
+    # printf 'ps-cfg-home:   %s\n' "$PS_CFG_HOME"
+    #
+    # if [ ${#app_doms[@]} -ne 0 ]; then
+    # printf '\n%s\n' "app:"
+    # printf '  - name: %s\n' "${app_doms[@]}"
+    # fi
+    #
+    # if [ ${#prcs_doms[@]} -ne 0 ]; then
+    # printf '\n%s\n' "prcs:"
+    # printf '  - name: %s\n' "${prcs_doms[@]}"
+    # fi
+    #
+    # if [ ${#web_doms[@]} -ne 0 ]; then
+    # printf '\n%s\n' "web:"
+    # printf '  - name: %s\n' "${web_doms[@]}"
+    # fi
 end
 
 def do_summary
-    puts "TODO: summary"
+    do_cmd("psadmin -envsummary")
+    #do_status("web","all")
 end
 
 def do_status(type, domain)
@@ -91,11 +111,11 @@ end
 def do_start(type, domain)
     case type
     when "app"
-        puts "TODO: starting the #{domain} #{type}"
+        do_cmd("psadmin -c boot -d #{domain}")
     when "prcs"
-        puts "TODO: starting the #{domain} #{type}"
+        do_cmd("psadmin -p start -d #{domain}")
     when "web"
-        puts "TODO: starting the #{domain} #{type}"
+        do_cmd("psadmin -w start -d #{doamin}")
     else
         puts "Invalid type, see psa help"
     end
@@ -104,11 +124,12 @@ end
 def do_stop(type, domain)
     case type
     when "app"
-        puts "TODO: stopping the #{domain} #{type}"
+        do_cmd("psadmin -c shutdown -d #{domain}")
     when "prcs"
-        puts "TODO: stopping the #{domain} #{type}"
+        do_cmd("psadmin -p stop -d #{domain}")
     when "web"
-        puts "TODO: stopping the #{domain} #{type}"
+        puts "web stop TODO"
+        #do_cmd("\${PS_CFG_HOME?}/webserv/$dom/bin/stopPIA.sh")
     else
         puts "Invalid type, see psa help"
     end
@@ -117,11 +138,11 @@ end
 def do_kill(type, domain)
     case type
     when "app"
-        puts "TODO: killing the #{domain} #{type}"
+        do_cmd("psadmin -c shutdown! -d #{domain}")
     when "prcs"
-        puts "TODO: killing the #{domain} #{type}"
+        do_cmd("psadmin -p kill -d #{domain}")
     when "web"
-        puts "TODO: killing the #{domain} #{type}"
+        puts "web kill n/a"
     else
         puts "Invalid type, see psa help"
     end
@@ -130,11 +151,11 @@ end
 def do_configure(type, domain)
     case type
     when "app"
-        puts "TODO: configuring the #{domain} #{type}"
+        do_cmd("psadmin -c configure -d #{domain}")
     when "prcs"
-        puts "TODO: configuring the #{domain} #{type}"
+        do_cmd("psadmin -p configure -d #{domain}")
     when "web"
-        puts "TODO: configuring the #{domain} #{type}"
+        puts "web configure n/a"
     else
         puts "Invalid type, see psa help"
     end
@@ -143,11 +164,11 @@ end
 def do_purge(type, domain)
     case type
     when "app"
-        puts "TODO: purging the #{domain} #{type}"
+        do_cmd("psadmin -c purge -d #{domain}")
     when "prcs"
-        puts "TODO: purging the #{domain} #{type}"
+        do_cmd("echo purge todo")
     when "web"
-        puts "TODO: purging the #{domain} #{type}"
+        do_cmd("rm -rf \${PS_CFG_HOME?}/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/")
     else
         puts "Invalid type, see psa help"
     end
@@ -156,42 +177,56 @@ end
 def do_flush(type, domain)
     case type
     when "app"
-        puts "TODO: flushing the #{domain} #{type}"
+        do_cmd("psadmin -c cleanipc -d #{domain}")
     when "prcs"
-        puts "TODO: flushing the #{domain} #{type}"
+        do_cmd("psadmin -p cleanipc -d #{domain}")
     when "web"
-        puts "TODO: flushing the #{domain} #{type}"
+        puts "web flush n/a"
     else
         puts "Invalid type, see psa help"
     end
 end
 
 def do_restart(type, domain)
-    case type
-    when "app"
-        puts "TODO: restarting the #{domain} #{type}"
-    when "prcs"
-        puts "TODO: restarting the #{domain} #{type}"
-    when "web"
-        puts "TODO: restarting the #{domain} #{type}"
-    else
-        puts "Invalid type, see psa help"
-    end
+    do_stop(type, domain)
+    do_start(type, domain)
 end
 
 def do_bounce(type, domain)
-    case type
-    when "app"
-        puts "TODO: bouncing the #{domain} #{type}"
-    when "prcs"
-        puts "TODO: bouncing the #{domain} #{type}"
-    when "web"
-        puts "TODO: bouncing the #{domain} #{type}"
-    else
-        puts "Invalid type, see psa help"
-    end
+    do_stop(type, domain)
+    do_purge(type, domain)
+    do_flush(type, domain)
+    do_configure(type, domain)
+    do_start(type, domain)
 end
 
+def do_pooladd(type, domain)
+   puts "web pooladd TODO"
+   #if [ "$PS_POOL_MGMT" = "on" ]; then
+   # Change this function to match your pool member addtion process
+   # echo "Adding web domain to load balanced pool..."
+   # exec_cmd "echo 'true' > \${PS_CFG_HOME?}/webserv/$dom/applications/peoplesoft/PORTAL.war/       ${PS_HEALTH_FILE?}"
+   # sleep ${PS_HEALTH_TIME?}
+   # echo "...domain added to pool."
+   # echo ""
+   #else
+   #echo "Skipping pool managment. To enable, set \$PS_POOL_MGMT to 'on'."
+   #fi
+end 
+
+def do_poolrm(type,domain)
+    puts "web poolrm TODO"
+    # if [ "$PS_POOL_MGMT" = "on" ]; then
+    # Change this function to match your pool member removal process
+    # echo "Removing domain from load balanced pool..."
+    # exec_cmd "rm -f \${PS_CFG_HOME?}/webserv/$dom/applications/peoplesoft/PORTAL.war/${PS_HEALTH_FILE?}"
+    # sleep ${PS_HEALTH_TIME?}
+    # echo "...domain removed from pool."
+    # echo ""
+    #else
+    #echo "Skipping pool managment. To enable, set \$PS_POOL_MGMT to 'on'."
+    #fi
+end
 def os
     @os ||= (
         host_os = RbConfig::CONFIG['host_os']
@@ -228,7 +263,7 @@ PS_RUNTIME_USER = "psadm2"     # TODO
 PS_POOL_MGMT = "off"           # TODO
 PS_HEALTH_FILE = "health.html" # TODO
 PS_HEALTH_TIME = "60"          # TODO
-PS_PSA_SUDO = "false"             # TODO
+PS_PSA_SUDO = "on"             # TODO
 IS_RUNTIME_USER = false        # TODO
 
 # process
@@ -263,6 +298,10 @@ commands.each do |c|
                 do_restart(t,d)
             when "bounce"
                 do_bounce(t,d)
+            when "pooladd"
+                do_pooladd(t,d)
+            when "do_poolrm"
+                do_poolrm(t,d)
             else
                 puts "Not a valid command. See psa help"
             end

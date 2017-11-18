@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'rbconfig'
+
 def do_help
     puts "Usage: psa [command] <type> <domain>"
     puts " "
@@ -38,8 +40,24 @@ def do_help
 end
 
 def do_cmd(cmd)
-    cmd = `sudo su - $PS_RUNTIME_USER -c "#{cmd}"`
-    puts cmd
+    case "#{OS_CONST}"
+    when "linux"
+        if IS_RUNTIME_USER
+            out = `"#{cmd}"`
+        else
+            if "#{PS_PSA_SUDO}" == "on"
+                out = `sudo su - $PS_RUNTIME_USER -c "#{cmd}"`
+            else
+                print "#{PS_RUNTIME_USER} "
+                out = `su - $PS_RUNTIME_USER -c "#{cmd}"`
+            end
+        end
+    when "windows"
+        out = `"#{cmd}"`
+    else
+        out = "Invalid OS"
+    end
+    puts out
 end
 
 def do_util
@@ -174,7 +192,28 @@ def do_bounce(type, domain)
     end
 end
 
-# main
+def os
+    @os ||= (
+        host_os = RbConfig::CONFIG['host_os']
+            case host_os
+            when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
+                :windows
+            when /darwin|mac os/
+                :macosx
+            when /linux/
+                :linux
+            when /solaris|bsd/
+                :unix
+            else
+                raise Error::WebDriverError, "unknown os: #{host_os.inspect}"
+            end
+     )
+ end
+
+# main 
+###
+
+# options
 commands = ARGV.shift
 types = ARGV.shift || " "
 domains = ARGV.shift || " "
@@ -183,6 +222,16 @@ commands = commands.split(',')
 types = types.split(',')
 domains = domains.split(',')
 
+# constants
+OS_CONST = os
+PS_RUNTIME_USER = "psadm2"     # TODO
+PS_POOL_MGMT = "off"           # TODO
+PS_HEALTH_FILE = "health.html" # TODO
+PS_HEALTH_TIME = "60"          # TODO
+PS_PSA_SUDO = "false"             # TODO
+IS_RUNTIME_USER = false        # TODO
+
+# process
 commands.each do |c|
     types.each do |t|
         domains.each do |d|

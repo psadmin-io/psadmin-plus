@@ -1,3 +1,217 @@
 #!/usr/bin/env ruby
 
-puts "This is psadmin-plus, the ruby version..."
+def do_help
+    puts "Usage: psa [command] <type> <domain>"
+    puts " "
+    puts "Commands:"
+    puts "        "
+    puts "    help           display this help message"
+    puts "    list           list domains"
+    puts "    admin          launch psadmin"
+    puts "    summary        PS_CFG_HOME summary, no type or domain needed"
+    puts "    status         status of the domain"
+    puts "    start          pooladd, if enabled, then start the domain"
+    puts "    stop           poolrm, if enabled, stop the domain"
+    puts "    restart        stop and start the domain"
+    puts "    purge          clear domain cache"
+    puts "    bounce         stop, flush, purge, configure and start the domain"
+    puts "    kill           force stop the domain"
+    puts "    configure      configure the domain"
+    puts "    flush          clear domain IPC"
+    puts "    poolrm         remove domain from load balanced pool  "
+    puts "    pooladd        add domain to load balanced pool  "
+    puts "      "
+    puts "Types:"
+    puts "      "
+    puts "    app            act on application domains"
+    puts "    prcs           act on process scheduler domains"
+    puts "    web            act on web domains"
+    puts "    all,<blank>    act on all types of domains"
+    puts "        "
+    puts "Domains:"
+    puts "        "
+    puts "    dom            act on specific domains"
+    puts "    all,<blank>    act on all domains"
+    puts " "
+    puts "Each parameter type can be enter in a comma separated list "
+    puts " "
+end
+
+def do_util
+    puts "TODO: util"
+end
+
+def do_list
+    puts "TODO: util"
+end
+
+def do_summary
+    puts "TODO: summary"
+end
+
+def do_status(type, domain)
+    case type
+    when "app"
+        puts "TODO: status of #{domain} #{type}"
+    when "prcs"
+        puts "TODO: status of #{domain} #{type}"
+    when "web"
+        puts "TODO: status of #{domain} #{type}"
+    else
+        puts "Invalid type, see psa help"
+    end
+end
+
+def do_start(type, domain)
+    case type
+    when "app"
+        puts "TODO: starting the #{domain} #{type}"
+    when "prcs"
+        puts "TODO: starting the #{domain} #{type}"
+    when "web"
+        puts "TODO: starting the #{domain} #{type}"
+    else
+        puts "Invalid type, see psa help"
+    end
+end
+
+def do_stop(type, domain)
+    case type
+    when "app"
+        puts "TODO: stopping the #{domain} #{type}"
+    when "prcs"
+        puts "TODO: stopping the #{domain} #{type}"
+    when "web"
+        puts "TODO: stopping the #{domain} #{type}"
+    else
+        puts "Invalid type, see psa help"
+    end
+end
+
+def do_kill(type, domain)
+    case type
+    when "app"
+        puts "TODO: killing the #{domain} #{type}"
+    when "prcs"
+        puts "TODO: killing the #{domain} #{type}"
+    when "web"
+        puts "TODO: killing the #{domain} #{type}"
+    else
+        puts "Invalid type, see psa help"
+    end
+end
+
+def do_configure(type, domain)
+    case type
+    when "app"
+        puts "TODO: configuring the #{domain} #{type}"
+    when "prcs"
+        puts "TODO: configuring the #{domain} #{type}"
+    when "web"
+        puts "TODO: configuring the #{domain} #{type}"
+    else
+        puts "Invalid type, see psa help"
+    end
+end
+
+def do_purge(type, domain)
+    case type
+    when "app"
+        puts "TODO: purging the #{domain} #{type}"
+    when "prcs"
+        puts "TODO: purging the #{domain} #{type}"
+    when "web"
+        puts "TODO: purging the #{domain} #{type}"
+    else
+        puts "Invalid type, see psa help"
+    end
+end
+
+def do_flush(type, domain)
+    case type
+    when "app"
+        puts "TODO: flushing the #{domain} #{type}"
+    when "prcs"
+        puts "TODO: flushing the #{domain} #{type}"
+    when "web"
+        puts "TODO: flushing the #{domain} #{type}"
+    else
+        puts "Invalid type, see psa help"
+    end
+end
+
+def do_restart(type, domain)
+    case type
+    when "app"
+        puts "TODO: restarting the #{domain} #{type}"
+    when "prcs"
+        puts "TODO: restarting the #{domain} #{type}"
+    when "web"
+        puts "TODO: restarting the #{domain} #{type}"
+    else
+        puts "Invalid type, see psa help"
+    end
+end
+
+def do_bounce(type, domain)
+    case type
+    when "app"
+        puts "TODO: bouncing the #{domain} #{type}"
+    when "prcs"
+        puts "TODO: bouncing the #{domain} #{type}"
+    when "web"
+        puts "TODO: bouncing the #{domain} #{type}"
+    else
+        puts "Invalid type, see psa help"
+    end
+end
+
+# main
+commands = ARGV.shift
+types = ARGV.shift || " "
+domains = ARGV.shift || " "
+
+commands = commands.split(',')
+types = types.split(',')
+domains = domains.split(',')
+
+commands.each do |c|
+    types.each do |t|
+        domains.each do |d|
+                        
+            case "#{c}"
+            when "help"
+                do_help
+            when "util"
+                do_util
+            when "list"
+                do_list
+            when "summary"
+                do_summary
+            when "status"
+                do_staus(t,d)
+            when "start"
+                do_start(t,d)
+            when "stop"
+                do_stop(t,d)
+            when "kill"
+                do_kill(t,d)
+            when "configure"
+                do_configure(t,d)
+            when "purge"
+                do_purge(t,d)
+            when "flush"
+                do_flush(t,d)
+            when "restart"
+                do_restart(t,d)
+            when "bounce"
+                do_bounce(t,d)
+            else
+                puts "Not a valid command. See psa help"
+            end
+        
+        end
+    end
+end    
+    
+

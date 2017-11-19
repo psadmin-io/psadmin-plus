@@ -60,12 +60,37 @@ def do_cmd(cmd)
     puts out
 end
 
+def find_apps
+    apps = Dir.glob("#{ENV['PS_CFG_HOME']}/appserv/*/psappsrv.ubx")
+    apps.map! {|app| app.split("/")[-2]}
+end
+
+def find_prcss
+    prcss = Dir.glob("#{ENV['PS_CFG_HOME']}/appserv/prcs/*/psprcsrv.ubx")
+    prcss.map! {|prcs| prcs.split("/")[-2]}
+end
+
+def find_webs
+    webs = Dir.glob("#{ENV['PS_CFG_HOME']}/webserv/*/piaconfig")
+    webs.map! {|web| web.split("/")[-2]}
+end
+
 def do_util
     puts "TODO: util"
 end
 
 def do_list
-    puts "TODO: util"
+    puts "TODO: list"
+    puts "app:"
+    puts find_apps
+    puts ""
+    puts "prcs:"
+    puts find_prcss
+    puts ""
+    puts "web"
+    puts find_webs
+    puts ""
+
     #  printf '%s\n' "---"
     # printf 'hostname:      %s\n' "$(hostname)"
     # printf 'ps-home:       %s\n' "$PS_HOME"
@@ -115,7 +140,8 @@ def do_start(type, domain)
     when "prcs"
         do_cmd("psadmin -p start -d #{domain}")
     when "web"
-        do_cmd("psadmin -w start -d #{doamin}")
+        do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/startPIA.sh")
+        #psadmin -w start -d #{domain}") # TODO - this isn't working, do we want it?
     else
         puts "Invalid type, see psa help"
     end
@@ -128,8 +154,7 @@ def do_stop(type, domain)
     when "prcs"
         do_cmd("psadmin -p stop -d #{domain}")
     when "web"
-        puts "web stop TODO"
-        #do_cmd("\${PS_CFG_HOME?}/webserv/$dom/bin/stopPIA.sh")
+        do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/stopPIA.sh")
     else
         puts "Invalid type, see psa help"
     end
@@ -142,7 +167,7 @@ def do_kill(type, domain)
     when "prcs"
         do_cmd("psadmin -p kill -d #{domain}")
     when "web"
-        puts "web kill n/a"
+        return # web kill n/a
     else
         puts "Invalid type, see psa help"
     end
@@ -155,7 +180,7 @@ def do_configure(type, domain)
     when "prcs"
         do_cmd("psadmin -p configure -d #{domain}")
     when "web"
-        puts "web configure n/a"
+        return # web configure n/a
     else
         puts "Invalid type, see psa help"
     end
@@ -168,7 +193,8 @@ def do_purge(type, domain)
     when "prcs"
         do_cmd("echo purge todo")
     when "web"
-        do_cmd("rm -rf \${PS_CFG_HOME?}/webserv/$dom/applications/peoplesoft/PORTAL*/*/cache*/")
+        do_cmd("rm -rf ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/")
+        puts "web cache purged"
     else
         puts "Invalid type, see psa help"
     end
@@ -181,7 +207,7 @@ def do_flush(type, domain)
     when "prcs"
         do_cmd("psadmin -p cleanipc -d #{domain}")
     when "web"
-        puts "web flush n/a"
+        return # web flush n/a
     else
         puts "Invalid type, see psa help"
     end
@@ -227,6 +253,7 @@ def do_poolrm(type,domain)
     #echo "Skipping pool managment. To enable, set \$PS_POOL_MGMT to 'on'."
     #fi
 end
+
 def os
     @os ||= (
         host_os = RbConfig::CONFIG['host_os']
@@ -243,19 +270,19 @@ def os
                 raise Error::WebDriverError, "unknown os: #{host_os.inspect}"
             end
      )
- end
+end
 
 # main 
 ###
 
 # options
-commands = ARGV.shift
-types = ARGV.shift || " "
-domains = ARGV.shift || " "
+opts_c = ARGV.shift
+opts_t = ARGV.shift || "all"
+opts_d = ARGV.shift || "all"
 
-commands = commands.split(',')
-types = types.split(',')
-domains = domains.split(',')
+commands = opts_c.split(',')
+types = opts_t.split(',')
+domains = opts_d.split(',')
 
 # constants
 OS_CONST = os

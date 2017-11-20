@@ -108,6 +108,7 @@ def do_summary
 end
 
 def do_status(type, domain)
+    puts "status - #{type} - #{domain}"
     case type
     when "app"
         do_cmd("psadmin -c sstatus -d #{domain}")
@@ -272,6 +273,9 @@ commands = opts_c.split(',')
 types = opts_t.split(',')
 domains = opts_d.split(',')
 
+if types.include? "all" then types = ['app','prcs','web'] end
+if domains.include? "all" then all_domains = true end
+
 # constants
 OS_CONST = os
 PS_RUNTIME_USER = "psadm2"     # TODO
@@ -284,8 +288,17 @@ IS_RUNTIME_USER = false        # TODO
 # process
 commands.each do |c|
     types.each do |t|
+        if all_domains then
+            case "#{t}"
+            when "app"
+                domains = find_apps
+            when "prcs"
+                domains = find_prcss
+            when "web"
+                domains = find_webs
+            end
+        end
         domains.each do |d|
-                        
             case "#{c}"
             when "help"
                 do_help

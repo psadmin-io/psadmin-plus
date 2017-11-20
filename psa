@@ -80,36 +80,26 @@ def do_util
 end
 
 def do_list
-    puts "TODO: list"
+    puts "---"
+    puts "hostname:      TODO"
+    puts "ps-home:       #{ENV['PS_HOME']}"
+    puts "ps-cfg-home:   #{ENV['PS_CFG_HOME']}"
+    puts "" 
     puts "app:"
-    puts find_apps
+    find_apps.each do |a|
+        puts "  - #{a}"
+    end
     puts ""
     puts "prcs:"
-    puts find_prcss
+    find_prcss.each do |p|
+        puts "  - #{p}"
+    end
     puts ""
-    puts "web"
-    puts find_webs
+    puts "web:"
+    find_webs.each do |w|
+        puts "  - #{w}"
+    end
     puts ""
-
-    #  printf '%s\n' "---"
-    # printf 'hostname:      %s\n' "$(hostname)"
-    # printf 'ps-home:       %s\n' "$PS_HOME"
-    # printf 'ps-cfg-home:   %s\n' "$PS_CFG_HOME"
-    #
-    # if [ ${#app_doms[@]} -ne 0 ]; then
-    # printf '\n%s\n' "app:"
-    # printf '  - name: %s\n' "${app_doms[@]}"
-    # fi
-    #
-    # if [ ${#prcs_doms[@]} -ne 0 ]; then
-    # printf '\n%s\n' "prcs:"
-    # printf '  - name: %s\n' "${prcs_doms[@]}"
-    # fi
-    #
-    # if [ ${#web_doms[@]} -ne 0 ]; then
-    # printf '\n%s\n' "web:"
-    # printf '  - name: %s\n' "${web_doms[@]}"
-    # fi
 end
 
 def do_summary
@@ -227,31 +217,29 @@ def do_bounce(type, domain)
 end
 
 def do_pooladd(type, domain)
-   puts "web pooladd TODO"
-   #if [ "$PS_POOL_MGMT" = "on" ]; then
-   # Change this function to match your pool member addtion process
-   # echo "Adding web domain to load balanced pool..."
-   # exec_cmd "echo 'true' > \${PS_CFG_HOME?}/webserv/$dom/applications/peoplesoft/PORTAL.war/       ${PS_HEALTH_FILE?}"
-   # sleep ${PS_HEALTH_TIME?}
-   # echo "...domain added to pool."
-   # echo ""
-   #else
-   #echo "Skipping pool managment. To enable, set \$PS_POOL_MGMT to 'on'."
-   #fi
+    if PS_POOL_MGMT == "on" then
+        # Change this function to match your pool member addtion process
+        puts "Adding web domain to load balanced pool..."
+        do_cmd("echo 'true' > ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/${PS_HEALTH_FILE?}")
+        sleep(PS_HEALTH_TIME.to_i)
+        puts "...domain added to pool."
+        puts ""
+    else
+        puts "Skipping pool managment. To enable, set $PS_POOL_MGMT to 'on'."
+    end
 end 
 
 def do_poolrm(type,domain)
-    puts "web poolrm TODO"
-    # if [ "$PS_POOL_MGMT" = "on" ]; then
-    # Change this function to match your pool member removal process
-    # echo "Removing domain from load balanced pool..."
-    # exec_cmd "rm -f \${PS_CFG_HOME?}/webserv/$dom/applications/peoplesoft/PORTAL.war/${PS_HEALTH_FILE?}"
-    # sleep ${PS_HEALTH_TIME?}
-    # echo "...domain removed from pool."
-    # echo ""
-    #else
-    #echo "Skipping pool managment. To enable, set \$PS_POOL_MGMT to 'on'."
-    #fi
+    if PS_POOL_MGMT == "on" then
+        # Change this function to match your pool member removal process
+        puts "Removing domain from load balanced pool..."
+        do_cmd("rm -f \${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/${PS_HEALTH_FILE?}")
+        sleep(PS_HEALTH_TIME.to_i)
+        puts "...domain removed from pool."
+        puts ""
+    else
+        puts "Skipping pool managment. To enable, set $PS_POOL_MGMT to 'on'."
+    end
 end
 
 def os
@@ -287,7 +275,7 @@ domains = opts_d.split(',')
 # constants
 OS_CONST = os
 PS_RUNTIME_USER = "psadm2"     # TODO
-PS_POOL_MGMT = "off"           # TODO
+PS_POOL_MGMT = "on"           # TODO
 PS_HEALTH_FILE = "health.html" # TODO
 PS_HEALTH_TIME = "60"          # TODO
 PS_PSA_SUDO = "on"             # TODO
@@ -327,12 +315,11 @@ commands.each do |c|
                 do_bounce(t,d)
             when "pooladd"
                 do_pooladd(t,d)
-            when "do_poolrm"
+            when "poolrm"
                 do_poolrm(t,d)
             else
                 puts "Not a valid command. See psa help"
             end
-        
         end
     end
 end    

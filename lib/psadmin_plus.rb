@@ -69,6 +69,11 @@ def do_cmd(cmd)
     puts out
 end
 
+def do_cmd_banner(c,t,d)
+   puts ""
+   puts "### #{c} - #{t} - #{d} ###"
+end
+
 def find_apps
     apps = Dir.glob("#{ENV['PS_CFG_HOME']}/appserv/*/psappsrv.ubx")
     apps.map! {|app| app.split("/")[-2]}
@@ -123,7 +128,6 @@ def do_summary
 end
 
 def do_status(type, domain)
-    puts "status - #{type} - #{domain}"
     case type
     when "app"
         do_cmd("psadmin -c sstatus -d #{domain}")

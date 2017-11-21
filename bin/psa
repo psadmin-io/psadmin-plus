@@ -60,6 +60,7 @@ commands.each do |c|
                 end
             end
             domains.each do |d|
+                do_cmd_banner(c,t,d)
                 case "#{c}"
                 when "status"
                     do_status(t,d)

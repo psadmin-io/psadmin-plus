@@ -41,7 +41,7 @@ def do_help
 end
 
 def do_is_runtime_user
-    Etc.getlogin == PS_RUNTIME_USER ? r = true : r = false
+    result = Etc.getlogin == PS_RUNTIME_USER ? true : false
 end
 
 def do_cmd(cmd)

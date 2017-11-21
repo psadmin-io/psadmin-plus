@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'psadmin_plus'
+#require_relative '../lib/psadmin_plus.rb'
 
 # options
 opts_c = ARGV.shift || "help"
@@ -15,13 +16,15 @@ if types.include? "all" then types = ['app','prcs','web'] end
 if domains.include? "all" then all_domains = true end
 
 # setup environment
-PS_PSA_CONF = ENV['PS_PSA_CONF'] || "~/.psa.conf"
-File.readline "PS_PSA_CONF" do |line|
-    if line.start_with? "#" then
-        next 
-    else
-        key, value = line.split "="
-        ENV[key] = value
+PS_PSA_CONF = ENV['PS_PSA_CONF'] || "#{ENV['HOME']}/.psa.conf"
+if File.exists?(PS_PSA_CONF) then
+    File.readlines(PS_PSA_CONF).each do |line|
+        if line.start_with? "#" then
+            next 
+        else
+            key, value = line.split "="
+            ENV[key] = value.strip
+        end
     end
 end
 

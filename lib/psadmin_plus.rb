@@ -103,8 +103,13 @@ def do_list
 end
 
 def do_summary
-    do_cmd("psadmin -envsummary")
-    #do_status("web","all")
+    case "#{OS_CONST}"
+    when "linux"
+        do_cmd("psadmin -envsummary")
+        #do_status("web","all")
+    when "windows"
+        do_cmd("#{ENV['PS_HOME']}/appserv/psadmin -envsummary")
+    end
 end
 
 def do_status(type, domain)

@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'rbconfig'
+require 'etc'
 
 def do_help
     puts "Usage: psa [command] <type> <domain>"
@@ -39,10 +40,14 @@ def do_help
     puts " "
 end
 
+def do_is_runtime_user
+    if Etc.getlogin == PS_RUNTIME_USER ? true | false
+end
+
 def do_cmd(cmd)
     case "#{OS_CONST}"
     when "linux"
-        if IS_RUNTIME_USER
+        if do_is_runtime_user
             out = `"#{cmd}"`
         else
             if "#{PS_PSA_SUDO}" == "on"

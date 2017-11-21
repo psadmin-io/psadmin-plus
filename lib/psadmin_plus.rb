@@ -53,7 +53,7 @@ def do_cmd(cmd)
             end
         end
     when "windows"
-        out = `"#{cmd}"`
+        out = `powershell -command "#{cmd}"`
     else
         out = "Invalid OS"
     end
@@ -108,7 +108,7 @@ def do_summary
         do_cmd("psadmin -envsummary")
         #do_status("web","all")
     when "windows"
-        do_cmd("#{ENV['PS_HOME']}/appserv/psadmin -envsummary")
+        do_cmd("psadmin -envsummary")
     end
 end
 

@@ -3,7 +3,7 @@
 require 'psadmin_plus'
 
 # options
-opts_c = ARGV.shift
+opts_c = ARGV.shift || "help"
 opts_t = ARGV.shift || "all"
 opts_d = ARGV.shift || "all"
 

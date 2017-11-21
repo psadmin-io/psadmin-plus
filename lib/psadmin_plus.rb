@@ -41,7 +41,7 @@ def do_help
 end
 
 def do_is_runtime_user
-    if Etc.getlogin == PS_RUNTIME_USER ? true | false
+    Etc.getlogin == PS_RUNTIME_USER ? r = true : r = false
 end
 
 def do_cmd(cmd)
@@ -51,10 +51,10 @@ def do_cmd(cmd)
             out = `"#{cmd}"`
         else
             if "#{PS_PSA_SUDO}" == "on"
-                out = `sudo su - $PS_RUNTIME_USER -c "#{cmd}"`
+                out = `sudo su - #{PS_RUNTIME_USER} -c "#{cmd}"`
             else
                 print "#{PS_RUNTIME_USER} "
-                out = `su - $PS_RUNTIME_USER -c "#{cmd}"`
+                out = `su - #{PS_RUNTIME_USER} -c "#{cmd}"`
             end
         end
     when "windows"

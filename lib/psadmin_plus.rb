@@ -40,15 +40,19 @@ def do_help
     puts " "
 end
 
-def do_is_runtime_user
-    result = Etc.getlogin == PS_RUNTIME_USER ? true : false
+def do_is_runtime_user_nix
+    result = ENV['USER'] == PS_RUNTIME_USER ? true : false
+end
+
+def do_is_runtime_user_win
+    result = ENV['USERNAME'] == PS_RUNTIME_USER ? true : false
 end
 
 def do_cmd(cmd)
     case "#{OS_CONST}"
     when "linux"
-        if do_is_runtime_user
-            out = `"#{cmd}"`
+        if do_is_runtime_user_nix
+            out = `#{cmd}`
         else
             if "#{PS_PSA_SUDO}" == "on"
                 out = `sudo su - #{PS_RUNTIME_USER} -c "#{cmd}"`
@@ -127,7 +131,7 @@ def do_status(type, domain)
         do_cmd("psadmin -c qstatus -d #{domain}")
         do_cmd("psadmin -c pslist -d #{domain}")
     when "prcs"
-        do_cmd("psadmin -p status -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -p status -d #{domain}")
     when "web"
         do_cmd("psadmin -w status -d #{domain}")
     else

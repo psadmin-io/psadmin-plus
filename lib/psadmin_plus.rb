@@ -86,9 +86,15 @@ end
 
 def do_list
     puts "---"
-    puts "hostname:      TODO"
-    puts "ps-home:       #{ENV['PS_HOME']}"
-    puts "ps-cfg-home:   #{ENV['PS_CFG_HOME']}"
+#    puts "hostname:      TODO"
+    puts "ps-home:         #{ENV['PS_HOME']}"
+    puts "ps-cfg-home:     #{ENV['PS_CFG_HOME']}"
+    puts ""
+    puts "PS_RUNTIME_USER: #{PS_RUNTIME_USER}"
+    puts "PS_PSA_SUDO:     #{PS_PSA_SUDO}"
+    puts "PS_POOL_MGMT:    #{PS_POOL_MGMT}"
+    puts "PS_HEALTH_FILE:  #{PS_HEALTH_FILE}"
+    puts "PS_HERALTH_TIME: #{PS_HEALTH_TIME}"
     puts "" 
     puts "app:"
     find_apps.each do |a|

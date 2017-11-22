@@ -198,7 +198,7 @@ def do_stop(type, domain)
         when "linux"
             do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/stopPIA.sh")
         when "windows"
-            do_cmd("psadmin -w shutdown! -d #{domain}".gsub('/','\\'))
+            do_cmd("#{PS_PSADMIN_PATH}/psadmin -w shutdown! -d #{domain}".gsub('/','\\'))
         end
     else
         puts "Invalid type, see psa help"

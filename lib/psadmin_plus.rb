@@ -62,7 +62,7 @@ def do_cmd(cmd)
             end
         end
     when "windows"
-        out = `powershell -command "#{cmd}"`
+        out = `powershell -NoProfile -Command "#{cmd}"`
     else
         out = "Invalid OS"
     end

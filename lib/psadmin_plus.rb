@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'rbconfig'
+require 'etc'
 
 def do_help
     puts "Usage: psa [command] <type> <domain>"
@@ -39,17 +40,25 @@ def do_help
     puts " "
 end
 
+def do_is_runtime_user_nix
+    result = ENV['USER'] == PS_RUNTIME_USER ? true : false
+end
+
+def do_is_runtime_user_win
+    result = ENV['USERNAME'] == PS_RUNTIME_USER ? true : false
+end
+
 def do_cmd(cmd)
     case "#{OS_CONST}"
     when "linux"
-        if IS_RUNTIME_USER
-            out = `"#{cmd}"`
+        if do_is_runtime_user_nix
+            out = `#{cmd}`
         else
             if "#{PS_PSA_SUDO}" == "on"
-                out = `sudo su - $PS_RUNTIME_USER -c "#{cmd}"`
+                out = `sudo su - #{PS_RUNTIME_USER} -c "#{cmd}"`
             else
                 print "#{PS_RUNTIME_USER} "
-                out = `su - $PS_RUNTIME_USER -c "#{cmd}"`
+                out = `su - #{PS_RUNTIME_USER} -c "#{cmd}"`
             end
         end
     when "windows"
@@ -58,6 +67,11 @@ def do_cmd(cmd)
         out = "Invalid OS"
     end
     puts out
+end
+
+def do_cmd_banner(c,t,d)
+   puts ""
+   puts "### #{c} - #{t} - #{d} ###"
 end
 
 def find_apps
@@ -81,9 +95,15 @@ end
 
 def do_list
     puts "---"
-    puts "hostname:      TODO"
-    puts "ps-home:       #{ENV['PS_HOME']}"
-    puts "ps-cfg-home:   #{ENV['PS_CFG_HOME']}"
+#    puts "hostname:      TODO"
+    puts "ps-home:         #{ENV['PS_HOME']}"
+    puts "ps-cfg-home:     #{ENV['PS_CFG_HOME']}"
+    puts ""
+    puts "PS_RUNTIME_USER: #{PS_RUNTIME_USER}"
+    puts "PS_PSA_SUDO:     #{PS_PSA_SUDO}"
+    puts "PS_POOL_MGMT:    #{PS_POOL_MGMT}"
+    puts "PS_HEALTH_FILE:  #{PS_HEALTH_FILE}"
+    puts "PS_HERALTH_TIME: #{PS_HEALTH_TIME}"
     puts "" 
     puts "app:"
     find_apps.each do |a|
@@ -108,7 +128,6 @@ def do_summary
 end
 
 def do_status(type, domain)
-    puts "status - #{type} - #{domain}"
     case type
     when "app"
         do_cmd("psadmin -c sstatus -d #{domain}")
@@ -116,7 +135,7 @@ def do_status(type, domain)
         do_cmd("psadmin -c qstatus -d #{domain}")
         do_cmd("psadmin -c pslist -d #{domain}")
     when "prcs"
-        do_cmd("psadmin -p status -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -p status -d #{domain}")
     when "web"
         do_cmd("psadmin -w status -d #{domain}")
     else

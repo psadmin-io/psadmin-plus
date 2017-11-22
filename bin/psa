@@ -1,9 +1,10 @@
 #!/usr/bin/env ruby
 
 require 'psadmin_plus'
+#require_relative '../lib/psadmin_plus.rb'
 
 # options
-opts_c = ARGV.shift
+opts_c = ARGV.shift || "help"
 opts_t = ARGV.shift || "all"
 opts_d = ARGV.shift || "all"
 
@@ -14,14 +15,26 @@ domains = opts_d.split(',')
 if types.include? "all" then types = ['app','prcs','web'] end
 if domains.include? "all" then all_domains = true end
 
+# setup environment
+PS_PSA_CONF = ENV['PS_PSA_CONF'] || "#{ENV['HOME']}/.psa.conf"
+if File.exists?(PS_PSA_CONF) then
+    File.readlines(PS_PSA_CONF).each do |line|
+        if line.start_with? "#" then
+            next 
+        else
+            key, value = line.split "="
+            ENV[key] = value.strip
+        end
+    end
+end
+
 # constants
 OS_CONST = os
-PS_RUNTIME_USER = "psadm2"     # TODO
-PS_POOL_MGMT = "on"           # TODO
-PS_HEALTH_FILE = "health.html" # TODO
-PS_HEALTH_TIME = "60"          # TODO
-PS_PSA_SUDO = "on"             # TODO
-IS_RUNTIME_USER = false        # TODO
+PS_RUNTIME_USER = ENV['PS_RUNTIME_USER'] || "psadm2"
+PS_POOL_MGMT = ENV['PS_POOL_MGMT'] || "on"
+PS_HEALTH_FILE = ENV['PS_HEALTH_FILE'] || "health.html"
+PS_HEALTH_TIME = ENV['PS_HEALTH_TIME'] || "60"
+PS_PSA_SUDO = ENV['PS_PSA_SUDO'] || "on"
 
 # process
 commands.each do |c|
@@ -47,6 +60,7 @@ commands.each do |c|
                 end
             end
             domains.each do |d|
+                do_cmd_banner(c,t,d)
                 case "#{c}"
                 when "status"
                     do_status(t,d)

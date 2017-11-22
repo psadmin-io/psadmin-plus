@@ -66,7 +66,7 @@ def do_cmd(cmd, print = true)
             end
         end
     when "windows"
-        out = `"#{cmd}"`
+        out = `powershell -command "#{cmd}"`
     else
         out = "Invalid OS"
     end

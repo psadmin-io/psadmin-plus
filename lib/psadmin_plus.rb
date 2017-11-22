@@ -103,13 +103,8 @@ def do_list
 end
 
 def do_summary
-    case "#{OS_CONST}"
-    when "linux"
-        do_cmd("psadmin -envsummary")
-        #do_status("web","all")
-    when "windows"
-        do_cmd("psadmin -envsummary")
-    end
+    do_cmd("psadmin -envsummary")
+    #do_status("web","all")
 end
 
 def do_status(type, domain)

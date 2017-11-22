@@ -150,8 +150,13 @@ def do_start(type, domain)
     when "prcs"
         do_cmd("psadmin -p start -d #{domain}")
     when "web"
-        do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/startPIA.sh")
-        #psadmin -w start -d #{domain}") # TODO - this isn't working, do we want it?
+        case "#{OS_CONST}"
+        when "linux"
+            do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/startPIA.sh")
+            # do_cmd("psadmin -w start -d #{domain}") # TODO - this isn't working, do we want it?
+        when "windows"
+            do_cmd("psadmin -w start -d #{domain}".gsub('/','\\')) #This hangs due to issues with startPIA.cmd
+        end
     else
         puts "Invalid type, see psa help"
     end
@@ -164,7 +169,12 @@ def do_stop(type, domain)
     when "prcs"
         do_cmd("psadmin -p stop -d #{domain}")
     when "web"
-        do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/stopPIA.sh")
+        case "#{OS_CONST}"
+        when "linux"
+            do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/stopPIA.sh")
+        when "windows"
+            do_cmd("psadmin -w shutdown! -d #{domain}".gsub('/','\\'))
+        end
     else
         puts "Invalid type, see psa help"
     end
@@ -203,8 +213,13 @@ def do_purge(type, domain)
     when "prcs"
         do_cmd("echo purge todo")
     when "web"
-        do_cmd("rm -rf ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/")
-        puts "web cache purged"
+        case "#{OS_CONST}"
+        when "linux"
+            do_cmd("rm -rf ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/")
+            puts "web cache purged"
+        when "windows"
+            do_cmd("Remove-Item -recurse -force ${env:PS_CFG_HOME}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/".gsub('/','\\'))
+        end
     else
         puts "Invalid type, see psa help"
     end

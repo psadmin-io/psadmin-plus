@@ -48,17 +48,21 @@ def do_is_runtime_user_win
     result = ENV['USERNAME'] == PS_RUNTIME_USER ? true : false
 end
 
-def do_cmd(cmd)
+def env(var)
+   result = "#{OS_CONST}" == "linux" ? "${#{var}}" : "$env:#{var}"
+end
+
+def do_cmd(cmd, print = true)
     case "#{OS_CONST}"
     when "linux"
         if do_is_runtime_user_nix
             out = `#{cmd}`
         else
             if "#{PS_PSA_SUDO}" == "on"
-                out = `sudo su - #{PS_RUNTIME_USER} -c "#{cmd}"`
+                out = `sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'`
             else
                 print "#{PS_RUNTIME_USER} "
-                out = `su - #{PS_RUNTIME_USER} -c "#{cmd}"`
+                out = `su - #{PS_RUNTIME_USER} -c '#{cmd}'`
             end
         end
     when "windows"
@@ -66,7 +70,7 @@ def do_cmd(cmd)
     else
         out = "Invalid OS"
     end
-    puts out
+    print ? (puts out) : result = out 
 end
 
 def do_cmd_banner(c,t,d)
@@ -74,19 +78,46 @@ def do_cmd_banner(c,t,d)
     puts "### #{c} - #{t} - #{d} ###"
 end
 
-def find_apps
-    apps = Dir.glob("#{ENV['PS_CFG_HOME']}".gsub('\\','/') + "/appserv/*/psappsrv.ubx")
+def find_apps_nix
+    apps = do_cmd("find #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx",false).split(/\n+/)
     apps.map! {|app| app.split("/")[-2]}
 end
 
-def find_prcss
-    prcss = Dir.glob("#{ENV['PS_CFG_HOME']}".gsub('\\','/') + "/appserv/prcs/*/psprcsrv.ubx")
+def find_prcss_nix
+    prcss = do_cmd("find #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx",false).split(/\n+/)
     prcss.map! {|prcs| prcs.split("/")[-2]}
 end
 
-def find_webs
-    webs = Dir.glob("#{ENV['PS_CFG_HOME']}".gsub('\\','/') + "/webserv/*/piaconfig")
+def find_webs_nix
+    webs = do_cmd("find #{env('PS_CFG_HOME')}/webserv/*/piaconfig -maxdepth 0",false).split(/\n+/)
     webs.map! {|web| web.split("/")[-2]}
+end
+
+def find_apps_win
+    apps = do_cmd("get-childitem #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | select fullname | Format-Table -HideTableHeaders",false).split(/\n+/)
+    apps.map! {|app| app.split('\\')[-2]}
+end
+
+def find_prcss_win
+    prcss = do_cmd("get-childitem #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | select fullname | Format-Table -HideTableHeaders",false).split(/\n+/)
+    prcss.map! {|prcs| prcs.split("\\")[-2]}
+end
+
+def find_webs_win
+    webs = do_cmd("get-childitem #{env('PS_CFG_HOME')}/webserv/*/piaconfig | select fullname | Format-Table -HideTableHeaders",false).split(/\n+/)
+    webs.map! {|web| web.split("\\")[-2]}
+end
+
+def find_apps
+    apps = "#{OS_CONST}" == "linux" ? find_apps_nix : find_apps_win
+end
+
+def find_prcss
+    prcss = "#{OS_CONST}" == "linux" ? find_prcss_nix : find_prcss_win
+end
+
+def find_webs
+    webs = "#{OS_CONST}" == "linux" ? find_webs_nix : find_webs_win
 end
 
 def do_util
@@ -95,9 +126,9 @@ end
 
 def do_list
     puts "---"
-#    puts "hostname:      TODO"
-    puts "ps-home:         #{ENV['PS_HOME']}"
-    puts "ps-cfg-home:     #{ENV['PS_CFG_HOME']}"
+    print "hostname:        " ; do_cmd('hostname')
+    print "ps-home:         " ; do_cmd('echo ' + env('PS_HOME'))
+    print "ps-cfg-home:     " ; do_cmd('echo ' + env('PS_CFG_HOME'))
     puts ""
     puts "PS_RUNTIME_USER: #{PS_RUNTIME_USER}"
     puts "PS_PSA_SUDO:     #{PS_PSA_SUDO}"
@@ -130,14 +161,14 @@ end
 def do_status(type, domain)
     case type
     when "app"
-        do_cmd("psadmin -c sstatus -d #{domain}")
-        do_cmd("psadmin -c cstatus -d #{domain}")
-        do_cmd("psadmin -c qstatus -d #{domain}")
-        do_cmd("psadmin -c pslist -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -c sstatus -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -c cstatus -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -c qstatus -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -c pslist -d #{domain}")
     when "prcs"
-        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -p status -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -p status -d #{domain}")
     when "web"
-        do_cmd("psadmin -w status -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -w status -d #{domain}")
     else
         puts "Invalid type, see psa help"
     end
@@ -146,17 +177,11 @@ end
 def do_start(type, domain)
     case type
     when "app"
-        do_cmd("psadmin -c boot -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -c boot -d #{domain}")
     when "prcs"
-        do_cmd("psadmin -p start -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -p start -d #{domain}")
     when "web"
-        case "#{OS_CONST}"
-        when "linux"
-            do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/startPIA.sh")
-            # do_cmd("psadmin -w start -d #{domain}") # TODO - this isn't working, do we want it?
-        when "windows"
-            do_cmd("psadmin -w start -d #{domain}".gsub('/','\\')) #This hangs due to issues with startPIA.cmd
-        end
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}")
     else
         puts "Invalid type, see psa help"
     end
@@ -165,9 +190,9 @@ end
 def do_stop(type, domain)
     case type
     when "app"
-        do_cmd("psadmin -c shutdown -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -c shutdown -d #{domain}")
     when "prcs"
-        do_cmd("psadmin -p stop -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -p stop -d #{domain}")
     when "web"
         case "#{OS_CONST}"
         when "linux"
@@ -183,9 +208,9 @@ end
 def do_kill(type, domain)
     case type
     when "app"
-        do_cmd("psadmin -c shutdown! -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -c shutdown! -d #{domain}")
     when "prcs"
-        do_cmd("psadmin -p kill -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -p kill -d #{domain}")
     when "web"
         return # web kill n/a
     else
@@ -196,9 +221,9 @@ end
 def do_configure(type, domain)
     case type
     when "app"
-        do_cmd("psadmin -c configure -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -c configure -d #{domain}")
     when "prcs"
-        do_cmd("psadmin -p configure -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -p configure -d #{domain}")
     when "web"
         return # web configure n/a
     else
@@ -209,7 +234,7 @@ end
 def do_purge(type, domain)
     case type
     when "app"
-        do_cmd("psadmin -c purge -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -c purge -d #{domain}")
     when "prcs"
         do_cmd("echo purge todo")
     when "web"
@@ -228,9 +253,9 @@ end
 def do_flush(type, domain)
     case type
     when "app"
-        do_cmd("psadmin -c cleanipc -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -c cleanipc -d #{domain}")
     when "prcs"
-        do_cmd("psadmin -p cleanipc -d #{domain}")
+        do_cmd("#{PS_PSADMIN_PATH}/psadmin -p cleanipc -d #{domain}")
     when "web"
         return # web flush n/a
     else
@@ -255,12 +280,12 @@ def do_pooladd(type, domain)
     if PS_POOL_MGMT == "on" then
         # Change this function to match your pool member addtion process
         puts "Adding web domain to load balanced pool..."
-        do_cmd("echo 'true' > ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/${PS_HEALTH_FILE?}")
+        do_cmd("echo 'true' > #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{ENV['PS_HEALTH_FILE']}")
         sleep(PS_HEALTH_TIME.to_i)
         puts "...domain added to pool."
         puts ""
     else
-        puts "Skipping pool managment. To enable, set $PS_POOL_MGMT to 'on'."
+        puts "Skipping pool managment. To enable, set PS_POOL_MGMT to 'on'."
     end
 end 
 
@@ -268,12 +293,12 @@ def do_poolrm(type,domain)
     if PS_POOL_MGMT == "on" then
         # Change this function to match your pool member removal process
         puts "Removing domain from load balanced pool..."
-        do_cmd("rm -f \${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/${PS_HEALTH_FILE?}")
+        do_cmd("rm -f #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{ENV['PS_HEALTH_FILE']}")
         sleep(PS_HEALTH_TIME.to_i)
         puts "...domain removed from pool."
         puts ""
     else
-        puts "Skipping pool managment. To enable, set $PS_POOL_MGMT to 'on'."
+        puts "Skipping pool managment. To enable, set PS_POOL_MGMT to 'on'."
     end
 end
 

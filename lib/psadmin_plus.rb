@@ -94,17 +94,17 @@ def find_webs_nix
 end
 
 def find_apps_win
-    apps = do_cmd("get-childitem #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | select fullname | Format-Table -HideTableHeaders",false).split(/\n+/)
+    apps = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
     apps.map! {|app| app.split('\\')[-2]}
 end
 
 def find_prcss_win
-    prcss = do_cmd("get-childitem #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | select fullname | Format-Table -HideTableHeaders",false).split(/\n+/)
+    prcss = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
     prcss.map! {|prcs| prcs.split("\\")[-2]}
 end
 
 def find_webs_win
-    webs = do_cmd("get-childitem #{env('PS_CFG_HOME')}/webserv/*/piaconfig | select fullname | Format-Table -HideTableHeaders",false).split(/\n+/)
+    webs = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
     webs.map! {|web| web.split("\\")[-2]}
 end
 
@@ -154,7 +154,7 @@ def do_list
 end
 
 def do_summary
-    do_cmd("psadmin -envsummary")
+    do_cmd("#{PS_PSADMIN_PATH}/psadmin -envsummary")
     #do_status("web","all")
 end
 

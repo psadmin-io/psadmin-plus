@@ -130,14 +130,14 @@ end
 def do_status(type, domain)
     case type
     when "app"
-        do_cmd("psadmin -c sstatus -d #{domain}")
-        do_cmd("psadmin -c cstatus -d #{domain}")
-        do_cmd("psadmin -c qstatus -d #{domain}")
-        do_cmd("psadmin -c pslist -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -c sstatus -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -c cstatus -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -c qstatus -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -c pslist -d #{domain}")
     when "prcs"
         do_cmd("#{ENV['PS_HOME']}/bin/psadmin -p status -d #{domain}")
     when "web"
-        do_cmd("psadmin -w status -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -w status -d #{domain}")
     else
         puts "Invalid type, see psa help"
     end
@@ -146,11 +146,11 @@ end
 def do_start(type, domain)
     case type
     when "app"
-        do_cmd("psadmin -c boot -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -c boot -d #{domain}")
     when "prcs"
-        do_cmd("psadmin -p start -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -p start -d #{domain}")
     when "web"
-        do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/startPIA.sh")
+        do_cmd("#{ENV['PS_CFG_HOME']}/webserv/#{domain}/bin/startPIA.sh")
         #psadmin -w start -d #{domain}") # TODO - this isn't working, do we want it?
     else
         puts "Invalid type, see psa help"
@@ -160,11 +160,11 @@ end
 def do_stop(type, domain)
     case type
     when "app"
-        do_cmd("psadmin -c shutdown -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -c shutdown -d #{domain}")
     when "prcs"
-        do_cmd("psadmin -p stop -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -p stop -d #{domain}")
     when "web"
-        do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/stopPIA.sh")
+        do_cmd("#{ENV['PS_CFG_HOME']}/webserv/#{domain}/bin/stopPIA.sh")
     else
         puts "Invalid type, see psa help"
     end
@@ -173,9 +173,9 @@ end
 def do_kill(type, domain)
     case type
     when "app"
-        do_cmd("psadmin -c shutdown! -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -c shutdown! -d #{domain}")
     when "prcs"
-        do_cmd("psadmin -p kill -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -p kill -d #{domain}")
     when "web"
         return # web kill n/a
     else
@@ -186,9 +186,9 @@ end
 def do_configure(type, domain)
     case type
     when "app"
-        do_cmd("psadmin -c configure -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -c configure -d #{domain}")
     when "prcs"
-        do_cmd("psadmin -p configure -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -p configure -d #{domain}")
     when "web"
         return # web configure n/a
     else
@@ -199,11 +199,11 @@ end
 def do_purge(type, domain)
     case type
     when "app"
-        do_cmd("psadmin -c purge -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -c purge -d #{domain}")
     when "prcs"
         do_cmd("echo purge todo")
     when "web"
-        do_cmd("rm -rf ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/")
+        do_cmd("rm -rf #{ENV['PS_CFG_HOME']}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/")
         puts "web cache purged"
     else
         puts "Invalid type, see psa help"
@@ -213,9 +213,9 @@ end
 def do_flush(type, domain)
     case type
     when "app"
-        do_cmd("psadmin -c cleanipc -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -c cleanipc -d #{domain}")
     when "prcs"
-        do_cmd("psadmin -p cleanipc -d #{domain}")
+        do_cmd("#{ENV['PS_HOME']}/bin/psadmin -p cleanipc -d #{domain}")
     when "web"
         return # web flush n/a
     else
@@ -240,12 +240,12 @@ def do_pooladd(type, domain)
     if PS_POOL_MGMT == "on" then
         # Change this function to match your pool member addtion process
         puts "Adding web domain to load balanced pool..."
-        do_cmd("echo 'true' > ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/${PS_HEALTH_FILE?}")
+        do_cmd("echo 'true' > #{ENV['PS_CFG_HOME']}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{ENV['PS_HEALTH_FILE']}")
         sleep(PS_HEALTH_TIME.to_i)
         puts "...domain added to pool."
         puts ""
     else
-        puts "Skipping pool managment. To enable, set $PS_POOL_MGMT to 'on'."
+        puts "Skipping pool managment. To enable, set PS_POOL_MGMT to 'on'."
     end
 end 
 
@@ -253,12 +253,12 @@ def do_poolrm(type,domain)
     if PS_POOL_MGMT == "on" then
         # Change this function to match your pool member removal process
         puts "Removing domain from load balanced pool..."
-        do_cmd("rm -f \${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/${PS_HEALTH_FILE?}")
+        do_cmd("rm -f #{ENV['PS_CFG_HOME']}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{ENV['PS_HEALTH_FILE']}")
         sleep(PS_HEALTH_TIME.to_i)
         puts "...domain removed from pool."
         puts ""
     else
-        puts "Skipping pool managment. To enable, set $PS_POOL_MGMT to 'on'."
+        puts "Skipping pool managment. To enable, set PS_POOL_MGMT to 'on'."
     end
 end
 

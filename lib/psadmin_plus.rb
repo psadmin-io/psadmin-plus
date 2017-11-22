@@ -59,10 +59,10 @@ def do_cmd(cmd, print = true)
             out = `#{cmd}`
         else
             if "#{PS_PSA_SUDO}" == "on"
-                out = `sudo su - #{PS_RUNTIME_USER} -c "#{cmd}"`
+                out = `sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'`
             else
                 print "#{PS_RUNTIME_USER} "
-                out = `su - #{PS_RUNTIME_USER} -c "#{cmd}"`
+                out = `su - #{PS_RUNTIME_USER} -c '#{cmd}'`
             end
         end
     when "windows"

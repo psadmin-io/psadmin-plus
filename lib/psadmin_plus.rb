@@ -75,17 +75,17 @@ def do_cmd_banner(c,t,d)
 end
 
 def find_apps
-    apps = Dir.glob("#{ENV['PS_CFG_HOME']}/appserv/*/psappsrv.ubx")
+    apps = Dir.glob("#{ENV['PS_CFG_HOME']}".gsub('\\','/') + "/appserv/*/psappsrv.ubx")
     apps.map! {|app| app.split("/")[-2]}
 end
 
 def find_prcss
-    prcss = Dir.glob("#{ENV['PS_CFG_HOME']}/appserv/prcs/*/psprcsrv.ubx")
+    prcss = Dir.glob("#{ENV['PS_CFG_HOME']}".gsub('\\','/') + "/appserv/prcs/*/psprcsrv.ubx")
     prcss.map! {|prcs| prcs.split("/")[-2]}
 end
 
 def find_webs
-    webs = Dir.glob("#{ENV['PS_CFG_HOME']}/webserv/*/piaconfig")
+    webs = Dir.glob("#{ENV['PS_CFG_HOME']}".gsub('\\','/') + "/webserv/*/piaconfig")
     webs.map! {|web| web.split("/")[-2]}
 end
 

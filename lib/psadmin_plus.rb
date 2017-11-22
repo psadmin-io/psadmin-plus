@@ -62,7 +62,7 @@ def do_cmd(cmd)
             end
         end
     when "windows"
-        out = `powershell -command "#{cmd}"`
+        out = `powershell -NoProfile -Command "#{cmd}"`
     else
         out = "Invalid OS"
     end
@@ -70,22 +70,22 @@ def do_cmd(cmd)
 end
 
 def do_cmd_banner(c,t,d)
-   puts ""
-   puts "### #{c} - #{t} - #{d} ###"
+    puts ""
+    puts "### #{c} - #{t} - #{d} ###"
 end
 
 def find_apps
-    apps = Dir.glob("#{ENV['PS_CFG_HOME']}/appserv/*/psappsrv.ubx")
+    apps = Dir.glob("#{ENV['PS_CFG_HOME']}".gsub('\\','/') + "/appserv/*/psappsrv.ubx")
     apps.map! {|app| app.split("/")[-2]}
 end
 
 def find_prcss
-    prcss = Dir.glob("#{ENV['PS_CFG_HOME']}/appserv/prcs/*/psprcsrv.ubx")
+    prcss = Dir.glob("#{ENV['PS_CFG_HOME']}".gsub('\\','/') + "/appserv/prcs/*/psprcsrv.ubx")
     prcss.map! {|prcs| prcs.split("/")[-2]}
 end
 
 def find_webs
-    webs = Dir.glob("#{ENV['PS_CFG_HOME']}/webserv/*/piaconfig")
+    webs = Dir.glob("#{ENV['PS_CFG_HOME']}".gsub('\\','/') + "/webserv/*/piaconfig")
     webs.map! {|web| web.split("/")[-2]}
 end
 
@@ -103,7 +103,7 @@ def do_list
     puts "PS_PSA_SUDO:     #{PS_PSA_SUDO}"
     puts "PS_POOL_MGMT:    #{PS_POOL_MGMT}"
     puts "PS_HEALTH_FILE:  #{PS_HEALTH_FILE}"
-    puts "PS_HERALTH_TIME: #{PS_HEALTH_TIME}"
+    puts "PS_HEALTH_TIME:  #{PS_HEALTH_TIME}"
     puts "" 
     puts "app:"
     find_apps.each do |a|

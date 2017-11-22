@@ -35,3 +35,8 @@ Here are some suggested addtions to your bash profile.
 ## PeopleTools Support
 This has been tested using:
 * 8.55
+
+
+## Features
+
+* Supports Service Accounts or User Accounts. `psa` can run commands as a service account so domains are started under the correct account

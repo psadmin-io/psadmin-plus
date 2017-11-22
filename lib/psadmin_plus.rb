@@ -70,8 +70,8 @@ def do_cmd(cmd)
 end
 
 def do_cmd_banner(c,t,d)
-   puts ""
-   puts "### #{c} - #{t} - #{d} ###"
+    puts ""
+    puts "### #{c} - #{t} - #{d} ###"
 end
 
 def find_apps
@@ -103,7 +103,7 @@ def do_list
     puts "PS_PSA_SUDO:     #{PS_PSA_SUDO}"
     puts "PS_POOL_MGMT:    #{PS_POOL_MGMT}"
     puts "PS_HEALTH_FILE:  #{PS_HEALTH_FILE}"
-    puts "PS_HERALTH_TIME: #{PS_HEALTH_TIME}"
+    puts "PS_HEALTH_TIME:  #{PS_HEALTH_TIME}"
     puts "" 
     puts "app:"
     find_apps.each do |a|

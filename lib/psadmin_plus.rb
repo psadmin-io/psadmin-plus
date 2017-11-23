@@ -66,7 +66,6 @@ def do_cmd(cmd, print = true)
             end
         end
     when "windows"
-        puts "Command: 'powershell -NoProfile -Command #{cmd}'"
         out = `powershell -NoProfile -Command "#{cmd}"`
     else
         out = "Invalid OS"

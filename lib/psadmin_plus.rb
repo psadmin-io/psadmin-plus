@@ -66,6 +66,7 @@ def do_cmd(cmd, print = true)
             end
         end
     when "windows"
+        puts "Command: 'powershell -NoProfile -Command #{cmd}'"
         out = `powershell -NoProfile -Command "#{cmd}"`
     else
         out = "Invalid OS"
@@ -74,8 +75,8 @@ def do_cmd(cmd, print = true)
 end
 
 def do_cmd_banner(c,t,d)
-    puts ""
-    puts "### #{c} - #{t} - #{d} ###"
+   puts ""
+   puts "### #{c} - #{t} - #{d} ###"
 end
 
 def find_apps_nix
@@ -198,7 +199,8 @@ def do_stop(type, domain)
         when "linux"
             do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/stopPIA.sh")
         when "windows"
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -w shutdown! -d #{domain}".gsub('/','\\'))
+            # do_cmd("#{PS_PSADMIN_PATH}/psadmin -w shutdown! -d #{domain}".gsub('/','\\'))
+            do_cmd("cmd /c ${env:PS_CFG_HOME}/webserv/#{domain}/bin/stopPIA.cmd".gsub('/','\\'))
         end
     else
         puts "Invalid type, see psa help"
@@ -243,7 +245,7 @@ def do_purge(type, domain)
             do_cmd("rm -rf ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/")
             puts "web cache purged"
         when "windows"
-            do_cmd("Remove-Item -recurse -force ${env:PS_CFG_HOME}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/".gsub('/','\\'))
+            do_cmd("Remove-Item $(Get-ChildItem ${env:PS_CFG_HOME}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/ | ?{ $_.PSIsContainer}) -recurse -force".gsub('/','\\'))
         end
     else
         puts "Invalid type, see psa help"
@@ -293,7 +295,12 @@ def do_poolrm(type,domain)
     if PS_POOL_MGMT == "on" then
         # Change this function to match your pool member removal process
         puts "Removing domain from load balanced pool..."
-        do_cmd("rm -f #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{ENV['PS_HEALTH_FILE']}")
+        case OS_CONST
+        when "linux"
+            do_cmd("rm -f #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{ENV['PS_HEALTH_FILE']}")
+        when "windows"
+            do_cmd("remove-item -force #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{ENV['PS_HEALTH_FILE']}")
+        end
         sleep(PS_HEALTH_TIME.to_i)
         puts "...domain removed from pool."
         puts ""

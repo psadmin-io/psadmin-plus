@@ -10,7 +10,7 @@ def do_help
     puts "        "
     puts "    help           display this help message"
     puts "    list           list domains"
-    puts "    admin          launch psadmin"
+    #puts "    admin          launch psadmin"
     puts "    summary        PS_CFG_HOME summary, no type or domain needed"
     puts "    status         status of the domain"
     puts "    start          pooladd, if enabled, then start the domain"
@@ -122,6 +122,10 @@ end
 
 def do_util
     puts "TODO: util"
+end
+
+def do_admin
+    do_cmd("#{PS_PSADMIN_PATH}/psadmin") 
 end
 
 def do_list

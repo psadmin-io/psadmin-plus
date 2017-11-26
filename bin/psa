@@ -42,6 +42,8 @@ commands.each do |c|
     case "#{c}"
     when "help"
         do_help
+    when "admin"
+        do_admin
     when "util"
         do_util
     when "list"

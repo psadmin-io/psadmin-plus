@@ -12,6 +12,10 @@
 ## Setup
 `gem install psadmin_plus`
 
+*Hey, I don't have ruby installed!*
+* [Use ruby included with Puppet on Windows](https://gist.github.com/iversond/e56e608cf8fa65f7160416f4c434da57#file-enableRubyGems-ps1)
+* Use ruby included with Puppet on Linux
+
 ## Environment Variables
 * `PS_RUNTIME_USER`
     * User that owns `PS_CFG_HOME` and should run `psadmin`

@@ -2,6 +2,7 @@
 
 require 'rbconfig'
 require 'etc'
+require 'open3'
 
 def do_help
     puts "Usage: psa [command] <type> <domain>"

@@ -70,7 +70,7 @@ function action_app
 
         ulogmv)
             # assume default log dir
-            exec_cmd "mv \${PS_CFG_HOME?}/appserv/$dom/ULOG.* \${PS_CFG_HOME?}/appserv/$dom/LOGS" 2>&1
+            exec_cmd "mv \${PS_CFG_HOME?}/appserv/$dom/ULOG.* \${PS_CFG_HOME?}/appserv/$dom/LOGS" 2>/dev/null
         ;;
 
         esac
@@ -129,7 +129,7 @@ function action_prcs
         ;;
         ulogmv)
             # assume default log dir
-            exec_cmd "mv \${PS_CFG_HOME?}/appserv/prcs/$dom/ULOG.* \${PS_CFG_HOME?}/appserv/prcs/$dom/LOGS" 2>&1
+            exec_cmd "mv \${PS_CFG_HOME?}/appserv/prcs/$dom/ULOG.* \${PS_CFG_HOME?}/appserv/prcs/$dom/LOGS"  2>/dev/null
         ;;
 
     #    compile)

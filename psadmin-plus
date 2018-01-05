@@ -68,6 +68,11 @@ function action_app
             exec_cmd "psadmin -c boot -d $dom" 2>&1
         ;;
 
+        ulogmv)
+            # assume default log dir
+            exec_cmd "mv \${PS_CFG_HOME?}/appserv/$dom/ULOG.* \${PS_CFG_HOME?}/appserv/prcs/$dom/LOGS"
+        ;;
+
         esac
     done    
     echo ""
@@ -121,6 +126,10 @@ function action_prcs
             exec_cmd "psadmin -p cleanipc -d $dom" 2>&1
             exec_cmd "psadmin -p configure -d $dom" 2>&1
             exec_cmd "psadmin -p start -d $dom" 2>&1
+        ;;
+        ulogmv)
+            # assume default log dir
+            exec_cmd "mv \${PS_CFG_HOME?}/appserv/prcs/$dom/ULOG.* \${PS_CFG_HOME?}/appserv/prcs/$dom/LOGS"
         ;;
 
     #    compile)
@@ -281,8 +290,9 @@ function print_help
     echo "    kill           force stop the domain"
     echo "    configure      configure the domain"
     echo "    flush          clear domain IPC"
-    echo "    poolrm         remove domain from load balanced pool  "
-    echo "    pooladd        add domain to load balanced pool  "
+    echo "    poolrm         remove domain from load balanced pool"
+    echo "    pooladd        add domain to load balanced pool"
+    echo "    ulogmv         move ULOG files to default log directory"
     echo "      "
     echo "Types:"
     echo "      "

@@ -70,9 +70,8 @@ function action_app
 
         ulogmv)
             # assume default log dir
-            exec_cmd "mv \${PS_CFG_HOME?}/appserv/$dom/ULOG.* \${PS_CFG_HOME?}/appserv/$dom/LOGS" 2>/dev/null
-        ;;
-
+            exec_cmd "if [ -f \${PS_CFG_HOME?}/appserv/$dom/ULOG.* ]; then mv ${PS_CFG_HOME?}/appserv/$dom/ULOG.* ${PS_CFG_HOME?}/appserv/$dom/LOGS; fi" 2>&1
+            ;;
         esac
     done    
     echo ""
@@ -129,7 +128,7 @@ function action_prcs
         ;;
         ulogmv)
             # assume default log dir
-            exec_cmd "mv \${PS_CFG_HOME?}/appserv/prcs/$dom/ULOG.* \${PS_CFG_HOME?}/appserv/prcs/$dom/LOGS"  2>/dev/null
+            exec_cmd "if [ -f \${PS_CFG_HOME?}/appserv/prcs/$dom/ULOG.* ]; then mv ${PS_CFG_HOME?}/appserv/prcs/$dom/ULOG.* ${PS_CFG_HOME?}/appserv/prcs/$dom/LOGS; fi" 2>&1
         ;;
 
     #    compile)
@@ -216,6 +215,9 @@ function action_web
             poolrm)
                 PS_POOL_MGMT=on
                 poolrm
+            ;;
+            ulogmv)
+                skip=true
             ;;
         esac
     done

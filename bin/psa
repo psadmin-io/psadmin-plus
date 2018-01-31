@@ -63,30 +63,44 @@ commands.each do |c|
                 end
             end
             domains.each do |d|
-                do_cmd_banner(c,t,d)
                 case "#{c}"
                 when "status"
+                    do_cmd_banner(c,t,d)
                     do_status(t,d)
                 when "start"
+                    do_cmd_banner(c,t,d)
                     do_start(t,d)
                 when "stop"
+                    do_cmd_banner(c,t,d)
                     do_stop(t,d)
                 when "kill"
+                    do_cmd_banner(c,t,d)
                     do_kill(t,d)
                 when "configure"
+                    do_cmd_banner(c,t,d)
                     do_configure(t,d)
                 when "purge"
+                    do_cmd_banner(c,t,d)
                     do_purge(t,d)
                 when "flush"
+                    do_cmd_banner(c,t,d)
                     do_flush(t,d)
                 when "restart"
+                    do_cmd_banner(c,t,d)
                     do_restart(t,d)
                 when "bounce"
+                    do_cmd_banner(c,t,d)
                     do_bounce(t,d)
                 when "pooladd"
-                    do_pooladd(t,d)
+                    if t == "web"
+                        do_cmd_banner(c,t,d)
+		        do_pooladd(t,d)
+		    end
                 when "poolrm"
-                    do_poolrm(t,d)
+                    if t == "web"
+                        do_cmd_banner(c,t,d)
+                        do_poolrm(t,d)
+                    end
                 else
                     puts "Not a valid command. See psa help"
                 end

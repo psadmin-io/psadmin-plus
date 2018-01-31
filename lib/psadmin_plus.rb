@@ -300,13 +300,13 @@ def do_poolrm(type,domain)
         # Change this function to match your pool member removal process
         puts "Removing domain from load balanced pool..."
         case "#{OS_CONST}"
-	when "linux"
+        when "linux"
             do_cmd("rm -f #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{PS_HEALTH_FILE}")
         when "windows"
             do_cmd("remove-item -force #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{PS_HEALTH_FILE}")
         else
-	    puts " badOS - #{OS_CONST}"
-	end
+            puts " badOS - #{OS_CONST}"
+        end
         sleep(PS_HEALTH_TIME.to_i)
         puts "...domain removed from pool."
         puts ""

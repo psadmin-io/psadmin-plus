@@ -11,7 +11,7 @@ def do_help
     puts "        "
     puts "    help           display this help message"
     puts "    list           list domains"
-    puts "    admin          launch psadmin"
+    #puts "    admin          launch psadmin"
     puts "    summary        PS_CFG_HOME summary, no type or domain needed"
     puts "    status         status of the domain"
     puts "    start          pooladd, if enabled, then start the domain"
@@ -123,6 +123,10 @@ end
 
 def do_util
     puts "TODO: util"
+end
+
+def do_admin
+    do_cmd("#{PS_PSADMIN_PATH}/psadmin") 
 end
 
 def do_list
@@ -306,7 +310,7 @@ def do_pooladd(type, domain)
     if PS_POOL_MGMT == "on" then
         # Change this function to match your pool member addtion process
         puts "Adding web domain to load balanced pool..."
-        do_cmd("echo 'true' > #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{ENV['PS_HEALTH_FILE']}")
+        do_cmd("echo 'true' > #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{PS_HEALTH_FILE}")
         sleep(PS_HEALTH_TIME.to_i)
         puts "...domain added to pool."
         puts ""
@@ -319,11 +323,13 @@ def do_poolrm(type,domain)
     if PS_POOL_MGMT == "on" then
         # Change this function to match your pool member removal process
         puts "Removing domain from load balanced pool..."
-        case OS_CONST
+        case "#{OS_CONST}"
         when "linux"
-            do_cmd("rm -f #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{ENV['PS_HEALTH_FILE']}")
+            do_cmd("rm -f #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{PS_HEALTH_FILE}")
         when "windows"
-            do_cmd("remove-item -force #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{ENV['PS_HEALTH_FILE']}")
+            do_cmd("remove-item -force #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{PS_HEALTH_FILE}")
+        else
+            puts " badOS - #{OS_CONST}"
         end
         sleep(PS_HEALTH_TIME.to_i)
         puts "...domain removed from pool."

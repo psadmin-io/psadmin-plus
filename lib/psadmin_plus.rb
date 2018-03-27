@@ -181,7 +181,30 @@ def do_start(type, domain)
     when "prcs"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -p start -d #{domain}")
     when "web"
-        do_cmd("#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}")
+        case "#{OS_CONST}"
+        when "linux"
+            do_cmd("#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}")
+        when "windows"
+            cfg_home = ENV['PS_CFG_HOME']
+            start_cmd= "#{cfg_home}/webserv/#{domain}/bin/startPIA.cmd"
+            domain_pid = Process.spawn("#{start_cmd}", :new_pgroup => true)
+            status = 'UNKNOWN'
+            count = 1
+            while status != 'started'
+                begin
+                    status = do_cmd("#{PS_PSADMIN_PATH}/psadmin -w status -d #{domain}")
+                rescue
+                    fail("Error while checking Weblogic server #{domain} status" +
+                    "Error: #{error_str}")
+                end
+
+                count += 1
+                puts "#{count}" + ' ' + "#{status}"
+                if count >= 20
+                    break
+                end
+            end 
+        end
     else
         puts "Invalid type, see psa help"
     end
@@ -199,7 +222,8 @@ def do_stop(type, domain)
             do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/stopPIA.sh")
         when "windows"
             # do_cmd("#{PS_PSADMIN_PATH}/psadmin -w shutdown! -d #{domain}".gsub('/','\\'))
-            do_cmd("cmd /c ${env:PS_CFG_HOME}/webserv/#{domain}/bin/stopPIA.cmd".gsub('/','\\'))
+            # do_cmd("cmd /c ${env:PS_CFG_HOME}/webserv/#{domain}/bin/stopPIA.cmd".gsub('/','\\'))
+            do_cmd("(gwmi win32_process | where {$_.Name -eq 'Java.exe'} | where {$_.CommandLine -match '#{domain}'}).ProcessId | % { stop-process $_ -force }")
         end
     else
         puts "Invalid type, see psa help"

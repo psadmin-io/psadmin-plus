@@ -2,6 +2,7 @@
 
 require 'rbconfig'
 require 'etc'
+require 'open3'
 
 def do_help
     puts "Usage: psa [command] <type> <domain>"
@@ -74,8 +75,8 @@ def do_cmd(cmd, print = true)
 end
 
 def do_cmd_banner(c,t,d)
-   puts ""
-   puts "### #{c} - #{t} - #{d} ###"
+    puts ""
+    puts "### #{c} - #{t} - #{d} ###"
 end
 
 def find_apps_nix

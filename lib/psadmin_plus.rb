@@ -191,8 +191,8 @@ def do_start(type, domain)
             do_cmd("#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}")
         when "windows"
             cfg_home = ENV['PS_CFG_HOME']
-            start_cmd= "#{cfg_home}/webserv/#{domain}/bin/startPIA.cmd"
-            domain_pid = Process.spawn("#{start_cmd}", :new_pgroup => true)
+            start_cmd= "start-job -name #{domain-startPIA} -scriptblock {#{cfg_home}/webserv/#{domain}/bin/startPIA.cmd}"
+            # domain_pid = Process.spawn("#{start_cmd}", :new_pgroup => true)
             status = 'UNKNOWN'
             count = 1
             while status != 'started'
@@ -229,6 +229,7 @@ def do_stop(type, domain)
             # do_cmd("#{PS_PSADMIN_PATH}/psadmin -w shutdown! -d #{domain}".gsub('/','\\'))
             # do_cmd("cmd /c ${env:PS_CFG_HOME}/webserv/#{domain}/bin/stopPIA.cmd".gsub('/','\\'))
             do_cmd("(gwmi win32_process | where {$_.Name -eq 'Java.exe'} | where {$_.CommandLine -match '#{domain}'}).ProcessId | % { stop-process $_ -force }")
+            do_cmd("get-job -name #{domain-startPIA} | remove-job")
         end
     else
         puts "Invalid type, see psa help"

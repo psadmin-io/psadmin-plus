@@ -57,20 +57,40 @@ def do_cmd(cmd, print = true, powershell = true)
     case "#{OS_CONST}"
     when "linux"
         if do_is_runtime_user_nix
+            case "#{PS_PSA_DEBUG}"
+            when true
+                p "Command: #{cmd}"
+            end
             out = `#{cmd}`
         else
             if "#{PS_PSA_SUDO}" == "on"
+                case "#{PS_PSA_DEBUG}"
+                when true
+                    p "Command: sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'"
+                end
                 out = `sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'`
             else
                 print "#{PS_RUNTIME_USER} "
+                case "#{PS_PSA_DEBUG}"
+                when true
+                    p "Command: su - #{PS_RUNTIME_USER} -c '#{cmd}'"
+                end
                 out = `su - #{PS_RUNTIME_USER} -c '#{cmd}'`
             end
         end
     when "windows"
         case powershell
         when true
+            case "#{PS_PSA_DEBUG}"
+            when true
+                p "Command: powershell -NoProfile -Command \"#{cmd}\""
+            end
             out = `powershell -NoProfile -Command "#{cmd}"`
         else
+            case "#{PS_PSA_DEBUG}"
+            when true
+                p "Command: #{cmd}"
+            end
             out = `#{cmd}`
         end
     else
@@ -85,32 +105,62 @@ def do_cmd_banner(c,t,d)
 end
 
 def find_apps_nix
-    apps = do_cmd("find #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx",false).split(/\n+/)
+    case "#{PS_MULTI_HOME}"
+    when "false"
+        apps = do_cmd("find #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx",false).split(/\n+/)
+    else
+        apps = do_cmd("find #{PS_MULTI_HOME}/*/appserv/*/psappsrv.ubx",false).split(/\n+/)
+    end
     apps.map! {|app| app.split("/")[-2]}
 end
 
 def find_prcss_nix
-    prcss = do_cmd("find #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx",false).split(/\n+/)
+    case "#{PS_MULTI_HOME}"
+    when "false"
+        prcss = do_cmd("find #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx",false).split(/\n+/)
+    else 
+        prcss = do_cmd("find #{PS_MULTI_HOME}/*/appserv/prcs/*/psprcsrv.ubx",false).split(/\n+/)
+    end
     prcss.map! {|prcs| prcs.split("/")[-2]}
 end
 
 def find_webs_nix
-    webs = do_cmd("find #{env('PS_CFG_HOME')}/webserv/*/piaconfig -maxdepth 0",false).split(/\n+/)
+    case "#{PS_MULTI_HOME}"
+    when "false"
+        webs = do_cmd("find #{env('PS_CFG_HOME')}/webserv/*/piaconfig -maxdepth 0",false).split(/\n+/)
+    else
+        webs = do_cmd("find #{PS_MULTI_HOME}/*/webserv/*/piaconfig -maxdepth 0",false).split(/\n+/)
+    end
     webs.map! {|web| web.split("/")[-2]}
 end
 
 def find_apps_win
-    apps = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+    case "#{PS_MULTI_HOME}"
+    when "false"
+        apps = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+    else
+        apps = do_cmd("(get-childitem #{PS_MULTI_HOME}/*/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+    end
     apps.map! {|app| app.split('\\')[-2]}
 end
 
 def find_prcss_win
-    prcss = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+    case "#{PS_MULTI_HOME}"
+    when "false"
+        prcss = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+    else
+        prcss = do_cmd("(get-childitem #{PS_MULTI_HOME}/*/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+    end
     prcss.map! {|prcs| prcs.split("\\")[-2]}
 end
 
 def find_webs_win
-    webs = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+    case "#{PS_MULTI_HOME}"
+    when "false"
+        webs = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+    else
+        webs = do_cmd("(get-childitem #{PS_MULTI_HOME}/*/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+    end
     webs.map! {|web| web.split("\\")[-2]}
 end
 
@@ -138,14 +188,19 @@ def do_list
     puts "---"
     print "hostname:        " ; do_cmd('hostname')
     print "ps-home:         " ; do_cmd('echo ' + env('PS_HOME'))
-    print "ps-cfg-home:     " ; do_cmd('echo ' + env('PS_CFG_HOME'))
+    if PS_MULTI_HOME == "false" 
+        print "ps-cfg-home:     " ; do_cmd('echo ' + env('PS_CFG_HOME'))
+    end
     puts ""
     puts "PS_RUNTIME_USER: #{PS_RUNTIME_USER}"
     puts "PS_PSA_SUDO:     #{PS_PSA_SUDO}"
     puts "PS_POOL_MGMT:    #{PS_POOL_MGMT}"
     puts "PS_HEALTH_FILE:  #{PS_HEALTH_FILE}"
     puts "PS_HEALTH_TIME:  #{PS_HEALTH_TIME}"
+    puts "PS_HEALTH_TEXT:  #{PS_HEALTH_TEXT}"
     puts "PS_WIN_SERVICES: #{PS_WIN_SERVICES}"
+    puts "PS_MULT_HOME:    #{PS_MULTI_HOME}"
+    puts "PS_PSA_DEBUG:    #{PS_PSA_DEBUG}"
     puts "" 
     puts "app:"
     find_apps.each do |a|
@@ -165,11 +220,19 @@ def do_list
 end
 
 def do_summary
+    if "#{PS_MULTI_HOME}" != "false"
+        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
+    end
+
     do_cmd("#{PS_PSADMIN_PATH}/psadmin -envsummary")
     #do_status("web","all")
 end
 
 def do_status(type, domain)
+    if "#{PS_MULTI_HOME}" != "false"
+        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
+    end
+
     case type
     when "app"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c sstatus -d #{domain}")
@@ -186,6 +249,9 @@ def do_status(type, domain)
 end
 
 def do_start(type, domain)
+    if "#{PS_MULTI_HOME}" != "false"
+        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
+    end
 
     web_service_name    = ENV['WEB_SERVICE_NAME'] || "Psft*Pia*#{domain}*"
     app_service_name    = ENV['APP_SERVICE_NAME'] || "Psft*App*#{domain}*"
@@ -218,12 +284,16 @@ def do_start(type, domain)
                 do_cmd("#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}", true, false)
             end
         end
+        do_pooladd(type,domain)
     else
         puts "Invalid type, see psa help"
     end
 end
 
 def do_stop(type, domain)
+    if "#{PS_MULTI_HOME}" != "false"
+        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
+    end
     
     web_service_name    = ENV['WEB_SERVICE_NAME'] || "Psft*Pia*#{domain}*"
     app_service_name    = ENV['APP_SERVICE_NAME'] || "Psft*App*#{domain}*"
@@ -245,6 +315,7 @@ def do_stop(type, domain)
             do_cmd("#{PS_PSADMIN_PATH}/psadmin -p stop -d #{domain}")
         end
     when "web"
+        do_poolrm(type,domain)
         case "#{OS_CONST}"
         when "linux"
             do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/stopPIA.sh")
@@ -262,6 +333,10 @@ def do_stop(type, domain)
 end
 
 def do_kill(type, domain)
+    if "#{PS_MULTI_HOME}" != "false"
+        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
+    end
+
     case type
     when "app"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c shutdown! -d #{domain}")
@@ -280,6 +355,10 @@ def do_kill(type, domain)
 end
 
 def do_configure(type, domain)
+    if "#{PS_MULTI_HOME}" != "false"
+        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
+    end
+
     case type
     when "app"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c configure -d #{domain}")
@@ -293,6 +372,10 @@ def do_configure(type, domain)
 end
 
 def do_purge(type, domain)
+    if "#{PS_MULTI_HOME}" != "false"
+        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
+    end
+
     case type
     when "app"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c purge -d #{domain}")
@@ -304,7 +387,7 @@ def do_purge(type, domain)
             do_cmd("rm -rf ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/")
             puts "web cache purged"
         when "windows"
-            do_cmd("Remove-Item $(Get-ChildItem ${env:PS_CFG_HOME}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/ | ?{ $_.PSIsContainer}) -recurse -force".gsub('/','\\'))
+            do_cmd("Remove-Item $(Get-ChildItem ${env:PS_CFG_HOME}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/ | ?{ $_.PSIsContainer}) -recurse -force -ErrorAction SilentlyContinue".gsub('/','\\'))
         end
     else
         puts "Invalid type, see psa help"
@@ -312,6 +395,10 @@ def do_purge(type, domain)
 end
 
 def do_flush(type, domain)
+    if "#{PS_MULTI_HOME}" != "false"
+        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
+    end
+
     case type
     when "app"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c cleanipc -d #{domain}")
@@ -339,9 +426,9 @@ end
 
 def do_pooladd(type, domain)
     if PS_POOL_MGMT == "on" then
-        # Change this function to match your pool member addtion process
+        # Change PS_HEALTH_TEXT and PS_HEALTH_FILE variables to match your system
         puts "Adding web domain to load balanced pool..."
-        do_cmd("echo 'true' > #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{PS_HEALTH_FILE}")
+        do_cmd("echo '#{PS_HEALTH_TEXT}' > #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{PS_HEALTH_FILE}")
         sleep(PS_HEALTH_TIME.to_i)
         puts "...domain added to pool."
         puts ""
@@ -352,13 +439,13 @@ end
 
 def do_poolrm(type,domain)
     if PS_POOL_MGMT == "on" then
-        # Change this function to match your pool member removal process
+        # Change PS_HEALTH_TEXT and PS_HEALTH_FILE variables to match your system
         puts "Removing domain from load balanced pool..."
         case "#{OS_CONST}"
         when "linux"
             do_cmd("rm -f #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{PS_HEALTH_FILE}")
         when "windows"
-            do_cmd("remove-item -force #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{PS_HEALTH_FILE}")
+            do_cmd("remove-item -force #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{PS_HEALTH_FILE} -ErrorAction SilentlyContinue")
         else
             puts " badOS - #{OS_CONST}"
         end

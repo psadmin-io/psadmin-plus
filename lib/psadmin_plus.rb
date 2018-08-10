@@ -145,7 +145,7 @@ def do_list
     puts "PS_POOL_MGMT:    #{PS_POOL_MGMT}"
     puts "PS_HEALTH_FILE:  #{PS_HEALTH_FILE}"
     puts "PS_HEALTH_TIME:  #{PS_HEALTH_TIME}"
-    puts "USE_WIN_SERVICES: #{USE_WIN_SERVICES}"
+    puts "PS_WIN_SERVICES: #{PS_WIN_SERVICES}"
     puts "" 
     puts "app:"
     find_apps.each do |a|
@@ -193,14 +193,14 @@ def do_start(type, domain)
 
     case type
     when "app"
-        case "#{USE_WIN_SERVICES}"
+        case "#{PS_WIN_SERVICES}"
         when "true"
             do_cmd("start-service #{app_service_name}")
         else
             do_cmd("#{PS_PSADMIN_PATH}/psadmin -c boot -d #{domain}")
         end
     when "prcs"
-        case "#{USE_WIN_SERVICES}"
+        case "#{PS_WIN_SERVICES}"
         when "true"
             do_cmd("start-service #{prcs_service_name}")
         else
@@ -211,7 +211,7 @@ def do_start(type, domain)
         when "linux"
             do_cmd("#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}")
         when "windows"
-            case "#{USE_WIN_SERVICES}"
+            case "#{PS_WIN_SERVICES}"
             when "true"
                 do_cmd("start-service #{web_service_name}")
             else
@@ -231,14 +231,14 @@ def do_stop(type, domain)
 
     case type
     when "app"
-        case "#{USE_WIN_SERVICES}"
+        case "#{PS_WIN_SERVICES}"
         when "true"
             do_cmd("stop-service #{app_service_name}")
         else
             do_cmd("#{PS_PSADMIN_PATH}/psadmin -c shutdown -d #{domain}")
         end
     when "prcs"
-        case "#{USE_WIN_SERVICES}"
+        case "#{PS_WIN_SERVICES}"
         when "true"
             do_cmd("stop-service #{prcs_service_name}")
         else
@@ -249,7 +249,7 @@ def do_stop(type, domain)
         when "linux"
             do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/stopPIA.sh")
         when "windows"
-            case "#{USE_WIN_SERVICES}"
+            case "#{PS_WIN_SERVICES}"
             when "true"
                 do_cmd("stop-service #{web_service_name}")
             else

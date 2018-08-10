@@ -50,10 +50,10 @@ def do_is_runtime_user_win
 end
 
 def env(var)
-   result = "#{OS_CONST}" == "linux" ? "${#{var}}" : "$env:#{var}"
+   result = "#{OS_CONST}" == "linux" ? "${#{var}}" : "%#{var}%"
 end
 
-def do_cmd(cmd, print = true)
+def do_cmd(cmd, print = true, powershell = true)
     case "#{OS_CONST}"
     when "linux"
         if do_is_runtime_user_nix
@@ -67,7 +67,12 @@ def do_cmd(cmd, print = true)
             end
         end
     when "windows"
-        out = `powershell -NoProfile -Command "#{cmd}"`
+        case powershell
+        when true
+            out = `powershell -NoProfile -Command "#{cmd}"`
+        else
+            out = `#{cmd}`
+        end
     else
         out = "Invalid OS"
     end
@@ -140,6 +145,7 @@ def do_list
     puts "PS_POOL_MGMT:    #{PS_POOL_MGMT}"
     puts "PS_HEALTH_FILE:  #{PS_HEALTH_FILE}"
     puts "PS_HEALTH_TIME:  #{PS_HEALTH_TIME}"
+    puts "PS_WIN_SERVICES: #{PS_WIN_SERVICES}"
     puts "" 
     puts "app:"
     find_apps.each do |a|
@@ -180,31 +186,75 @@ def do_status(type, domain)
 end
 
 def do_start(type, domain)
+
+    web_service_name    = ENV['WEB_SERVICE_NAME'] || "Psft*Pia*#{domain}*"
+    app_service_name    = ENV['APP_SERVICE_NAME'] || "Psft*App*#{domain}*"
+    prcs_service_name   = ENV['PRCS_SERVICE_NAME'] || "Psft*Prcs*#{domain}*"
+
     case type
     when "app"
-        do_cmd("#{PS_PSADMIN_PATH}/psadmin -c boot -d #{domain}")
+        case "#{PS_WIN_SERVICES}"
+        when "true"
+            do_cmd("start-service #{app_service_name}")
+        else
+            do_cmd("#{PS_PSADMIN_PATH}/psadmin -c boot -d #{domain}")
+        end
     when "prcs"
-        do_cmd("#{PS_PSADMIN_PATH}/psadmin -p start -d #{domain}")
+        case "#{PS_WIN_SERVICES}"
+        when "true"
+            do_cmd("start-service #{prcs_service_name}")
+        else
+            do_cmd("#{PS_PSADMIN_PATH}/psadmin -p start -d #{domain}")
+        end
     when "web"
-        do_cmd("#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}")
+        case "#{OS_CONST}"
+        when "linux"
+            do_cmd("#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}")
+        when "windows"
+            case "#{PS_WIN_SERVICES}"
+            when "true"
+                do_cmd("start-service #{web_service_name}")
+            else
+                do_cmd("#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}", true, false)
+            end
+        end
     else
         puts "Invalid type, see psa help"
     end
 end
 
 def do_stop(type, domain)
+    
+    web_service_name    = ENV['WEB_SERVICE_NAME'] || "Psft*Pia*#{domain}*"
+    app_service_name    = ENV['APP_SERVICE_NAME'] || "Psft*App*#{domain}*"
+    prcs_service_name   = ENV['PRCS_SERVICE_NAME'] || "Psft*Prcs*#{domain}*"
+
     case type
     when "app"
-        do_cmd("#{PS_PSADMIN_PATH}/psadmin -c shutdown -d #{domain}")
+        case "#{PS_WIN_SERVICES}"
+        when "true"
+            do_cmd("stop-service #{app_service_name}")
+        else
+            do_cmd("#{PS_PSADMIN_PATH}/psadmin -c shutdown -d #{domain}")
+        end
     when "prcs"
-        do_cmd("#{PS_PSADMIN_PATH}/psadmin -p stop -d #{domain}")
+        case "#{PS_WIN_SERVICES}"
+        when "true"
+            do_cmd("stop-service #{prcs_service_name}")
+        else
+            do_cmd("#{PS_PSADMIN_PATH}/psadmin -p stop -d #{domain}")
+        end
     when "web"
         case "#{OS_CONST}"
         when "linux"
             do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/stopPIA.sh")
         when "windows"
-            # do_cmd("#{PS_PSADMIN_PATH}/psadmin -w shutdown! -d #{domain}".gsub('/','\\'))
-            do_cmd("cmd /c ${env:PS_CFG_HOME}/webserv/#{domain}/bin/stopPIA.cmd".gsub('/','\\'))
+            case "#{PS_WIN_SERVICES}"
+            when "true"
+                do_cmd("stop-service #{web_service_name}")
+            else
+                do_cmd("#{PS_PSADMIN_PATH}/psadmin -w shutdown -d #{domain}", true, false)
+            end
         end
     else
         puts "Invalid type, see psa help"
@@ -218,7 +268,12 @@ def do_kill(type, domain)
     when "prcs"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -p kill -d #{domain}")
     when "web"
-        return # web kill n/a
+        case "#{OS_CONST}"
+        when "windows"
+            do_cmd("(gwmi win32_process | where {$_.Name -eq 'Java.exe'} | where {$_.CommandLine -match '#{domain}'}).ProcessId  -ErrorAction SilentlyContinue | % { stop-process $_ -force } -ErrorAction SilentlyContinue")
+        when "linux"
+            return #kill n/a
+        end
     else
         puts "Invalid type, see psa help"
     end

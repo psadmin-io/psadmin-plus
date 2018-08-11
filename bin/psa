@@ -19,7 +19,7 @@ if domains.include? "all" then all_domains = true end
 
 
 # setup environment
-PS_PSA_CONF = ENV['PS_HEALTH_TEXT'] || "#{ENV['HOME']}/.psa.conf"
+PS_PSA_CONF = ENV['PS_PSA_CONF'] || "#{ENV['HOME']}/.psa.conf"
 if File.exists?(PS_PSA_CONF) then
     File.readlines(PS_PSA_CONF).each do |line|
         if line.start_with? "#" then

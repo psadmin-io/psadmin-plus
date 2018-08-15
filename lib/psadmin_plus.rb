@@ -257,31 +257,56 @@ def do_start(type, domain)
     app_service_name    = ENV['APP_SERVICE_NAME'] || "Psft*App*#{domain}*"
     prcs_service_name   = ENV['PRCS_SERVICE_NAME'] || "Psft*Prcs*#{domain}*"
 
+    start_app_cmd = "#{PS_PSADMIN_PATH}/psadmin -c boot -d #{domain}"
+    start_app_service_cmd = "start-service #{app_service_name}"
+    start_prcs_cmd = "#{PS_PSADMIN_PATH}/psadmin -p start -d #{domain}"
+    start_prcs_service_cmd = "start-service #{prcs_service_name}"   
+    start_web_cmd = "#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}"
+    start_web_service_cmd = "start-service #{web_service_name}"
+
     case type
     when "app"
         case "#{PS_WIN_SERVICES}"
-        when "true"
-            do_cmd("start-service #{app_service_name}")
+        when "tux"
+        when "app"
+        when "all"
+            do_cmd(start_app_service_cmd)
         else
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -c boot -d #{domain}")
+            do_cmd(start_app_cmd)
+            case "#{PS_TRAIL_SERVICE}"
+            when "true"
+                do_cmd(start_app_service_cmd)
+            end
         end
     when "prcs"
         case "#{PS_WIN_SERVICES}"
-        when "true"
-            do_cmd("start-service #{prcs_service_name}")
+        when "tux"
+        when "prcs"
+        when "all"
+            do_cmd(start_prcs_service_cmd)
         else
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -p start -d #{domain}")
+            do_cmd(start_prcs_cmd)
+            case "#{PS_TRAIL_SERVICE}"
+            when "true"
+                do_cmd(start_prcs_service_cmd)
+            end
         end
     when "web"
         case "#{OS_CONST}"
         when "linux"
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}")
+            do_cmd(start_web_cmd)
         when "windows"
             case "#{PS_WIN_SERVICES}"
-            when "true"
-                do_cmd("start-service #{web_service_name}")
+            when "web"
+            when "all"
+                do_cmd(start_web_service_cmd)
             else
-                do_cmd("#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}", true, false)
+                # Run command outside of powershell with 'false' parameter
+                do_cmd(start_web_cmd, true, false)
+                case "#{PS_TRAIL_SERVICE}"
+                when "true"
+                    do_cmd(start_web_service_cmd)
+                end
             end
         end
         do_pooladd(type,domain)
@@ -299,32 +324,52 @@ def do_stop(type, domain)
     app_service_name    = ENV['APP_SERVICE_NAME'] || "Psft*App*#{domain}*"
     prcs_service_name   = ENV['PRCS_SERVICE_NAME'] || "Psft*Prcs*#{domain}*"
 
+    stop_app_cmd = "#{PS_PSADMIN_PATH}/psadmin -c shutdown -d #{domain}"
+    stop_app_service_cmd = "stop-service #{app_service_name}"
+    stop_prcs_cmd = "#{PS_PSADMIN_PATH}/psadmin -p stop -d #{domain}"
+    stop_prcs_service_cmd = "stop-service #{prcs_service_name}"   
+    stop_web_cmd_lnx = "${PS_CFG_HOME?}/webserv/#{domain}/bin/stopPIA.sh"
+    stop_web_cmd_win = "#{PS_PSADMIN_PATH}/psadmin -w shutdown -d #{domain}"
+    stop_web_service_cmd = "stop-service #{web_service_name}"
+
     case type
     when "app"
         case "#{PS_WIN_SERVICES}"
         when "true"
-            do_cmd("stop-service #{app_service_name}")
+            do_cmd(stop_app_service_cmd)
         else
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -c shutdown -d #{domain}")
+            do_cmd(stop_app_cmd)
+            case "#{PS_TRAIL_SERVICE}"
+            when "true"
+                do_cmd(stop_app_service_cmd)
+            end
         end
     when "prcs"
         case "#{PS_WIN_SERVICES}"
         when "true"
-            do_cmd("stop-service #{prcs_service_name}")
+            do_cmd(stop_prcs_service_cmd)
         else
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -p stop -d #{domain}")
+            do_cmd(stop_prcs_cmd)
+            case "#{PS_TRAIL_SERVICE}"
+            when "true"
+                do_cmd(stop_prcs_service_cmd)
+            end
         end
     when "web"
         do_poolrm(type,domain)
         case "#{OS_CONST}"
         when "linux"
-            do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/stopPIA.sh")
+            do_cmd(stop_web_cmd_lnx)
         when "windows"
             case "#{PS_WIN_SERVICES}"
             when "true"
-                do_cmd("stop-service #{web_service_name}")
+                do_cmd(stop_web_service_cmd)
             else
-                do_cmd("#{PS_PSADMIN_PATH}/psadmin -w shutdown -d #{domain}", true, false)
+                do_cmd(stop_web_cmd_win, true, false)
+                case "#{PS_TRAIL_SERVICE}"
+                when "true"
+                    do_cmd(stop_web_service_cmd)
+                end
             end
         end
     else

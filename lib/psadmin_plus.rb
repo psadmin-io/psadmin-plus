@@ -58,21 +58,21 @@ def do_cmd(cmd, print = true, powershell = true)
     when "linux"
         if do_is_runtime_user_nix
             case "#{PS_PSA_DEBUG}"
-            when true
+            when "true"
                 p "Command: #{cmd}"
             end
             out = `#{cmd}`
         else
             if "#{PS_PSA_SUDO}" == "on"
                 case "#{PS_PSA_DEBUG}"
-                when true
+                when "true"
                     p "Command: sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'"
                 end
                 out = `sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'`
             else
                 print "#{PS_RUNTIME_USER} "
                 case "#{PS_PSA_DEBUG}"
-                when true
+                when "true"
                     p "Command: su - #{PS_RUNTIME_USER} -c '#{cmd}'"
                 end
                 out = `su - #{PS_RUNTIME_USER} -c '#{cmd}'`
@@ -82,13 +82,13 @@ def do_cmd(cmd, print = true, powershell = true)
         case powershell
         when true
             case "#{PS_PSA_DEBUG}"
-            when true
+            when "true"
                 p "Command: powershell -NoProfile -Command \"#{cmd}\""
             end
             out = `powershell -NoProfile -Command "#{cmd}"`
         else
             case "#{PS_PSA_DEBUG}"
-            when true
+            when "true"
                 p "Command: #{cmd}"
             end
             out = `#{cmd}`

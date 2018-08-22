@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
     s.name        = 'psadmin_plus'
-    s.version     = '0.0.8'
+    s.version     = '0.0.0'
     s.date        = '2018-08-10'
     s.summary     = "psadmin plus"
     s.description = "A psadmin helper tool"

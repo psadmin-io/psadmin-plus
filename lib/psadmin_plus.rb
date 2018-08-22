@@ -58,21 +58,21 @@ def do_cmd(cmd, print = true, powershell = true)
     when "linux"
         if do_is_runtime_user_nix
             case "#{PS_PSA_DEBUG}"
-            when true
+            when "true"
                 p "Command: #{cmd}"
             end
             out = `#{cmd}`
         else
             if "#{PS_PSA_SUDO}" == "on"
                 case "#{PS_PSA_DEBUG}"
-                when true
+                when "true"
                     p "Command: sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'"
                 end
                 out = `sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'`
             else
                 print "#{PS_RUNTIME_USER} "
                 case "#{PS_PSA_DEBUG}"
-                when true
+                when "true"
                     p "Command: su - #{PS_RUNTIME_USER} -c '#{cmd}'"
                 end
                 out = `su - #{PS_RUNTIME_USER} -c '#{cmd}'`
@@ -82,13 +82,13 @@ def do_cmd(cmd, print = true, powershell = true)
         case powershell
         when true
             case "#{PS_PSA_DEBUG}"
-            when true
+            when "true"
                 p "Command: powershell -NoProfile -Command \"#{cmd}\""
             end
             out = `powershell -NoProfile -Command "#{cmd}"`
         else
             case "#{PS_PSA_DEBUG}"
-            when true
+            when "true"
                 p "Command: #{cmd}"
             end
             out = `#{cmd}`
@@ -267,9 +267,7 @@ def do_start(type, domain)
     case type
     when "app"
         case "#{PS_WIN_SERVICES}"
-        when "tux"
-        when "app"
-        when "all"
+        when "tux", "app", "all"
             do_cmd(start_app_service_cmd)
         else
             do_cmd(start_app_cmd)
@@ -280,9 +278,7 @@ def do_start(type, domain)
         end
     when "prcs"
         case "#{PS_WIN_SERVICES}"
-        when "tux"
-        when "prcs"
-        when "all"
+        when "tux", "prcs", "all"
             do_cmd(start_prcs_service_cmd)
         else
             do_cmd(start_prcs_cmd)
@@ -297,8 +293,7 @@ def do_start(type, domain)
             do_cmd(start_web_cmd)
         when "windows"
             case "#{PS_WIN_SERVICES}"
-            when "web"
-            when "all"
+            when "web", "all"
                 do_cmd(start_web_service_cmd)
             else
                 # Run command outside of powershell with 'false' parameter

@@ -134,6 +134,12 @@ def find_webs_nix
     webs.map! {|web| web.split("/")[-2]}
 end
 
+def find_sites_nix
+"$PS_CFG_HOME"/webserv/"$dom"/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs
+    webs = do_cmd("find #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs -maxdepth 0",false).split(/\n+/)
+    webs.map! {|site| site.split("/")[-2]}
+end
+
 def find_apps_win
     case "#{PS_MULTI_HOME}"
     when "false"
@@ -164,6 +170,12 @@ def find_webs_win
     webs.map! {|web| web.split("\\")[-2]}
 end
 
+def find_sites_win(domain)
+#TODO
+    sites = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+    sites.map! {|site| site.split("\\")[-2]}
+end
+
 def find_apps
     apps = "#{OS_CONST}" == "linux" ? find_apps_nix : find_apps_win
 end
@@ -174,6 +186,10 @@ end
 
 def find_webs
     webs = "#{OS_CONST}" == "linux" ? find_webs_nix : find_webs_win
+end
+
+def find_sites(domain)
+    sites = "#{OS_CONST}" == "linux" ? find_sites_nix : find_sites_win
 end
 
 def do_util
@@ -393,7 +409,7 @@ def do_kill(type, domain)
         when "windows"
             do_cmd("(gwmi win32_process | where {$_.Name -eq 'Java.exe'} | where {$_.CommandLine -match '#{domain}'}).ProcessId  -ErrorAction SilentlyContinue | % { stop-process $_ -force } -ErrorAction SilentlyContinue")
         when "linux"
-            return #kill n/a
+            puts 'Sorry, `web kill` is not supported on Linux.'
         end
     else
         puts "Invalid type, see psa help"
@@ -411,7 +427,7 @@ def do_configure(type, domain)
     when "prcs"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -p configure -d #{domain}")
     when "web"
-        return # web configure n/a
+        do_webprof_reload("#{domain}")
     else
         puts "Invalid type, see psa help"
     end
@@ -501,6 +517,55 @@ def do_poolrm(type,domain)
     else
         puts "Skipping pool managment. To enable, set PS_POOL_MGMT to 'on'."
     end
+end
+
+def do_webprof_reload(domain)
+
+	puts "Reloading Web Profiles"
+	# TODO
+	# - needs setting in setEnv? conf? ENV?
+	#   - $ADMINSERVER_HOSTNAME
+	#   - $ADMINSERVER_PORT
+	# - add debugging
+	case "#{OS_CONST}"
+	when "linux"	
+		# source setEnv
+		do_cmd(". #{env('PS_CFG_HOME')}/webserv/#{domain}/bin/setEnv.sh")
+		
+		find_sites.each do |s|
+			# set vars
+			prop_file = "#{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/#{s}}/configuration.properties"
+            url = "http://#{env('ADMINSERVER_HOSTNAME')}.mnapps.state.mn.us:#{env('ADMINSERVER_PORT')}/psp/#{s}/?cmd=login&"
+            # set reload in config.props 
+            do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=1/g' #{prop_file}")
+            # ping site
+            do_cmd("curl -s -o /dev/null '#{url}'")
+            # unset reload in config.props
+            do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=0/g' #{prop_file}")
+            # done
+            puts " - #{s}"
+		end
+	when "windows"
+		# source setEnv
+		do_cmd(". #{env('PS_CFG_HOME')}/webserv/#{domain}/bin/setEnv.bat")	
+		
+		find_sites.each do |s|
+			# set vars
+			prop_file = "#{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/#{s}}/configuration.properties"
+            url = "http://#{env('ADMINSERVER_HOSTNAME')}.mnapps.state.mn.us:#{env('ADMINSERVER_PORT')}/psp/#{s}/?cmd=login&"
+            # set reload in config.props 
+			do_cmd("((Get-Content -Path #{prop_file} -Raw) -replace 'ReloadWebProfileWithoutRestart=0','ReloadWebProfileWithoutRestart=1') | Set-Content -Path #{prop_file}")
+			# ping site
+            do_cmd("Invoke-RestMethod -Uri '#{url}' | Out-Null")
+            # unset reload in config.props            
+			do_cmd("((Get-Content -Path #{prop_file} -Raw) -replace 'ReloadWebProfileWithoutRestart=1','ReloadWebProfileWithoutRestart=0') | Set-Content -Path #{prop_file}")
+            # done
+            puts " - #{s}"
+		end
+	else
+		puts " badOS - #{OS_CONST}"
+	end
+	
 end
 
 def os

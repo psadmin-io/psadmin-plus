@@ -97,6 +97,7 @@ def do_cmd(cmd, print = true, powershell = true)
         out = "Invalid OS"
     end
     print ? (puts out) : result = out 
+    out
 end
 
 def do_cmd_banner(c,t,d)
@@ -267,7 +268,7 @@ def do_start(type, domain)
     start_app_service_cmd = "start-service #{app_service_name}"
     start_prcs_cmd = "#{PS_PSADMIN_PATH}/psadmin -p start -d #{domain}"
     start_prcs_service_cmd = "start-service #{prcs_service_name}"   
-    start_web_cmd = "#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}"
+    start_web_cmd = "${PS_CFG_HOME?}/webserv/#{domain}/bin/startPIA.sh"
     start_web_service_cmd = "start-service #{web_service_name}"
 
     case type
@@ -296,7 +297,12 @@ def do_start(type, domain)
     when "web"
         case "#{OS_CONST}"
         when "linux"
-            do_cmd(start_web_cmd)
+            if File.exist?("#{ENV['PS_CFG_HOME']}/webserv/#{domain}/servers/PIA/tmp/PIA.lok")
+                puts "Domain #{domain} already started"
+            else
+                do_cmd(start_web_cmd)
+                sleep 5.0
+            end
         when "windows"
             case "#{PS_WIN_SERVICES}"
             when "web", "all"

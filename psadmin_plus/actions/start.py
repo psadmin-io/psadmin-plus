@@ -10,7 +10,8 @@ class Start(Action):
         # TODO - parallel switch - self._psadmin(["-c","parallelboot","-d",domain])
 
     def _prcs(self,domain):
-        self._psadmin(["-p","status","-d",domain])
+        self._psadmin(["-p","start","-d",domain])
 
     def _web(self,domain):
-        self._psadmin(["-w","status","-d",domain])
+        self._psadmin(["-w","start","-d",domain])
+# ${PS_CFG_HOME?}/webserv/#{domain}/bin/startPIA.sh

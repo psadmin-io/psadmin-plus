@@ -13,19 +13,17 @@ from psadmin_plus.actions import list
 #from psadmin_plus.actions import pooladd
 from psadmin_plus.actions import purge
 from psadmin_plus.actions import restart
-from psadmin_plus.actions import start
+from psadmin_plus.actions.start import Start
 from psadmin_plus.actions import status
 from psadmin_plus.actions import stop
 from psadmin_plus.actions import summary
 #from psadmin_plus.actions import util
-from psadmin_plus.interface.conf import Conf
 
 # hack to get around python3 issues - See Click and Python3 Surrogate Handling
 os.environ["LC_ALL"] = "en_US.utf-8"
 os.environ["LANG"] = "en_US.utf-8"
 
-def process(conf):
-  conf = conf
+def process():
   climain()
 
 @click.group()
@@ -92,7 +90,7 @@ def _restart(type,domain):
 @click.argument('type')
 @click.argument('domain')
 def _start(type,domain):
-  getattr(start,type)()
+  Start().process(type, domain)
 
 @click.command(name='status',help='status of the domain')
 @click.argument('type')

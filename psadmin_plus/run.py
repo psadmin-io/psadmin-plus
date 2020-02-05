@@ -1,7 +1,8 @@
-from psadmin_plus.interfaces import cli
+from psadmin_plus.interface import cli, conf
 
 def run():
-  cli.process()
+  conf = Conf()
+  cli.process(conf)
 
 if __name__ == '__main__':
   run()

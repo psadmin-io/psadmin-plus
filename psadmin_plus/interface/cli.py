@@ -24,8 +24,8 @@ os.environ["LC_ALL"] = "en_US.utf-8"
 os.environ["LANG"] = "en_US.utf-8"
 
 @click.group()
-def process():
-  pass
+def process(conf):
+  conf = conf
 
 #@click.command(name='admin',help='launch psadmin')
 #def _admin():

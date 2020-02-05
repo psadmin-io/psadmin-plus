@@ -24,12 +24,12 @@ from psadmin_plus.interface.conf import Conf
 os.environ["LC_ALL"] = "en_US.utf-8"
 os.environ["LANG"] = "en_US.utf-8"
 
-def start(conf):
+def process(conf):
   conf = conf
-  process()
+  climain()
 
 @click.group()
-def process():
+def climain():
   pass
 
 #@click.command(name='admin',help='launch psadmin')
@@ -117,17 +117,17 @@ def _summary():
 # add commands
 
 #process.add_command(_admin)
-process.add_command(_bounce)
-process.add_command(_configure)
-process.add_command(_flush)
-process.add_command(_kill)
-process.add_command(_list)
-#process.add_command(_pooladd)
-#process.add_command(_poolrm)
-process.add_command(_purge)
-process.add_command(_restart)
-process.add_command(_start)
-process.add_command(_status)
-process.add_command(_stop)
-process.add_command(_summary)
-#process.add_command(_util)
+climain.add_command(_bounce)
+climain.add_command(_configure)
+climain.add_command(_flush)
+climain.add_command(_kill)
+climain.add_command(_list)
+#climain.add_command(_pooladd)
+#climain.add_command(_poolrm)
+climain.add_command(_purge)
+climain.add_command(_restart)
+climain.add_command(_start)
+climain.add_command(_status)
+climain.add_command(_stop)
+climain.add_command(_summary)
+#climain.add_command(_util)

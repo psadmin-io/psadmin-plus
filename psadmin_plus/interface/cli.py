@@ -18,14 +18,19 @@ from psadmin_plus.actions import status
 from psadmin_plus.actions import stop
 from psadmin_plus.actions import summary
 #from psadmin_plus.actions import util
+from psadmin_plus.interface.conf import Conf
 
 # hack to get around python3 issues - See Click and Python3 Surrogate Handling
 os.environ["LC_ALL"] = "en_US.utf-8"
 os.environ["LANG"] = "en_US.utf-8"
 
-@click.group()
-def process(conf):
+def start(conf):
   conf = conf
+  process()
+
+@click.group()
+def process():
+  pass
 
 #@click.command(name='admin',help='launch psadmin')
 #def _admin():

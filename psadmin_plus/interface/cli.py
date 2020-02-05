@@ -14,7 +14,7 @@ from psadmin_plus.actions import list
 from psadmin_plus.actions import purge
 from psadmin_plus.actions import restart
 from psadmin_plus.actions.start import Start
-from psadmin_plus.actions import status
+from psadmin_plus.actions.status import Status
 from psadmin_plus.actions import stop
 from psadmin_plus.actions import summary
 #from psadmin_plus.actions import util
@@ -96,7 +96,7 @@ def _start(type,domain):
 @click.argument('type')
 @click.argument('domain')
 def _status(type,domain):
-  getattr(actions_status,type)()
+  Status().process(type, domain)
 
 @click.command(name='stop',help='stop the domain')
 @click.argument('type')

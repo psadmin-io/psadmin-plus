@@ -2,7 +2,7 @@ class Conf:
 
     test = 'test'
 
-    def __init__():
+    def __init__(self):
         self.os = 'linux' # TODO
         #PS_RUNTIME_USER     = ENV['PS_RUNTIME_USER'] || "psadm2"
         #PS_POOL_MGMT        = ENV['PS_POOL_MGMT'] || "on"

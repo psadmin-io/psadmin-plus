@@ -1,3 +1,4 @@
-*.gem
 .*
 !.gitignore
+psadmin_plus/__pycache__/
+psadmin_plus/*/__pycache__/

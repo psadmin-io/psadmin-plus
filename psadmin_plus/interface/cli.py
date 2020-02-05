@@ -32,59 +32,59 @@ def climain():
 
 #@click.command(name='admin',help='launch psadmin')
 #def _admin():
-#  getattr(actions_admin)()
+#  Admin().process(type, domain)
 
 @click.command(name='bounce',help='stop, flush, purge, configure and start')
 @click.argument('type')
 @click.argument('domain')
 def _bounce(type,domain):
-  getattr(actions_bounce,type)()
+  Bounce().process(type, domain)
 
 @click.command(name='configure',help='configure the domain')
 @click.argument('type')
 @click.argument('domain')
 def _configure(type,domain):
-  getattr(actions_configure,type)()
+  Configure().process(type, domain)
 
 @click.command(name='flush',help='clear domain IPC')
 @click.argument('type')
 @click.argument('domain')
 def _flush(type,domain):
-  getattr(actions_flush,type)()
+  Flush().process(type, domain)
 
 @click.command(name='kill',help='force stop the domain')
 @click.argument('type')
 @click.argument('domain')
 def _kill(type,domain):
-  getattr(actions_kill,type)()
+  Kill().process(type, domain)
 
 @click.command(name='list',help='list domains')
 def _list():
-  getattr(actions_list)()
+  List().process(type, domain)
 
 #@click.command(name='pooladd',help='add domain to load balanced pool')
 #@click.argument('type')
 #@click.argument('domain')
 #def _pooladd(type,domain):
-#  getattr(actions_pooladd,type)()
+#  Pooladd().process(type, domain)
 
 #@click.command(name='poolrm',help='remove domain from load balanced pool')
 #@click.argument('type')
 #@click.argument('domain')
 #def _poolrm(type,domain):
-#  getattr(actions_poolrm,type)()
+#  Poolrm().process(type, domain)
 
 @click.command(name='purge',help='clear domain cache')
 @click.argument('type')
 @click.argument('domain')
 def _purge(type,domain):
-  getattr(actions_purge,type)()
+  Purge().process(type, domain)
 
 @click.command(name='restart',help='stop and start the domain')
 @click.argument('type')
 @click.argument('domain')
 def _restart(type,domain):
-  getattr(actions_restart,type)()
+  Restart().process(type, domain)
 
 @click.command(name='start',help='start the domain')
 @click.argument('type')
@@ -102,15 +102,15 @@ def _status(type,domain):
 @click.argument('type')
 @click.argument('domain')
 def _stop(type,domain):
-  getattr(actions_stop,type)()
+  Stop().process(type, domain)
 
 @click.command(name='summary',help='PS_CFG_HOME summary')
 def _summary():
-  getattr(actions_summary)()
+  Summary().process(type, domain)
 
 #@click.command(name='util',help='TODO')
 #def _util():
-#  getattr(actions_util)()
+#  Util().process(type, domain)
 
 # add commands
 

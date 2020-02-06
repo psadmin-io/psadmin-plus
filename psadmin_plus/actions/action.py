@@ -35,5 +35,8 @@ class Action:
     def _psadmin(self, args):
         subprocess.call(["psadmin"] + args)
 
-    def _oscmd(self, path, cmd):
-        subprocess.call(cmd, cwd=path)
+    def _oscmd(self, path, args):
+        subprocess.call(args, cwd=path)
+    
+    def _oscmd2(self, args):
+        subprocess.call(args)

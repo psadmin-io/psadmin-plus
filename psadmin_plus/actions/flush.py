@@ -12,4 +12,4 @@ class Flush(Action):
         self._psadmin(["-p","cleanipc","-d",domain])
 
     def _web(self,domain):
-        print('web does not have a flush command - TODO')
+        print('web does not have a flush command.')

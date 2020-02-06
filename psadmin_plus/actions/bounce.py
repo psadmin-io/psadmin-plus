@@ -30,5 +30,4 @@ class Bounce(Action):
         if (self.conf.PS_PIA_PSA == "true"):
             self._psadmin(["-w","start","-d",domain])
         else:
-            print('TODO - run non-psadmin cmd')
-            self._oscmd("${PS_CFG_HOME?}/webserv/#{domain}/bin","startPIA.sh")
+            self._oscmd(self.conf.PS_CFG_HOME + "/webserv/" + domain + "/bin","startPIA.sh")

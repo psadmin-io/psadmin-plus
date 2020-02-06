@@ -7,8 +7,10 @@ class Restart(Action):
 
     def _app(self,domain):
         self._psadmin(["-c","shutdown","-d",domain])
-        self._psadmin(["-c","boot","-d",domain])
-        # TODO - parallel switch - self._psadmin(["-c","parallelboot","-d",domain])
+        if self.conf.PS_PARALLEL_BOOT == "true":
+            self._psadmin(["-c","parallelboot","-d",domain])
+        else:
+            self._psadmin(["-c","boot","-d",domain])
 
     def _prcs(self,domain):
         self._psadmin(["-p","stop","-d",domain])
@@ -16,5 +18,7 @@ class Restart(Action):
 
     def _web(self,domain):
         self._psadmin(["-w","shutdown","-d",domain])
-        self._psadmin(["-w","start","-d",domain])
-        # TODO ${PS_CFG_HOME?}/webserv/#{domain}/bin/startPIA.sh
+        if self.conf.PS_PIA_PSA == "true":
+            self._psadmin(["-w","start","-d",domain])
+        else:
+            self._oscmd(self.conf.PS_CFG_HOME + "/webserv/" + domain + "/bin","startPIA.sh")

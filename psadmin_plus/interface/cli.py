@@ -93,8 +93,8 @@ def _start(type,domain):
   Start().process(type, domain)
 
 @click.command(name='status',help='status of the domain')
-@click.argument('type',default='all',required=False)
-@click.argument('domain',default='all',required=False)
+@click.argument('type',required=False)
+@click.argument('domain',required=False)
 def _status(type,domain):
   Status().process(type, domain)
 

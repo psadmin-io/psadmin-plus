@@ -10,8 +10,11 @@ class Bounce(Action):
         self._psadmin(["-c","purge","-d",domain])
         self._psadmin(["-c","cleanipc","-d",domain])
         self._psadmin(["-c","configure","-d",domain])
-        self._psadmin(["-c","boot","-d",domain])
-        # TODO - parallel switch - self._psadmin(["-c","parallelboot","-d",domain])
+        
+        if (self.conf.PS_PARALLEL_BOOT == "true"):
+            self._psadmin(["-c","parallelboot","-d",domain])
+        else:
+            self._psadmin(["-c","boot","-d",domain])
 
     def _prcs(self,domain):
         self._psadmin(["-p","stop","-d",domain])
@@ -23,5 +26,9 @@ class Bounce(Action):
     def _web(self,domain):
         self._psadmin(["-w","shutdown","-d",domain])
         print('web purge coming soon! - TODO')
-        self._psadmin(["-w","start","-d",domain])
-        # TODO ${PS_CFG_HOME?}/webserv/#{domain}/bin/startPIA.sh
+        
+        if (self.conf.PS_PIA_PSA == "true"):
+            self._psadmin(["-w","start","-d",domain])
+        else:
+            print('TODO - run non-psadmin cmd')
+            self._oscmd("${PS_CFG_HOME?}/webserv/#{domain}/bin","startPIA.sh")

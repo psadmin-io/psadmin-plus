@@ -2,7 +2,7 @@ import subprocess
 
 from psadmin_plus.interface.conf import Conf
 
-# TODO - we are assuming linux, run as psadm2, psadmin in patch, etc 
+# we are assuming linux, run as psadm2, psadmin in patch, etc 
 
 class Action:
 
@@ -16,7 +16,6 @@ class Action:
             self._prcs(domain)
         elif type == 'web':
             self._web(domain)
-        # TODO
         # elif type == 'all':
         #    self._app(domain)
         #    self._prcs(domain)
@@ -35,3 +34,6 @@ class Action:
 
     def _psadmin(self, args):
         subprocess.call(["psadmin"] + args)
+
+    def _oscmd(self, path, cmd):
+        subprocess.call(cmd, cwd=path)

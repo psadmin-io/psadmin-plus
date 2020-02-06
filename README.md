@@ -1,5 +1,5 @@
 #TODO - update for python
-
+TODO - python version only supports linux, running as psadm2, single PS_FG_HOME, etc
 # psadmin-plus 
 
 `psadmin_plus` is a RubyGem helper tool for `psadmin`. By passing parameters via command line, you can run `psadmin` actions like start, stop, status, etc. All domains should be contained in a single `PS_CFG_HOME`. If you use multiple `PS_CFG_HOME` homes, see the Environment Variables section on how to enable support.

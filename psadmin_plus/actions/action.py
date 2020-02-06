@@ -16,10 +16,10 @@ class Action:
             self._prcs(domain)
         elif type == 'web':
             self._web(domain)
-        # elif type == 'all':
-        #    self._app(domain)
-        #    self._prcs(domain)
-        #    self._web(domain)
+        elif type == 'all':
+            self._app(domain)
+            self._prcs(domain)
+            self._web(domain)
         else:
             raise ValueError('Invalid domain type provided to Action')
 

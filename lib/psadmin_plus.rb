@@ -521,12 +521,11 @@ end
 
 def do_webprof_reload(domain)
 
+
 	puts "Reloading Web Profiles"
-	# TODO
-	# - needs setting in setEnv? conf? ENV?
-	#   - $ADMINSERVER_HOSTNAME
-	#   - $ADMINSERVER_PORT
-	# - add debugging
+	# TODO - add debugging
+	# TODO - add windows
+	# TODO - lookup vars in props file instead of config?
 	case "#{OS_CONST}"
 	when "linux"	
 		# source setEnv
@@ -535,33 +534,33 @@ def do_webprof_reload(domain)
 		find_sites.each do |s|
 			# set vars
 			prop_file = "#{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/#{s}}/configuration.properties"
-            url = "http://#{env('ADMINSERVER_HOSTNAME')}.mnapps.state.mn.us:#{env('ADMINSERVER_PORT')}/psp/#{s}/?cmd=login&"
-            # set reload in config.props 
-            do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=1/g' #{prop_file}")
-            # ping site
-            do_cmd("curl -s -o /dev/null '#{url}'")
-            # unset reload in config.props
-            do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=0/g' #{prop_file}")
-            # done
-            puts " - #{s}"
+           		 url = "http://#{PS_PIA_HOST}.#{PS_PIA_DOMAIN}:#{PS_PIA_PORT}/psp/#{s}/?cmd=login&"
+            		# set reload in config.props 
+            		do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=1/g' #{prop_file}")
+            		# ping site
+            		do_cmd("curl -s -o /dev/null '#{url}'")
+            		# unset reload in config.props
+            		do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=0/g' #{prop_file}")
+            		# done
+            		puts " - #{s}"
 		end
 	when "windows"
-		# source setEnv
-		do_cmd(". #{env('PS_CFG_HOME')}/webserv/#{domain}/bin/setEnv.bat")	
+		puts "Windows support coming soon."		
+		#do_cmd(". #{env('PS_CFG_HOME')}/webserv/#{domain}/bin/setEnv.sh")
 		
-		find_sites.each do |s|
-			# set vars
-			prop_file = "#{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/#{s}}/configuration.properties"
-            url = "http://#{env('ADMINSERVER_HOSTNAME')}.mnapps.state.mn.us:#{env('ADMINSERVER_PORT')}/psp/#{s}/?cmd=login&"
-            # set reload in config.props 
-			do_cmd("((Get-Content -Path #{prop_file} -Raw) -replace 'ReloadWebProfileWithoutRestart=0','ReloadWebProfileWithoutRestart=1') | Set-Content -Path #{prop_file}")
-			# ping site
-            do_cmd("Invoke-RestMethod -Uri '#{url}' | Out-Null")
-            # unset reload in config.props            
-			do_cmd("((Get-Content -Path #{prop_file} -Raw) -replace 'ReloadWebProfileWithoutRestart=1','ReloadWebProfileWithoutRestart=0') | Set-Content -Path #{prop_file}")
-            # done
-            puts " - #{s}"
-		end
+		#find_sites.each do |s|
+		#	# set vars
+		#	prop_file = "#{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/#{s}}/configuration.properties"
+           	#	 url = "http://#{PS_PIA_HOST}.#{PS_PIA_DOMAIN}:#{PS_PIA_PORT}/psp/#{s}/?cmd=login&"
+            	#	# set reload in config.props 
+            	#	do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=1/g' #{prop_file}")
+            	#	# ping site
+            	#	do_cmd("curl -s -o /dev/null '#{url}'")
+            	#	# unset reload in config.props
+            	#	do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=0/g' #{prop_file}")
+            	#	# done
+            	#	puts " - #{s}"
+		#end
 	else
 		puts " badOS - #{OS_CONST}"
 	end

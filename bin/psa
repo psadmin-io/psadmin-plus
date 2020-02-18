@@ -45,7 +45,10 @@ PS_TRAIL_SERVICE    = ENV['PS_TRAIL_SERVICE'] || "false"
 PS_MULTI_HOME       = ENV['PS_MULTI_HOME'] || "false"
 PS_PARALLEL_BOOT    = ENV['PS_PARALLEL_BOOT'] || "false"
 PS_PSA_DEBUG        = ENV['PS_PSA_DEBUG']  || "false"
-
+PS_PIA_HOST         = ENV['PS_PIA_HOST']  
+PS_PIA_PORT         = ENV['PS_PIA_PORT'] || "8000" 
+PS_PIA_DOMAIN       = ENV['PS_PIA_DOMAIN'] 
+	
 # validation
 # check runtime user
 if "#{OS_CONST}" == "linux" then

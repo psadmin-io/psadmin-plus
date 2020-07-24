@@ -20,6 +20,12 @@
 
 * [Use ruby included with Puppet on Windows](https://gist.github.com/iversond/e56e608cf8fa65f7160416f4c434da57#file-enableRubyGems-ps1)
 * Use ruby included with Puppet on Linux
+    * Install ruby for user `psadm2` using the `--user-install` command.
+        ```
+        $ /opt/puppetlabs/puppet/bin/gem install psadmin_plus --user-install
+        $ echo 'export PATH=$PATH:~/.gem/ruby/2.4.0/bin' >> ~/.bashrc
+        $ . ~/.bashrc
+        ```
 
 ## Environment Variables
 

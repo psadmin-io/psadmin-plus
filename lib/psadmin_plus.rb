@@ -268,7 +268,8 @@ def do_start(type, domain)
     start_app_service_cmd = "start-service #{app_service_name}"
     start_prcs_cmd = "#{PS_PSADMIN_PATH}/psadmin -p start -d #{domain}"
     start_prcs_service_cmd = "start-service #{prcs_service_name}"   
-    start_web_cmd = "${PS_CFG_HOME?}/webserv/#{domain}/bin/startPIA.sh"
+    case ""
+    start_web_cmd = "${PS_CFG_HOME?}/webserv/#{domain}/bin/startPIA"
     start_web_service_cmd = "start-service #{web_service_name}"
 
     case type
@@ -300,7 +301,7 @@ def do_start(type, domain)
             if File.exist?("#{ENV['PS_CFG_HOME']}/webserv/#{domain}/servers/PIA/tmp/PIA.lok")
                 puts "Domain #{domain} already started"
             else
-                do_cmd(start_web_cmd)
+                do_cmd(start_web_cmd + ".sh")
                 sleep 5.0
             end
         when "windows"
@@ -309,7 +310,7 @@ def do_start(type, domain)
                 do_cmd(start_web_service_cmd)
             else
                 # Run command outside of powershell with 'false' parameter
-                do_cmd(start_web_cmd, true, false)
+                do_cmd(start_web_cmd + ".cmd", true, false)
                 case "#{PS_TRAIL_SERVICE}"
                 when "true"
                     do_cmd(start_web_service_cmd)

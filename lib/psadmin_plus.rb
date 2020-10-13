@@ -268,13 +268,15 @@ def do_start(type, domain)
     start_app_service_cmd = "start-service #{app_service_name}"
     start_prcs_cmd = "#{PS_PSADMIN_PATH}/psadmin -p start -d #{domain}"
     start_prcs_service_cmd = "start-service #{prcs_service_name}"   
-    start_web_cmd = "${PS_CFG_HOME?}/webserv/#{domain}/bin/startPIA.sh"
+    start_web_cmd_lnx = "${PS_CFG_HOME?}/webserv/#{domain}/bin/startPIA.sh"
+    start_web_cmd_win = "#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}"
     start_web_service_cmd = "start-service #{web_service_name}"
 
+    # 10-08-2020 Dale Haman: Changing the logic used on PS_WIN_SERVICES, it will never be tux, app or all.
     case type
     when "app"
         case "#{PS_WIN_SERVICES}"
-        when "tux", "app", "all"
+        when "true", "tux", "app", "all"
             do_cmd(start_app_service_cmd)
         else
             do_cmd(start_app_cmd)
@@ -285,7 +287,7 @@ def do_start(type, domain)
         end
     when "prcs"
         case "#{PS_WIN_SERVICES}"
-        when "tux", "prcs", "all"
+        when "true", "tux", "prcs", "all"
             do_cmd(start_prcs_service_cmd)
         else
             do_cmd(start_prcs_cmd)
@@ -300,18 +302,18 @@ def do_start(type, domain)
             if File.exist?("#{ENV['PS_CFG_HOME']}/webserv/#{domain}/servers/PIA/tmp/PIA.lok")
                 puts "Domain #{domain} already started"
             else
-                do_cmd(start_web_cmd)
+                do_cmd(start_web_cmd_lnx)
                 sleep 5.0
             end
         when "windows"
             case "#{PS_WIN_SERVICES}"
-            when "web", "all"
+            when "true", "web", "all"
                 do_cmd(start_web_service_cmd)
             else
                 # Run command outside of powershell with 'false' parameter
-                do_cmd(start_web_cmd, true, false)
+                do_cmd(start_web_cmd_win, true, false)
                 case "#{PS_TRAIL_SERVICE}"
-                when "true"
+                when "true", "web", "all"
                     do_cmd(start_web_service_cmd)
                 end
             end

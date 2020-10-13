@@ -276,7 +276,7 @@ def do_start(type, domain)
     case type
     when "app"
         case "#{PS_WIN_SERVICES}"
-        when "true"
+        when "true", "tux", "app", "all"
             do_cmd(start_app_service_cmd)
         else
             do_cmd(start_app_cmd)
@@ -287,7 +287,7 @@ def do_start(type, domain)
         end
     when "prcs"
         case "#{PS_WIN_SERVICES}"
-        when "true"
+        when "true", "tux", "app", "all"
             do_cmd(start_prcs_service_cmd)
         else
             do_cmd(start_prcs_cmd)
@@ -307,13 +307,13 @@ def do_start(type, domain)
             end
         when "windows"
             case "#{PS_WIN_SERVICES}"
-            when "true"
+            when "true", "web", "all"
                 do_cmd(start_web_service_cmd)
             else
                 # Run command outside of powershell with 'false' parameter
                 do_cmd(start_web_cmd_win, true, false)
                 case "#{PS_TRAIL_SERVICE}"
-                when "true"
+                when "true", "web", "all"
                     do_cmd(start_web_service_cmd)
                 end
             end

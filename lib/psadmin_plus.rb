@@ -287,7 +287,7 @@ def do_start(type, domain)
         end
     when "prcs"
         case "#{PS_WIN_SERVICES}"
-        when "true", "tux", "app", "all"
+        when "true", "tux", "prcs", "all"
             do_cmd(start_prcs_service_cmd)
         else
             do_cmd(start_prcs_cmd)

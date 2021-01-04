@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'psadmin_plus'
-#require_relative '../lib/psadmin_plus.rb'
 
 # options
 opts_c   = ARGV.shift || "help"
@@ -99,6 +98,9 @@ commands.each do |c|
                 when "configure"
                     do_cmd_banner(c,t,d)
                     do_configure(t,d)
+                when "reconfigure"
+                    do_cmd_banner(c,t,d)
+                    do_reconfigure(t,d)
                 when "purge"
                     do_cmd_banner(c,t,d)
                     do_purge(t,d)

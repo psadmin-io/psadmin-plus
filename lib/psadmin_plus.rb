@@ -18,6 +18,7 @@ def do_help
     puts "    stop           poolrm, if enabled, stop the domain"
     puts "    restart        stop and start the domain"
     puts "    purge          clear domain cache"
+    puts "    reconfigure    stop, configure, and start the domain"
     puts "    bounce         stop, flush, purge, configure and start the domain"
     puts "    kill           force stop the domain"
     puts "    configure      configure the domain"
@@ -467,6 +468,12 @@ end
 
 def do_restart(type, domain)
     do_stop(type, domain)
+    do_start(type, domain)
+end
+
+def do_reconfigure(type, domain)
+    do_stop(type, domain)
+    do_configure(type, domain)
     do_start(type, domain)
 end
 

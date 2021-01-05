@@ -4,13 +4,14 @@
 
 ## Example Usage
 
-| Task                  | Command              |
-| --------------------- | -------------------- |
-| help                  | `psa help`           |
-| list domains          | `psa list`           |
-| start all domains     | `psa start`          |
-| start all web domains | `psa start web`      |
-| start hdev web domain | `psa start web hdev` |
+| Task                          | Command                |
+| ----------------------------- | ---------------------- |
+| help                          | `psa help`             |
+| list domains                  | `psa list`             |
+| start all domains             | `psa start`            |
+| start all web domains         | `psa start web`        |
+| start hdev web domain         | `psa start web hdev`   |
+| clear hrdev cache and restart | `psa bounce app hrdev` |
 
 ## Setup
 

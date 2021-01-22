@@ -1,6 +1,11 @@
 #!/usr/bin/env ruby
 
-require 'psadmin_plus'
+begin
+  require 'psadmin_plus'
+rescue LoadError
+  # running directly, not through gem install
+  require_relative '../lib/psadmin_plus.rb'
+end
 
 # options
 opts_c   = ARGV.shift || "help"

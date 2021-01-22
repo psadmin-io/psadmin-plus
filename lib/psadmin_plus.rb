@@ -461,7 +461,7 @@ def do_kill(type, domain)
         when "windows"
             do_cmd("(gwmi win32_process | where {$_.Name -eq 'Java.exe'} | where {$_.CommandLine -match '#{domain}'}).ProcessId  -ErrorAction SilentlyContinue | % { stop-process $_ -force } -ErrorAction SilentlyContinue")
         when "linux"
-            return #kill n/a
+            do_cmd("kill $(ps aux|grep java|grep ${PS_CFG_HOME?}/webserv/#{domain}/piaconfig|awk ' {print $2}')")
         end
     else
         puts "Invalid type, see psa help"
@@ -475,7 +475,7 @@ def do_configure(type, domain)
     when "prcs"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -p configure -d #{domain}")
     when "web"
-        return # web configure n/a
+        do_webprof_reload("#{domain}")
     else
         puts "Invalid type, see psa help"
     end

@@ -54,6 +54,25 @@ psa help
     * Use Unix path separators on all platforms. E.g, `PS_MULTI_HOME=/opt/oracle/psft/cfg` or `PS_MULTI_HOME=c:/psft/cfg`
     * Option is any valid path or `false`
     * If not set, default is `false`
+* `PS_MULTI_DELIMIT`
+    * Set this value to specifiy how `PS_CFG_HOME` directories are structured. 
+    * By default, `/` is used for when a pattern of `<PS_MULTI_HOMES>/<DOMAIN_NAME>` is used.
+        * Example
+        ```
+        # c:/ps_cfg_home/hrdev
+        # c:/ps_cfg_home/hrtst
+        PS_MULTI_HOMES="c:/ps_cfg_home"
+        PS_MULTI_DELIMIT="/"
+        ```
+    * If a base directory pattern is not used, a custom delimiter can be used between `<PS_MULTI_HOMES>` and `<DOMAIN_NAME>`.
+        * Example
+        ```
+        # c:/ps_cfg_home-hrdev
+        # c:/ps_cfg_home-hrtst
+        PS_MULTI_HOMES="c:/ps_cfg_home"
+        PS_MULTI_DELIMIT="-"
+        ```
+    * If not set, default is `/`
 * `PS_WIN_SERVICES`
     * Use Windows Services to start/stop web, app and prcs domains.
     * Options are: `all`, `tux`, `web`, `app`, `prcs`

@@ -147,6 +147,11 @@ def find_webs_nix
     webs.map! {|web| web.split("/")[-2]}
 end
 
+def find_sites_nix(domain)
+    webs = do_cmd("find ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/* -maxdepth 0",false).split(/\n+/)
+    webs.map! {|site| site.split("/")[-1]}
+end
+
 def find_apps_win
     case "#{PS_MULTI_HOME}"
     when "false"
@@ -177,6 +182,12 @@ def find_webs_win
     webs.map! {|web| web.split("\\")[-2]}
 end
 
+def find_sites_win(domain)
+    #TODO
+    #sites = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+    #sites.map! {|site| site.split("\\")[-2]}
+end
+
 def find_apps
     apps = "#{OS_CONST}" == "linux" ? find_apps_nix : find_apps_win
 end
@@ -187,6 +198,10 @@ end
 
 def find_webs
     webs = "#{OS_CONST}" == "linux" ? find_webs_nix : find_webs_win
+end
+
+def find_sites(domain)
+    sites = "#{OS_CONST}" == "linux" ? find_sites_nix(domain) : find_sites_win(domain)
 end
 
 def do_util
@@ -528,7 +543,53 @@ def do_hookstop(command, type, domain)
     end
 end
 
+def do_webprof_reload(domain)
+    puts "Reloading Web Profiles"
 
+    case "#{OS_CONST}"
+    when "linux"	
+        "#{PS_PSA_DEBUG}" == "true" ? show_debug = true : show_debug = false
+
+        find_sites(domain).each do |s|
+            # set vars
+            url = "${ADMINSERVER_PROTOCOL?}://${ADMINSERVER_HOSTNAME?}:${ADMINSERVER_PORT?}/psp/#{s}/?cmd=login&"
+            src_env = ". ${PS_CFG_HOME?}/webserv/#{domain}/bin/setEnv.sh"
+            prop_file = "${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/#{s}/configuration.properties"
+
+            # set reload in config.props 
+            do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=1/g' #{prop_file}",show_debug)
+
+            # source setEnv and ping site
+            show_debug ? do_cmd("#{src_env} ; curl -s #{url}",show_debug) : do_cmd("#{src_env} ; curl -s -o /dev/null #{url}",show_debug)
+
+            # unset reload in config.props
+            do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=0/g' #{prop_file}",show_debug)
+
+            # done
+            puts " - #{s}"
+        end
+    when "windows"
+        puts "Windows support coming soon."		
+        #do_cmd(". #{env('PS_CFG_HOME')}/webserv/#{domain}/bin/setEnv.sh")
+
+        #find_sites.each do |s|
+	#    # set vars
+        #    prop_file = "#{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/#{s}}/configuration.properties"
+        #    url = "http://#{PS_PIA_HOST}.#{PS_PIA_DOMAIN}:#{PS_PIA_PORT}/psp/#{s}/?cmd=login&"
+        #    # set reload in config.props 
+        #    do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=1/g' #{prop_file}")
+        #    # ping site
+        #    do_cmd("curl -s -o /dev/null '#{url}'")
+        #    # unset reload in config.props
+        #    do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=0/g' #{prop_file}")
+        #    # done
+        #    puts " - #{s}"
+        #end
+    else
+        puts " badOS - #{OS_CONST}"
+    end
+    puts ""
+end
 
 def os
     @os ||= (

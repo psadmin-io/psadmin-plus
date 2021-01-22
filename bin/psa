@@ -36,7 +36,11 @@ end
 # constants
 OS_CONST            = os
 PS_RUNTIME_USER     = ENV['PS_RUNTIME_USER'] || "psadm2"
-PS_POOL_MGMT        = ENV['PS_POOL_MGMT'] || "on"
+PS_HOOK_INTERP      = ENV['PS_HOOK_INTERP'] || "ruby"
+PS_HOOK_PRE         = ENV['PS_HOOK_PRE'] || "false"
+PS_HOOK_POST        = ENV['PS_HOOK_POST'] || "false"
+PS_HOOK_START       = ENV['PS_HOOK_START'] || "false"
+PS_HOOK_STOP        = ENV['PS_HOOK_STOP'] || "false"
 PS_HEALTH_FILE      = ENV['PS_HEALTH_FILE'] || "health.html"
 PS_HEALTH_TIME      = ENV['PS_HEALTH_TIME'] || "60"
 PS_HEALTH_TEXT      = ENV['PS_HEALTH_TEXT'] || "true"
@@ -85,6 +89,8 @@ commands.each do |c|
                 end
             end
             domains.each do |d|
+                do_hookpre(c,t,d)
+
                 case "#{c}"
                 when "status"
                     do_cmd_banner(c,t,d)
@@ -116,19 +122,11 @@ commands.each do |c|
                 when "bounce"
                     do_cmd_banner(c,t,d)
                     do_bounce(t,d)
-                when "pooladd"
-                    if t == "web"
-                        do_cmd_banner(c,t,d)
-		        do_pooladd(t,d)
-		    end
-                when "poolrm"
-                    if t == "web"
-                        do_cmd_banner(c,t,d)
-                        do_poolrm(t,d)
-                    end
                 else
                     puts "Not a valid command. See psa help"
                 end
+
+                do_hookpost(c,t,d)
             end
         end
     end

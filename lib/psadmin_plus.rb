@@ -14,8 +14,8 @@ def do_help
     #puts "    admin          launch psadmin"
     puts "    summary        PS_CFG_HOME summary, no type or domain needed"
     puts "    status         status of the domain"
-    puts "    start          pooladd, if enabled, then start the domain"
-    puts "    stop           poolrm, if enabled, stop the domain"
+    puts "    start          hookstart, if enabled, then start the domain"
+    puts "    stop           hookstop, if enabled, stop the domain"
     puts "    restart        stop and start the domain"
     puts "    purge          clear domain cache"
     puts "    reconfigure    stop, configure, and start the domain"
@@ -23,8 +23,6 @@ def do_help
     puts "    kill           force stop the domain"
     puts "    configure      configure the domain"
     puts "    flush          clear domain IPC"
-    puts "    poolrm         remove domain from load balanced pool  "
-    puts "    pooladd        add domain to load balanced pool  "
     puts "      "
     puts "Types:"
     puts "      "
@@ -196,12 +194,16 @@ def do_list
     puts ""
     puts "PS_RUNTIME_USER:   #{PS_RUNTIME_USER}"
     puts "PS_PSA_SUDO:       #{PS_PSA_SUDO}"
-    puts "PS_POOL_MGMT:      #{PS_POOL_MGMT}"
+    puts "PS_HOOK_INTERP:    #{PS_HOOK_INTERP}"
+    puts "PS_HOOK_PRE:       #{PS_HOOK_PRE}"
+    puts "PS_HOOK_POST:      #{PS_HOOK_POST}"
+    puts "PS_HOOK_START:     #{PS_HOOK_START}"
+    puts "PS_HOOK_STOP:      #{PS_HOOK_STOP}"
     puts "PS_HEALTH_FILE:    #{PS_HEALTH_FILE}"
     puts "PS_HEALTH_TIME:    #{PS_HEALTH_TIME}"
     puts "PS_HEALTH_TEXT:    #{PS_HEALTH_TEXT}"
     puts "PS_WIN_SERVICES:   #{PS_WIN_SERVICES}"
-    puts "PS_MULT_HOME:      #{PS_MULTI_HOME}"
+    puts "PS_MULTI_HOME:     #{PS_MULTI_HOME}"
     puts "PS_PARALLEL_BOOT:  #{PS_PARALLEL_BOOT}"
     puts "PS_PSA_DEBUG:      #{PS_PSA_DEBUG}"
     puts "" 
@@ -286,6 +288,7 @@ def do_start(type, domain)
                 do_cmd(start_app_service_cmd)
             end
         end
+        do_hookstart("start",type,domain)
     when "prcs"
         case "#{PS_WIN_SERVICES}"
         when "true", "tux", "prcs", "all"
@@ -297,6 +300,7 @@ def do_start(type, domain)
                 do_cmd(start_prcs_service_cmd)
             end
         end
+        do_hookstart("start",type,domain)
     when "web"
         case "#{OS_CONST}"
         when "linux"
@@ -319,7 +323,7 @@ def do_start(type, domain)
                 end
             end
         end
-        do_pooladd(type,domain)
+        do_hookstart("start",type,domain)
     else
         puts "Invalid type, see psa help"
     end
@@ -344,6 +348,7 @@ def do_stop(type, domain)
 
     case type
     when "app"
+        do_hookstop("stop",type,domain)
         case "#{PS_WIN_SERVICES}"
         when "true"
             do_cmd(stop_app_service_cmd)
@@ -355,6 +360,7 @@ def do_stop(type, domain)
             end
         end
     when "prcs"
+        do_hookstop("stop",type,domain)
         case "#{PS_WIN_SERVICES}"
         when "true"
             do_cmd(stop_prcs_service_cmd)
@@ -366,7 +372,7 @@ def do_stop(type, domain)
             end
         end
     when "web"
-        do_poolrm(type,domain)
+        do_hookstop("stop",type,domain)
         case "#{OS_CONST}"
         when "linux"
             do_cmd(stop_web_cmd_lnx)
@@ -485,38 +491,47 @@ def do_bounce(type, domain)
     do_start(type, domain)
 end
 
-def do_pooladd(type, domain)
-    if PS_POOL_MGMT == "on" then
-        # Change PS_HEALTH_TEXT and PS_HEALTH_FILE variables to match your system
-        puts "Adding web domain to load balanced pool..."
-        do_cmd("echo '#{PS_HEALTH_TEXT}' > #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{PS_HEALTH_FILE}")
-        sleep(PS_HEALTH_TIME.to_i)
-        puts "...domain added to pool."
-        puts ""
-    else
-        puts "Skipping pool managment. To enable, set PS_POOL_MGMT to 'on'."
+def do_hook(command, type, domain, script) 
+    ENV['PSA_CMD'] = command
+    ENV['PSA_TYPE'] = type
+    ENV['PSA_DOMAIN'] = domain
+    out = `#{PS_HOOK_INTERP} #{script}`
+    puts out
+end 
+
+def do_hookpre(command, type, domain) 
+    if "#{PS_HOOK_PRE}" != "false"    
+        "#{PS_PSA_DEBUG}" == "true" ? (puts "Executing domain pre command hook...\n\n") : nil
+        do_hook(command, type, domain, PS_HOOK_PRE)
+        "#{PS_PSA_DEBUG}" == "true" ? (puts "\n...hook done") : nil
+        end
+end 
+
+def do_hookpost(command, type, domain) 
+    if "#{PS_HOOK_POST}" != "false"    
+        "#{PS_PSA_DEBUG}" == "true" ? (puts "Executing domain post command hook...\n\n") : nil
+        do_hook(command, type, domain, PS_HOOK_POST)
+        "#{PS_PSA_DEBUG}" == "true" ? (puts "\n...hook done") : nil
     end
 end 
 
-def do_poolrm(type,domain)
-    if PS_POOL_MGMT == "on" then
-        # Change PS_HEALTH_TEXT and PS_HEALTH_FILE variables to match your system
-        puts "Removing domain from load balanced pool..."
-        case "#{OS_CONST}"
-        when "linux"
-            do_cmd("rm -f #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{PS_HEALTH_FILE}")
-        when "windows"
-            do_cmd("remove-item -force #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/#{PS_HEALTH_FILE} -ErrorAction SilentlyContinue")
-        else
-            puts " badOS - #{OS_CONST}"
-        end
-        sleep(PS_HEALTH_TIME.to_i)
-        puts "...domain removed from pool."
-        puts ""
-    else
-        puts "Skipping pool managment. To enable, set PS_POOL_MGMT to 'on'."
+def do_hookstart(command, type, domain) 
+    if "#{PS_HOOK_START}" != "false"    
+        "#{PS_PSA_DEBUG}" == "true" ? (puts "Executing domain start hook...\n\n") : nil
+        do_hook(command, type, domain, PS_HOOK_START)
+        "#{PS_PSA_DEBUG}" == "true" ? (puts "\n...hook done") : nil
+    end
+end 
+
+def do_hookstop(command, type, domain) 
+    if "#{PS_HOOK_STOP}" != "false"    
+        "#{PS_PSA_DEBUG}" == "true" ? (puts "Executing domain stop hook...\n\n") : nil
+        do_hook(command, type, domain, PS_HOOK_STOP)
+        "#{PS_PSA_DEBUG}" == "true" ? (puts "\n...hook done") : nil
     end
 end
+
+
 
 def os
     @os ||= (

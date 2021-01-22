@@ -49,6 +49,7 @@ PS_PSADMIN_PATH     = "#{OS_CONST}" == "linux" ? "#{env('PS_HOME')}/bin" : "cmd 
 PS_WIN_SERVICES     = ENV['PS_WIN_SERVICES'] || "false"
 PS_TRAIL_SERVICE    = ENV['PS_TRAIL_SERVICE'] || "false"
 PS_MULTI_HOME       = ENV['PS_MULTI_HOME'] || "false"
+PS_MULTI_DELMIT     = ENV['PS_MULTI_DELMIT'] || "/"
 PS_PARALLEL_BOOT    = ENV['PS_PARALLEL_BOOT'] || "false"
 PS_PSA_DEBUG        = ENV['PS_PSA_DEBUG']  || "false"
 
@@ -82,6 +83,8 @@ commands.each do |c|
                 case "#{t}"
                 when "app"
                     domains = find_apps
+                when "pubsub"
+                    domains = find_apps # TODO - find only apps with PUBSUB enabled?
                 when "prcs"
                     domains = find_prcss
                 when "web"

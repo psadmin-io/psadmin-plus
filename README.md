@@ -45,22 +45,6 @@ psa help
 * `PS_RUNTIME_USER`
     * User that owns `PS_CFG_HOME` and should run `psadmin`
     * If not set, default is `psadm2`
-* `PS_POOL_MGMT`
-    * Enables load balanced pool management
-    * Options are: `on`, `off`
-    * If not set, default is `off`
-* `PS_HEALTH_FILE`
-    * Name of file used by Load Balancer health check
-    * Options are: any valid filename
-    * If not set, default is `heath.html`
-* `PS_HEALTH_TEXT`
-    * The content of the health check file
-    * Options are: any valid string. Use single quotes if the string has spaces or special characters.
-    * If not set, default is `true`
-* `PS_HEALTH_TIME`
-    * Health check timeout duration in seconds
-    * Options are: any integer
-    * If not set, default is 60 seconds
 * `PS_PSA_SUDO`
     * Runs commands as `PS_RUNTIME_USER` via `sudo`, if set to `on`
     * Options are: `on`, `off`
@@ -88,7 +72,23 @@ psa help
     * The location of a configuration file for `psadmin-plus`
     * Options are: a valid path to the config file
     * If not set, default is `~/.psa.conf`
-
+* `PS_HOOK_INTERP`
+    * Sets the interpreter to be used for hook scripts.
+    * Options are: `ruby`, `bash`, `Powershell -File`, etc
+    * If not set, default is `ruby`
+* `PS_HOOK_PRE`|`PS_HOOK_POST`
+    * Sets the hook script to run pre or post command.
+    * Examples are found in `lib/hooks`.
+    * If not set, default is `false` and no hook is triggered.
+* `PS_HOOK_STOP`
+    * Sets the hook script to run before the `stop` command.
+    * Examples are found in `lib/hooks`.
+    * If not set, default is `false` and no hook is triggered.
+* `PS_HOOK_START`
+    * Sets the hook script to run after the `start` command.
+    * Examples are found in `lib/hooks`.
+    * If not set, default is `false` and no hook is triggered.
+    
 ## Configuration File
 
 You can store the `psadmin-plus` configuration in a file instead of environment variables. 

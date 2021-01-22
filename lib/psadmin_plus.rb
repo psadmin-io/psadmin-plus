@@ -106,6 +106,17 @@ def do_cmd_banner(c,t,d)
     puts ""
 end
 
+def do_set_cfg_home(d)
+    if "#{PS_MULTI_HOME}" != "false"
+        if PS_MULTI_PREFIX > 0
+            h = d.slice(0..PS_MULTI_PREFIX)
+        else
+            h = d
+        end
+        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}#{PS_MULTI_DELMIT}#{h}"
+    end
+end
+
 def find_apps_nix
     case "#{PS_MULTI_HOME}"
     when "false"
@@ -237,11 +248,7 @@ def do_summary
     #do_status("web","all")
 end
 
-def do_status(type, domain)
-    if "#{PS_MULTI_HOME}" != "false"
-        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
-    end
-
+def do_status(type, domain)   
     case type
     when "app"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c sstatus -d #{domain}")
@@ -258,10 +265,6 @@ def do_status(type, domain)
 end
 
 def do_start(type, domain)
-    if "#{PS_MULTI_HOME}" != "false"
-        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
-    end
-
     web_service_name    = ENV['WEB_SERVICE_NAME'] || "Psft*Pia*#{domain}*"
     app_service_name    = ENV['APP_SERVICE_NAME'] || "Psft*App*#{domain}*"
     prcs_service_name   = ENV['PRCS_SERVICE_NAME'] || "Psft*Prcs*#{domain}*"
@@ -279,7 +282,6 @@ def do_start(type, domain)
     start_web_cmd_win = "#{PS_PSADMIN_PATH}/psadmin -w start -d #{domain}"
     start_web_service_cmd = "start-service #{web_service_name}"
 
-    # 10-08-2020 Dale Haman: Changing the logic used on PS_WIN_SERVICES, it will never be tux, app or all.
     case type
     when "app"
         case "#{PS_WIN_SERVICES}"
@@ -333,11 +335,7 @@ def do_start(type, domain)
     end
 end
 
-def do_stop(type, domain)
-    if "#{PS_MULTI_HOME}" != "false"
-        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
-    end
-    
+def do_stop(type, domain)    
     web_service_name    = ENV['WEB_SERVICE_NAME'] || "Psft*Pia*#{domain}*"
     app_service_name    = ENV['APP_SERVICE_NAME'] || "Psft*App*#{domain}*"
     prcs_service_name   = ENV['PRCS_SERVICE_NAME'] || "Psft*Prcs*#{domain}*"
@@ -398,10 +396,6 @@ def do_stop(type, domain)
 end
 
 def do_kill(type, domain)
-    if "#{PS_MULTI_HOME}" != "false"
-        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
-    end
-
     case type
     when "app"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c shutdown! -d #{domain}")
@@ -420,10 +414,6 @@ def do_kill(type, domain)
 end
 
 def do_configure(type, domain)
-    if "#{PS_MULTI_HOME}" != "false"
-        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
-    end
-
     case type
     when "app"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c configure -d #{domain}")
@@ -437,10 +427,6 @@ def do_configure(type, domain)
 end
 
 def do_purge(type, domain)
-    if "#{PS_MULTI_HOME}" != "false"
-        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
-    end
-
     case type
     when "app"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c purge -d #{domain}")
@@ -460,10 +446,6 @@ def do_purge(type, domain)
 end
 
 def do_flush(type, domain)
-    if "#{PS_MULTI_HOME}" != "false"
-        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}/#{domain}"
-    end
-
     case type
     when "app"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c cleanipc -d #{domain}")

@@ -93,7 +93,7 @@ commands.each do |c|
             end
             domains.each do |d|
                 do_hookpre(c,t,d)
-
+                do_set_cfg_home(d)
                 case "#{c}"
                 when "status"
                     do_cmd_banner(c,t,d)

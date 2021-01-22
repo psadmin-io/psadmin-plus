@@ -95,16 +95,12 @@ psa help
     * Sets the interpreter to be used for hook scripts.
     * Options are: `ruby`, `bash`, `Powershell -File`, etc
     * If not set, default is `ruby`
-* `PS_HOOK_PRE`|`PS_HOOK_POST`
+* `PS_HOOK_PRE` and `PS_HOOK_POST`
     * Sets the hook script to run pre or post command.
     * Examples are found in `lib/hooks`.
     * If not set, default is `false` and no hook is triggered.
-* `PS_HOOK_STOP`
-    * Sets the hook script to run before the `stop` command.
-    * Examples are found in `lib/hooks`.
-    * If not set, default is `false` and no hook is triggered.
-* `PS_HOOK_START`
-    * Sets the hook script to run after the `start` command.
+* `PS_HOOK_STOP` and `PS_HOOK_START`
+    * Sets the hook script to run before the `stop` command and after the `start` command.
     * Examples are found in `lib/hooks`.
     * If not set, default is `false` and no hook is triggered.
     

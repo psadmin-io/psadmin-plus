@@ -1,6 +1,6 @@
 # psadmin-plus 
 
-`psadmin_plus` is a RubyGem helper tool for `psadmin`. By passing parameters via command line, you can run `psadmin` actions like start, stop, status, etc. All domains should be contained in a single `PS_CFG_HOME`. If you use multiple `PS_CFG_HOME` homes, see the [Multi Config Homes](#multi-config-homes) section on how to enable support.
+`psadmin_plus` is a RubyGem helper tool for `psadmin`. By passing parameters via command line, you can run `psadmin` actions like start, stop, status, etc. All domains should be contained in a single `PS_CFG_HOME`. If you use multiple `PS_CFG_HOME` homes, see the [Multi Config Homes](###multi-config-homes) section on how to enable support.
 
 ## Example Usage
 
@@ -104,23 +104,17 @@ Or set `PS_PSA_CONF` if you want to use a configuration file in a custom locatio
 
 `export PS_PSA_CONF=/u01/app/psa.conf`
 
-## PeopleTools Support
-
-This has been tested using:
-
-* 8.58
-* 8.57
-
-## Hooks
-
-* TODO
-
 ## Features
 
+### General
 * Supports Service Accounts or User Accounts. `psa` can run commands as a service account so domains are started under the correct account.
 * Supports Windows Services as well as `psadmin` for domains on Windows
+
+### Multi Config Homes
+
 * Support for multiple PS_CFG_HOME folders.
-
-## Limitations
-
 * Multiple `PS_CFG_HOME`s: The multi-config home support is limited to a single domain under `PS_CFG_HOME`, and the domain name must match the folder for `PS_CFG_HOME`. If your domain is named `HRDEV`, then the `PS_CFG_HOME` must end with that domain name. (E.g, `c:\psft\cfg\HRDEV`)
+
+### Hooks
+
+* TODO

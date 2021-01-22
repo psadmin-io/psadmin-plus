@@ -101,7 +101,8 @@ end
 
 def do_cmd_banner(c,t,d)
     puts ""
-    puts "### #{c} - #{t} - #{d} ###"
+    puts "===[ #{c} . #{t} . #{d} ]==="
+    puts ""
 end
 
 def find_apps_nix

@@ -136,6 +136,10 @@ Or set `PS_PSA_CONF` if you want to use a configuration file in a custom locatio
 # Features
 
 ## General
+* Execute against `web`, `app`, `pubsub`, and `prcs` domain types.
+* Types and Domains can be given in a comma separated list.
+    * Example: `psa status app,prcs hrdev,hrtst`
+* Web Profiles can be reloaded without a domain restart by using `psa configure web`
 * Supports Service Accounts or User Accounts. `psa` can run commands as a service account so domains are started under the correct account.
 * Supports Windows Services as well as `psadmin` for domains on Windows
 

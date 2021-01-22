@@ -20,8 +20,6 @@ domains = opts_d.split(',')
 if types.include? "all" then types = ['app','prcs','web'] end
 if domains.include? "all" then all_domains = true end
 
-
-
 # setup environment
 PS_PSA_CONF = ENV['PS_PSA_CONF'] || "#{ENV['HOME']}/.psa.conf"
 if File.exists?(PS_PSA_CONF) then
@@ -30,7 +28,7 @@ if File.exists?(PS_PSA_CONF) then
             next 
         else
             key, value = line.split "="
-            ENV[key] = value.strip
+            value.nil? ? next : ENV[key] = value.strip
         end
     end
 end

@@ -54,6 +54,13 @@ psa help
     * Use Unix path separators on all platforms. E.g, `PS_MULTI_HOME=/opt/oracle/psft/cfg` or `PS_MULTI_HOME=c:/psft/cfg`
     * Option is any valid path or `false`
     * If not set, default is `false`
+* `PS_MULTI_PREFIX`
+    * Set this value to enable multiple domains in a multi home setup
+    * If no standard prefix is used, only a single domain under PS_CFG_HOME is supported and the domain name must match the folder for PS_CFG_HOME. 
+        * Example: If your domain is named HRDEV, then the PS_CFG_HOME must end with that domain name. (E.g, c:\psft\cfg\HRDEV)
+    * If prefix length is set, multiple domains under PS_CFG_HOME are supported but the domains must be prefixed with the same name as the folder for PS_CFG_HOME. 
+        * Example: If your domains are named HRDEV01 and HRDEV02, and `PS_MULTI_PREFIX` is set to 5, then the PS_CFG_HOME must end with the first 5 characters of domain name. (E.g, c:\psft\cfg\HRDEV)
+    * If not set, default is `0` and will assume single domain
 * `PS_MULTI_DELIMIT`
     * Set this value to specifiy how `PS_CFG_HOME` directories are structured. 
     * By default, `/` is used for when a pattern of `<PS_MULTI_HOMES>/<DOMAIN_NAME>` is used.

@@ -30,6 +30,8 @@
 
 ## Environment Variables
 
+# TODO - add hooks
+
 * `PS_RUNTIME_USER`
     * User that owns `PS_CFG_HOME` and should run `psadmin`
     * If not set, default is `psadm2`
@@ -106,8 +108,12 @@ Or set `PS_PSA_CONF` if you want to use a configuration file in a custom locatio
 
 This has been tested using:
 
-* 8.55
-* 8.56
+* 8.58
+* 8.57
+
+## Hooks
+
+* TODO
 
 ## Features
 

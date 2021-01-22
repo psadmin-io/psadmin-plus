@@ -2,7 +2,7 @@
 
 `psadmin_plus` is a RubyGem helper tool for `psadmin`. By passing parameters via command line, you can run `psadmin` actions like start, stop, status, etc. All domains should be contained in a single `PS_CFG_HOME`. If you use multiple `PS_CFG_HOME` homes, see the [Multi Config Homes](#multi-config-homes) section on how to enable support.
 
-## Example Usage
+# Example Usage
 
 | Task                          | Command                |
 | ----------------------------- | ---------------------- |
@@ -13,8 +13,9 @@
 | start hdev web domain         | `psa start web hdev`   |
 | clear hrdev cache and restart | `psa bounce app hrdev` |
 
-## Setup
+# Setup
 
+## gem install
 `gem install psadmin_plus`
 
 *Hey, I don't have ruby installed!*
@@ -27,10 +28,9 @@
         $ echo 'export PATH=$PATH:~/.gem/ruby/2.4.0/bin' >> ~/.bashrc
         $ . ~/.bashrc
         ```
+     * `SSL_
 
 ## Environment Variables
-
-# TODO - add hooks
 
 * `PS_RUNTIME_USER`
     * User that owns `PS_CFG_HOME` and should run `psadmin`
@@ -104,17 +104,24 @@ Or set `PS_PSA_CONF` if you want to use a configuration file in a custom locatio
 
 `export PS_PSA_CONF=/u01/app/psa.conf`
 
-## Features
+# Features
 
-### General
+## General
 * Supports Service Accounts or User Accounts. `psa` can run commands as a service account so domains are started under the correct account.
 * Supports Windows Services as well as `psadmin` for domains on Windows
 
-### Multi Config Homes
+## Multi Config Homes
 
 * Support for multiple PS_CFG_HOME folders.
 * Multiple `PS_CFG_HOME`s: The multi-config home support is limited to a single domain under `PS_CFG_HOME`, and the domain name must match the folder for `PS_CFG_HOME`. If your domain is named `HRDEV`, then the `PS_CFG_HOME` must end with that domain name. (E.g, `c:\psft\cfg\HRDEV`)
 
-### Hooks
+## Hooks
 
 * TODO
+
+# Troubleshooting
+
+* SSL issues in Ruby scripts.
+    * Review CA Certificates and `SSL_CERT_FILE` variable
+        * Linux example: `export SSL_CERT_FILE=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem`
+        * Windows example: [CA Setup](https://gist.github.com/iversond/e56e608cf8fa65f7160416f4c434da57#file-enableRubyGems-ps1)

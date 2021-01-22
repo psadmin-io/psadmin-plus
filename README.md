@@ -126,8 +126,7 @@ Or set `PS_PSA_CONF` if you want to use a configuration file in a custom locatio
 * Multiple `PS_CFG_HOME`s: The multi-config home support is limited to a single domain under `PS_CFG_HOME`, and the domain name must match the folder for `PS_CFG_HOME`. If your domain is named `HRDEV`, then the `PS_CFG_HOME` must end with that domain name. (E.g, `c:\psft\cfg\HRDEV`)
 
 ## Hooks
-
-* TODO
+Hooks give you the ability to execute custom scripts in the `psadmin-plus` execution stream. Hook behavior is controlled by `PS_HOOKS_*` variables, [see Environment Variables](#environment-variables). You can select what type of scripts will be executed - examples: ruby, bash, powershell. You have the option to run scripts pre or post commands, as well as when using `start` or `stop`. 
 
 # Troubleshooting
 

@@ -79,57 +79,70 @@ commands.each do |c|
         do_summary
     else
         types.each do |t|
-            if all_domains then
-                case "#{t}"
-                when "app"
-                    domains = find_apps
-                when "pubsub"
-                    domains = find_apps #  TODO - find only apps with PUBSUB enabled?
-                when "prcs"
-                    domains = find_prcss
-                when "web"
-                    domains = find_webs
-                end
+            # find valid domains for this type
+            case "#{t}"
+            when "app"
+                valid_domains = find_apps
+            when "pubsub"
+                valid_domains = find_apps # TODO - find only apps with PUBSUB enabled?
+            when "prcs"
+                valid_domains = find_prcss
+            when "web"
+                valid_domains = find_webs
             end
-            domains.each do |d|
-                do_hookpre(c,t,d)
-                do_set_cfg_home(d)
-                case "#{c}"
-                when "status"
-                    do_cmd_banner(c,t,d)
-                    do_status(t,d)
-                when "start"
-                    do_cmd_banner(c,t,d)
-                    do_start(t,d)
-                when "stop"
-                    do_cmd_banner(c,t,d)
-                    do_stop(t,d)
-                when "kill"
-                    do_cmd_banner(c,t,d)
-                    do_kill(t,d)
-                when "configure"
-                    do_cmd_banner(c,t,d)
-                    do_configure(t,d)
-                when "reconfigure"
-                    do_cmd_banner(c,t,d)
-                    do_reconfigure(t,d)
-                when "purge"
-                    do_cmd_banner(c,t,d)
-                    do_purge(t,d)
-                when "flush"
-                    do_cmd_banner(c,t,d)
-                    do_flush(t,d)
-                when "restart"
-                    do_cmd_banner(c,t,d)
-                    do_restart(t,d)
-                when "bounce"
-                    do_cmd_banner(c,t,d)
-                    do_bounce(t,d)
-                else
-                    puts "Not a valid command. See psa help"
-                end
 
-                do_hookpost(c,t,d)
+            if all_domains then
+                domains = valid_domains
+            end
+
+            domains.each do |d|
+                # validate domain for current type
+                if valid_domains.include? d
+                    do_hookpre(c,t,d)
+                    do_set_cfg_home(d)
+
+                    case "#{c}"
+                    when "status"
+                        do_cmd_banner(c,t,d)
+                        do_status(t,d)
+                    when "start"
+                        do_cmd_banner(c,t,d)
+                        do_start(t,d)
+                    when "stop"
+                        do_cmd_banner(c,t,d)
+                        do_stop(t,d)
+                    when "kill"
+                        do_cmd_banner(c,t,d)
+                        do_kill(t,d)
+                    when "configure"
+                        do_cmd_banner(c,t,d)
+                        do_configure(t,d)
+                    when "reconfigure"
+                        do_cmd_banner(c,t,d)
+                        do_reconfigure(t,d)
+                    when "purge"
+                        do_cmd_banner(c,t,d)
+                        do_purge(t,d)
+                    when "flush"
+                        do_cmd_banner(c,t,d)
+                        do_flush(t,d)
+                    when "restart"
+                        do_cmd_banner(c,t,d)
+                        do_restart(t,d)
+                    when "bounce"
+                        do_cmd_banner(c,t,d)
+                        do_bounce(t,d)
+                    else
+                        puts "Not a valid command. See psa help"
+                    end  
+
+                    do_hookpost(c,t,d)
+                else
+                    if ENV['PS_PSA_DEBUG'] == "true" 
+                        do_cmd_banner(c,t,d)
+                        puts "No valid domain found for this type."
+                    end
+                end
             end
         end
     end

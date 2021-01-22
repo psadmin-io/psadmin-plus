@@ -113,7 +113,7 @@ def do_set_cfg_home(d)
         else
             h = d
         end
-        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}#{PS_MULTI_DELMIT}#{h}"
+        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}#{h}"
     end
 end
 
@@ -122,7 +122,7 @@ def find_apps_nix
     when "false"
         apps = do_cmd("find #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx 2>/dev/null",false).split(/\n+/)
     else
-        apps = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELMIT}*/appserv/*/psappsrv.ubx 2>/dev/null",false).split(/\n+/)
+        apps = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx 2>/dev/null",false).split(/\n+/)
     end
     apps.map! {|app| app.split("/")[-2]}
 end
@@ -132,7 +132,7 @@ def find_prcss_nix
     when "false"
         prcss = do_cmd("find #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",false).split(/\n+/)
     else 
-        prcss = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELMIT}*/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",false).split(/\n+/)
+        prcss = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",false).split(/\n+/)
     end
     prcss.map! {|prcs| prcs.split("/")[-2]}
 end
@@ -142,7 +142,7 @@ def find_webs_nix
     when "false"
         webs = do_cmd("find #{env('PS_CFG_HOME')}/webserv/*/piaconfig -maxdepth 0",false).split(/\n+/)
     else
-        webs = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELMIT}*/webserv/*/piaconfig -maxdepth 0",false).split(/\n+/)
+        webs = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig -maxdepth 0",false).split(/\n+/)
     end
     webs.map! {|web| web.split("/")[-2]}
 end
@@ -157,7 +157,7 @@ def find_apps_win
     when "false"
         apps = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
     else
-        apps = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELMIT}*/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+        apps = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
     end
     apps.map! {|app| app.split('\\')[-2]}
 end
@@ -167,7 +167,7 @@ def find_prcss_win
     when "false"
         prcss = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
     else
-        prcss = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELMIT}*/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+        prcss = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
     end
     prcss.map! {|prcs| prcs.split("\\")[-2]}
 end
@@ -177,7 +177,7 @@ def find_webs_win
     when "false"
         webs = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
     else
-        webs = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELMIT}*/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+        webs = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
     end
     webs.map! {|web| web.split("\\")[-2]}
 end
@@ -219,7 +219,7 @@ def do_list
     if PS_MULTI_HOME == "false" 
         print "ps-cfg-home:       " ; do_cmd('echo ' + env('PS_CFG_HOME'))
     else
-        puts "ps-cfg-home base:  #{PS_MULTI_HOME}#{PS_MULTI_DELMIT}*"  
+        puts "ps-cfg-home base:  #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*"  
     end
     puts ""
     puts "PS_RUNTIME_USER:   #{PS_RUNTIME_USER}"
@@ -274,7 +274,7 @@ end
 
 def do_summary
     if "#{PS_MULTI_HOME}" != "false"
-        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}#{PS_MULTI_DELMIT}#{domain}"
+        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}#{domain}"
     end
 
     do_psadmin_check ? nil : exit

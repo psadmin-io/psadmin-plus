@@ -28,7 +28,17 @@
         $ echo 'export PATH=$PATH:~/.gem/ruby/2.4.0/bin' >> ~/.bashrc
         $ . ~/.bashrc
         ```
-     * `SSL_
+
+## git clone
+If you don't want to use the `gem` install, do a `git` clone install of this repo instead. Then add `psadmin-plus/bin` to your `PATH`. This can be helpful when doing development or adjusting `psadmin-plus` to better fit your needs.
+
+```
+cd ~
+git clone https://github.com/psadmin-io/psadmin-plus.git
+cd psadmin-plus
+export PATH:$PATH:~/psadmin-plus/bin
+psa help
+```
 
 ## Environment Variables
 

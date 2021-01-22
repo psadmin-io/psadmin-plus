@@ -84,7 +84,7 @@ commands.each do |c|
                 when "app"
                     domains = find_apps
                 when "pubsub"
-                    domains = find_apps # TODO - find only apps with PUBSUB enabled?
+                    domains = find_apps #  TODO - find only apps with PUBSUB enabled?
                 when "prcs"
                     domains = find_prcss
                 when "web"

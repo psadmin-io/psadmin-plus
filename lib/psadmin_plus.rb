@@ -255,6 +255,9 @@ def do_status(type, domain)
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c cstatus -d #{domain}")
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c qstatus -d #{domain}")
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c pslist -d #{domain}")
+    when "pubsub"
+        ENV['TUXCONFIG'] = "#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG"
+        do_cmd("echo 'printserver -g PUBSUB' | #{ENV['TUXDIR']}/bin/tmadmin")
     when "prcs"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -p status -d #{domain}")
     when "web"
@@ -295,6 +298,10 @@ def do_start(type, domain)
             end
         end
         do_hookstart("start",type,domain)
+    when "pubsub"
+        ENV['TUXCONFIG'] = "#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG"
+        do_cmd("echo 'boot -g PUBSUB' | #{ENV['TUXDIR']}/bin/tmadmin")
+        # do_hookstart("start",type,domain) - TODO skip hook for PUBSUB?
     when "prcs"
         case "#{PS_WIN_SERVICES}"
         when "true", "tux", "prcs", "all"
@@ -361,6 +368,10 @@ def do_stop(type, domain)
                 do_cmd(stop_app_service_cmd)
             end
         end
+    when "pubsub"
+        # do_hookstop("stop",type,domain) - TODO skip hook for PUBSUB?
+        ENV['TUXCONFIG'] = "#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG"
+        do_cmd("echo 'shutdown -g PUBSUB' | #{ENV['TUXDIR']}/bin/tmadmin")
     when "prcs"
         do_hookstop("stop",type,domain)
         case "#{PS_WIN_SERVICES}"

@@ -254,10 +254,33 @@ def do_list
     puts ""
 end
 
+def do_psadmin_check
+    # Check to see if psadmin loads correctly
+    # This will help when used on web servers that don't have Tuxedo
+    case "#{PS_PSA_DEBUG}"
+    when "true"
+        puts "Checking psadmin version to validate configuration:"
+        check = do_cmd("#{PS_PSADMIN_PATH}/psadmin -v 2>&1",true)
+    else
+        check = do_cmd("#{PS_PSADMIN_PATH}/psadmin -v 2>&1",false)
+    end
+    if check.include? "error"
+        # psadmin config is NOT valid
+        puts "ERROR: psadmin is not configured correctly for this environment!"
+        puts "       Some psadmin-plus actions only work when Tuxedo and psadmin are configured"
+        false
+    else
+        # psadmin config is valid
+        true
+    end 
+end
+
 def do_summary
     if "#{PS_MULTI_HOME}" != "false"
         ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}#{PS_MULTI_DELMIT}#{domain}"
     end
+
+    do_psadmin_check ? nil : exit
 
     do_cmd("#{PS_PSADMIN_PATH}/psadmin -envsummary")
     #do_status("web","all")
@@ -266,6 +289,7 @@ end
 def do_status(type, domain)   
     case type
     when "app"
+        do_psadmin_check ? nil : return
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c sstatus -d #{domain}")
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c cstatus -d #{domain}")
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c qstatus -d #{domain}")
@@ -274,9 +298,14 @@ def do_status(type, domain)
         ENV['TUXCONFIG'] = "#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG"
         do_cmd("echo 'printserver -g PUBSUB' | #{ENV['TUXDIR']}/bin/tmadmin")
     when "prcs"
+        do_psadmin_check ? nil : return
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -p status -d #{domain}")
     when "web"
+        # TODO - PIA script status? 1. psadmin, 2. script, 3. lock file, 4. service
+        #do_psadmin_check ? nil : return
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -w status -d #{domain}")
+        #do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/singleserverStatus.sh")
+        #if File.exist?("#{ENV['PS_CFG_HOME']}/webserv/#{domain}/servers/PIA/tmp/PIA.lok")
     else
         puts "Invalid type, see psa help"
     end

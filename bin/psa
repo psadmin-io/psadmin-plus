@@ -11,7 +11,16 @@ end
 opts_c   = ARGV.shift || "help"
 opts_t   = ARGV.shift || "all"
 opts_d   = ARGV.shift || "all"
-opt_cfg  = ARGV.shift
+# Set remaining arguments as environment variables
+ARGV.each do |arg|
+  if arg.include? "="
+    var = arg.split('=')
+	ENV[var[0]]=var[1]
+    puts "Setting environment variable " + var[0] + "=" + var[1]
+  else
+    # puts "Skip argument, no valid environment variable found."
+  end
+end
 
 commands = opts_c.split(',')
 types = opts_t.split(',')

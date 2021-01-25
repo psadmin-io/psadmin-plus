@@ -12,6 +12,7 @@
 | start all web domains         | `psa start web`        |
 | start hdev web domain         | `psa start web hdev`   |
 | clear hrdev cache and restart | `psa bounce app hrdev` |
+| check status with PS_CFG_HOME override | `psa status all all PS_CFG_HOME=/opt/psft/cfg` |
 
 # Setup
 
@@ -41,6 +42,8 @@ psa help
 ```
 
 ## Environment Variables
+Environment variables are used to control `psadmin-plus` and `psadmin` functionality. You can set environment variables in your shell before calling `psadmin-plus`. You can also set variables in your `.psa.conf` file. Lastly, you can pass in key value pairs in the trailing arguments you send to `psadmin-plus` and they will be exported. To pass variables in your arguments, they need to be listed last and you need to provide command, type and domain arguments as well. Example: `psa status all all PS_CFG_HOME=/opt/psft/cfg OTHER=value`.
+
 
 * `PS_RUNTIME_USER`
     * User that owns `PS_CFG_HOME` and should run `psadmin`

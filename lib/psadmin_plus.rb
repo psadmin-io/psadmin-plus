@@ -273,14 +273,23 @@ def do_psadmin_check
 end
 
 def do_summary
-    if "#{PS_MULTI_HOME}" != "false"
-        ENV['PS_CFG_HOME'] = "#{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}#{domain}"
-    end
-
     do_psadmin_check ? nil : exit
 
-    do_cmd("#{PS_PSADMIN_PATH}/psadmin -envsummary")
-    #do_status("web","all")
+    case "#{PS_MULTI_HOME}"
+    when "false"
+        cfgs = [ ENV['PS_CFG_HOME'] ]
+    else 
+	# TODO - nix and win?
+	cfgs = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELMIT}*/peopletools.properties | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true).split(/\n+/)
+    end
+	
+    cfgs.each do |c|	
+	c = c.chomp("peopletools.properties")
+        ENV['PS_CFG_HOME'] = c
+	ENV['PS_HOME'] = c.sub! 'psconfighome', 'pshome'
+	do_cmd("#{PS_PSADMIN_PATH}/psadmin -envsummary")
+	#do_status("web","all")
+    end
 end
 
 def do_status(type, domain)   

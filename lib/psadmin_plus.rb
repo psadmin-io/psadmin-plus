@@ -27,7 +27,7 @@ def do_help
     puts "Types:"
     puts "      "
     puts "    app            act on application domains"
-    puts "    pubsub         act on PUBSUB group of application domains"
+    #puts "    pubsub         act on PUBSUB group of application domains"
     puts "    prcs           act on process scheduler domains"
     puts "    web            act on web domains"
     puts "    all,<blank>    act on web, app, and prcs domains"

@@ -483,7 +483,7 @@ def do_purge(type, domain)
     when "app"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c purge -d #{domain}")
     when "prcs"
-        do_cmd("echo purge todo")
+        do_cmd("echo Purge currently does nothing for prcs")
     when "web"
         case "#{OS_CONST}"
         when "linux"

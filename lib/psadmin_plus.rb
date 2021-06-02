@@ -61,21 +61,21 @@ def do_cmd(cmd, print = true, powershell = true)
             when "true"
                 p "Command: #{cmd}"
             end
-            out = `#{cmd}`
+            out = `#{cmd} 2>&1`
         else
             if "#{PS_PSA_SUDO}" == "on"
                 case "#{PS_PSA_DEBUG}"
                 when "true"
-                    p "Command: sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'"
+                    p "Command: sudo su - #{PS_RUNTIME_USER} -c '#{cmd}' 2>&1"
                 end
-                out = `sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'`
+                out = `sudo su - #{PS_RUNTIME_USER} -c '#{cmd}' 2>&1`
             else
                 print "#{PS_RUNTIME_USER} "
                 case "#{PS_PSA_DEBUG}"
                 when "true"
-                    p "Command: su - #{PS_RUNTIME_USER} -c '#{cmd}'"
+                    p "Command: su - #{PS_RUNTIME_USER} -c '#{cmd}' 2>&1"
                 end
-                out = `su - #{PS_RUNTIME_USER} -c '#{cmd}'`
+                out = `su - #{PS_RUNTIME_USER} -c '#{cmd}' 2>&1`
             end
         end
     when "windows"
@@ -83,15 +83,15 @@ def do_cmd(cmd, print = true, powershell = true)
         when true
             case "#{PS_PSA_DEBUG}"
             when "true"
-                p "Command: powershell -NoProfile -Command \"#{cmd}\""
+                p "Command: powershell -NoProfile -Command \"#{cmd}\" 2>&1"
             end
-            out = `powershell -NoProfile -Command "#{cmd}"`
+            out = `powershell -NoProfile -Command "#{cmd}" 2>&1`
         else
             case "#{PS_PSA_DEBUG}"
             when "true"
-                p "Command: #{cmd}"
+                p "Command: #{cmd} 2>&1"
             end
-            out = `#{cmd}`
+            out = `#{cmd} 2>&1`
         end
     else
         out = "Invalid OS"

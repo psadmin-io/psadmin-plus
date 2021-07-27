@@ -37,7 +37,7 @@ If you don't want to use the `gem` install, do a `git` clone install of this rep
 cd ~
 git clone https://github.com/psadmin-io/psadmin-plus.git
 cd psadmin-plus
-export PATH:$PATH:~/psadmin-plus/bin
+export PATH=$PATH:~/psadmin-plus/bin
 psa help
 ```
 

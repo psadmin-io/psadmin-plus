@@ -93,7 +93,7 @@ Environment variables are used to control `psadmin-plus` and `psadmin` functiona
         1. `APP_SERVICE_NAME`
         1. `PRCS_SERVICE_NAME`
     * The override names must include `#{domain}` somewhere in the name. That is used by `psadmin-plus` to call the correct domain. E.g, `WEB_SERVICE_NAME="#{domain}-pia"`
-* `PS_TRAIL_SERVICES`
+* `PS_TRAIL_SERVICE`
     * On Windows, you can use this option to set the Windows service after starting/stopping a domain via psadmin. This lets you start/stop and view the domain output but keep the Windows service status in sync.
     * Options are: `true`, `false`
     * If note set, default is `false`

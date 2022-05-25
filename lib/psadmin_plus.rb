@@ -237,12 +237,7 @@ def do_list
     puts "PS_TRAIL_SERVICE =  #{PS_TRAIL_SERVICE}"
     puts "PS_MULT_HOME     =  #{PS_MULTI_HOME}"
     puts "PS_PARALLEL_BOOT =  #{PS_PARALLEL_BOOT}"
-<<<<<<< HEAD
-    puts "PS_PSA_DEBUG =      #{PS_PSA_DEBUG}"
-
-=======
     puts "PS_PSA_DEBUG     =  #{PS_PSA_DEBUG}"
->>>>>>> 14b95a0 (Add more env vars, fix alignment)
     puts "" 
     puts "app:"
     find_apps.each do |a|

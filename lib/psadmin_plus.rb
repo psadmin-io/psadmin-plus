@@ -483,7 +483,13 @@ def do_purge(type, domain)
     when "app"
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c purge -d #{domain}")
     when "prcs"
-        do_cmd("echo Purge currently does nothing for prcs")
+        case "#{OS_CONST}"
+        when "linux"
+            do_cmd("rm -rf ${PS_CFG_HOME?}/appserv/prcs/#{domain}/CACHE/*")
+        when "windows"
+            do_cmd("Remove-Item $(Get-ChildItem ${env:PS_CFG_HOME}/appserv/prcs/#{domain}/CACHE/* | ?{ $_.PSIsContainer}) -recurse -force -ErrorAction SilentlyContinue".gsub('/','\\'))
+        end
+        puts "prcs cache purged"
     when "web"
         case "#{OS_CONST}"
         when "linux"

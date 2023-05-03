@@ -52,7 +52,7 @@ Environment variables are used to control `psadmin-plus` and `psadmin` functiona
     * Runs commands as `PS_RUNTIME_USER` via `sudo`, if set to `on`
     * Options are: `on`, `off`
     * If not set, default is `off`
-* `PS_MULTI_HOMES`
+* `PS_MULTI_HOME`
     * Set this value to the base folder where your `PS_CFG_HOME` are stored. 
     * Use Unix path separators on all platforms. E.g, `PS_MULTI_HOME=/opt/oracle/psft/cfg` or `PS_MULTI_HOME=c:/psft/cfg`
     * Option is any valid path or `false`

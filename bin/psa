@@ -11,6 +11,7 @@ end
 opts_c   = ARGV.shift || "help"
 opts_t   = ARGV.shift || "all"
 opts_d   = ARGV.shift || "all"
+opts_s   = ARGV.shift || "all"
 # Set remaining arguments as environment variables
 ARGV.each do |arg|
   if arg.include? "="
@@ -25,9 +26,11 @@ end
 commands = opts_c.split(',')
 types = opts_t.split(',')
 domains = opts_d.split(',')
+statuses = opts_s.split(',')
 
 if types.include? "all" then types = ['app','prcs','web'] end
 if domains.include? "all" then all_domains = true end
+if statuses.include? "all" then tuxcmd = ['psr', 'pq'] end
 
 # setup environment
 PS_PSA_CONF = ENV['PS_PSA_CONF'] || "#{ENV['HOME']}/.psa.conf"
@@ -90,6 +93,8 @@ commands.each do |c|
             case "#{t}"
             when "app"
                 valid_domains = find_apps
+            when "tux"
+                valid_domains = find_apps
             when "pubsub"
                 valid_domains = find_apps # TODO - find only apps with PUBSUB enabled?
             when "prcs"
@@ -111,7 +116,7 @@ commands.each do |c|
                     case "#{c}"
                     when "status"
                         do_cmd_banner(c,t,d)
-                        do_status(t,d)
+                        do_status(t,d, tuxcmd)
                     when "start"
                         do_cmd_banner(c,t,d)
                         do_start(t,d)

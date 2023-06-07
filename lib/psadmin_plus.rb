@@ -28,6 +28,7 @@ def do_help
     puts "      "
     puts "    app            act on application domains"
     #puts "    pubsub         act on PUBSUB group of application domains"
+    puts "    tux            act on tuxedo domain (status only: psr, pq)"
     puts "    prcs           act on process scheduler domains"
     puts "    web            act on web domains"
     puts "    all,<blank>    act on web, app, and prcs domains"
@@ -283,7 +284,7 @@ def do_summary
     #do_status("web","all")
 end
 
-def do_status(type, domain)   
+def do_status(type, domain, tuxcmd)
     case type
     when "app"
         do_psadmin_check ? nil : return
@@ -291,9 +292,15 @@ def do_status(type, domain)
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c cstatus -d #{domain}")
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c qstatus -d #{domain}")
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c pslist -d #{domain}")
-    when "pubsub"
+    when "tux"
         ENV['TUXCONFIG'] = "#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG"
-        do_cmd("echo 'printserver -g PUBSUB' | #{ENV['TUXDIR']}/bin/tmadmin")
+        tuxcmd.each do |cmd|
+            do_cmd("echo #{cmd} | #{ENV['TUXDIR']}/bin/tmadmin -r | grep PS |  while IFS= read -r line; do printf '[%s] %s\n' \"$(date '+%Y-%m-%d %H:%M:%S')\" \"$line\"; done")
+        end
+    when "pubsub"
+        do_psadmin_check ? nil : return
+        ENV['TUXCONFIG'] = "#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG"
+        do_cmd("echo printserver -g PUBSUB | #{ENV['TUXDIR']}/bin/tmadmin -r")
     when "prcs"
         do_psadmin_check ? nil : return
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -p status -d #{domain}")

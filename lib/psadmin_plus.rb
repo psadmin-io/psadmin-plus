@@ -304,7 +304,7 @@ def do_status(type, domain, tuxcmd)
         end
     when "pubsub"
         do_psadmin_check ? nil : return
-        ENV['TUXCONFIG'] = env'PS_CFG_HOME') + "    /appserv/#{domain}/PSTUXCFG"
+        ENV['TUXCONFIG'] = env('PS_CFG_HOME') + "/appserv/#{domain}/PSTUXCFG"
         do_cmd("echo printserver -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
     when "prcs"
         do_psadmin_check ? nil : return

@@ -298,15 +298,16 @@ def do_status(type, domain, tuxcmd)
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c qstatus -d #{domain}")
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c pslist -d #{domain}")
     when "tux"
-        ENV['TUXCONFIG'] = env('PS_CFG_HOME') + "/appserv/#{domain}/PSTUXCFG"
         tuxcmd.each do |cmd|
-            output = do_cmd("echo #{cmd} | " + env('TUXDIR') + "/bin/tmadmin -r ") #| grep PS |  while IFS= read -r line; do printf '[%s] %s\n' \"\$\(date '+%Y-%m-%d %H:%M:%S'\)\" \"\$line\"; done")
+            # output = do_cmd(ENV['TUXCONFIG'] = env('PS_CFG_HOME') + "/appserv/#{domain}/PSTUXCFG"
+            # output = do_cmd("echo #{cmd} | " + env('TUXDIR') + "/bin/tmadmin -r ") #| grep PS |  while IFS= read -r line; do printf '[%s] %s\n' \"\$\(date '+%Y-%m-%d %H:%M:%S'\)\" \"\$line\"; done")
+            output = do_cmd("#{env('TUXCONFIG')} = #{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo #{cmd} | " + env('TUXDIR') + "/bin/tmadmin -r ")
             p output
         end
     when "pubsub"
         do_psadmin_check ? nil : return
-        ENV['TUXCONFIG'] = env('PS_CFG_HOME') + "/appserv/#{domain}/PSTUXCFG"
-        do_cmd("echo printserver -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
+        # ENV['TUXCONFIG'] = env('PS_CFG_HOME') + "/appserv/#{domain}/PSTUXCFG"
+        do_cmd("#{env('TUXCONFIG')} = #{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo printserver -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
     when "prcs"
         do_psadmin_check ? nil : return
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -p status -d #{domain}")

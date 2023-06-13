@@ -305,6 +305,7 @@ def do_status(type, domain, tuxcmd)
             # output.split ('\n').each do | line |
             *lines = output.split('\n')
             p "Lines: " + lines.to_s
+            p "Lines object " + lines.type
             lines.each do | line |
                 p Time.now.strftime("[%Y-%m-%d %H:%M:%S] ") + line
             end

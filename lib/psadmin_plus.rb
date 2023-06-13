@@ -120,7 +120,7 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = "no")
             if !line.empty?
                 if line != '> '
                     output = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  +  line
-                    p output.tr('"', '')
+                    p output.to_s.gsub('"', '')
                 end
             end
         end

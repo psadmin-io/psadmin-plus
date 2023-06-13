@@ -127,7 +127,7 @@ end
 def do_output(line)
     if !line.empty?
         if line != '> '
-            puts (Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  +  line).gsub('"', '')
+            puts (Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  + "#{c} . #{t} . #{d} " +  line).gsub('"', '')
         end
     end
 end

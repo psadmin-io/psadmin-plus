@@ -119,7 +119,7 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = "no")
         lines[0...-2].each do | line |
             if !line.empty?
                 if line != '> '
-                    (p Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  +  line).delete_prefix('"').delete_suffix('"')
+                    (p Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  +  line).rchomp('"').chomp('"')
                 end
             end
         end

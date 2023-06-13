@@ -127,7 +127,7 @@ end
 
 def do_cmd_banner(c,t,d)
     if "#{PS_PSA_TIMESTAMP}" == "true"
-        puts "Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  + ===[ #{c} . #{t} . #{d} ]==="
+        puts Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  + "===[ #{c} . #{t} . #{d} ]==="
     else
         puts ""
         puts "===[ #{c} . #{t} . #{d} ]==="

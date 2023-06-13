@@ -103,7 +103,8 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = "no")
         out = "Invalid OS"
     end
 
-    # Handle Output - Check if timestamps are requested - override if parameter is "off"
+    # Handle Output - Check if timestamps are requested
+    # - override if parameter is "off" for internal calls
     case "#{PS_PSA_TIMESTAMP}"
     when "true"
         if timestamp != "off"
@@ -117,15 +118,18 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = "no")
     else
         *lines = stdout.split(/\n/)
         lines[0...-2].each do | line |
-            if !line.empty?
-                if line != '> '
-                    output = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  +  line
-                    p output.to_s.gsub('"', '')
-                end
-            end
+            do_output(line)
         end
     end
 
+end
+
+def do_output(line)
+    if !line.empty?
+        if line != '> '
+            puts (Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  +  line).gsub('"', '')
+        end
+    end
 end
 
 def do_cmd_banner(c,t,d)

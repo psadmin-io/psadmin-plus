@@ -117,7 +117,9 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = "no")
     else
         *lines = stdout.split(/\n/)
         lines[0...-2].each do | line |
-            p (Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  +  line).delete_prefix('"').delete_suffix('"')
+            if !line.empty?
+                (p Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  +  line).delete_prefix('"').delete_suffix('"')
+            end
         end
     end
 

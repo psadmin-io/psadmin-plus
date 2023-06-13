@@ -303,7 +303,7 @@ def do_status(type, domain, tuxcmd)
             # output = do_cmd("echo #{cmd} | " + env('TUXDIR') + "/bin/tmadmin -r ") #| grep PS |  while IFS= read -r line; do printf '[%s] %s\n' \"\$\(date '+%Y-%m-%d %H:%M:%S'\)\" \"\$line\"; done")
             output = do_cmd("export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo #{cmd} | " + env('TUXDIR') + "/bin/tmadmin -r ")
             # output.split ('\n').each do | line |
-            copyright, rights, license, trademark, *lines = ex.split('\n')
+            copyright, rights, license, trademark, *lines = output.split('\n')
             lines.each do | line |
                 p Time.now.strftime("[%Y-%m-%d %H:%M:%S] ") + line
             end

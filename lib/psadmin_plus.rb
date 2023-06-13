@@ -126,9 +126,13 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = "no")
 end
 
 def do_cmd_banner(c,t,d)
-    puts ""
-    puts "===[ #{c} . #{t} . #{d} ]==="
-    puts ""
+    if "#{PS_PSA_TIMESTAMP}" == "true"
+        puts "Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  + ===[ #{c} . #{t} . #{d} ]==="
+    else
+        puts ""
+        puts "===[ #{c} . #{t} . #{d} ]==="
+        puts ""
+    end
 end
 
 def do_set_cfg_home(d)

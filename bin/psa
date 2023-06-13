@@ -62,6 +62,7 @@ PS_MULTI_DELIMIT    = ENV['PS_MULTI_DELIMIT'] || "/"
 PS_MULTI_PREFIX     = ENV['PS_MULTI_PREFIX'].to_i || 0
 PS_PARALLEL_BOOT    = ENV['PS_PARALLEL_BOOT'] || "false"
 PS_PSA_DEBUG        = ENV['PS_PSA_DEBUG']  || "false"
+PS_PSA_TIMESTAMP    = ENV['PS_PSA_TIMESTAMP'] || "false"
 
 # validation
 # check runtime user

@@ -74,7 +74,7 @@ def do_cmd(cmd, print = true, powershell = true)
                 when "true"
                     p "Command: sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'"
                 end
-                out = `sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'`
+                stdout, stderr, status = Open3.capture3("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
             else
                 print "#{PS_RUNTIME_USER} "
                 case "#{PS_PSA_DEBUG}"
@@ -102,8 +102,16 @@ def do_cmd(cmd, print = true, powershell = true)
     else
         out = "Invalid OS"
     end
-    print ? (puts out) : result = out 
-    out
+    case "#{PS_PSA_TIMESTAMP}"
+    when "false"
+        print ? (puts stdout) : result = stdout 
+        stdout
+    when "true"
+        *lines = stdout.split(/\n/)
+        lines[0...-2].each do | line |
+            p Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  +  line
+        end
+    end
 end
 
 def do_cmd_banner(c,t,d)
@@ -299,15 +307,11 @@ def do_status(type, domain, tuxcmd)
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c pslist -d #{domain}")
     when "tux"
         tuxcmd.each do |cmd|
-            # output = do_cmd(ENV['TUXCONFIG'] = env('PS_CFG_HOME') + "/appserv/#{domain}/PSTUXCFG"
-            # output = do_cmd("echo #{cmd} | " + env('TUXDIR') + "/bin/tmadmin -r ") #| grep PS |  while IFS= read -r line; do printf '[%s] %s\n' \"\$\(date '+%Y-%m-%d %H:%M:%S'\)\" \"\$line\"; done")
             output = do_cmd("export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo #{cmd} | " + env('TUXDIR') + "/bin/tmadmin -r ")
-            # output.split ('\n').each do | line |
-            *lines = output.split(/\n/)
-            p "Lines: " + lines.to_s
-            lines.each do | line |
-                p Time.now.strftime("[%Y-%m-%d %H:%M:%S] ") + line
-            end
+            # space, header, divider, *lines = output.split(/\n/)
+            # lines[0...-2].each do | line |
+            #     p Time.now.strftime("[%Y-%m-%d %H:%M:%S]") + " #{cmd} " +  line
+            # end
         end
     when "pubsub"
         do_psadmin_check ? nil : return

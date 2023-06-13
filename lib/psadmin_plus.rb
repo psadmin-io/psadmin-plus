@@ -59,7 +59,7 @@ def env(var)
    result = "#{OS_CONST}" == "linux" ? "${#{var}}" : "%#{var}%"
 end
 
-def do_cmd(cmd, print = true, powershell = true)
+def do_cmd(cmd, print = true, powershell = true, timestamp = "no")
     case "#{OS_CONST}"
     when "linux"
         if do_is_runtime_user_nix
@@ -102,16 +102,25 @@ def do_cmd(cmd, print = true, powershell = true)
     else
         out = "Invalid OS"
     end
+
+    # Handle Output - Check if timestamps are requested - override if parameter is "off"
     case "#{PS_PSA_TIMESTAMP}"
-    when "false"
+    when "true"
+        if timestamp != "off"
+            timestamp = "on"
+        end
+    end
+
+    if timestamp == "off" || timestamp == "no"
         print ? (puts stdout) : result = stdout 
         stdout
-    when "true"
+    else
         *lines = stdout.split(/\n/)
         lines[0...-2].each do | line |
             p Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  +  line
         end
     end
+
 end
 
 def do_cmd_banner(c,t,d)
@@ -134,7 +143,7 @@ end
 def find_apps_nix
     case "#{PS_MULTI_HOME}"
     when "false"
-        apps = do_cmd("find #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx 2>/dev/null",false).split(/\n+/)
+        apps = do_cmd("find #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx 2>/dev/null",false,false,"off").split(/\n+/)
     else
         apps = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx 2>/dev/null",false).split(/\n+/)
     end

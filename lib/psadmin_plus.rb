@@ -74,7 +74,7 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = "no")
                 when "true"
                     p "Command: sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'"
                 end
-                stdout, stderr, status = Open3.capture3("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
+                stdout, status = Open3.capture2e("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
             else
                 print "#{PS_RUNTIME_USER} "
                 case "#{PS_PSA_DEBUG}"

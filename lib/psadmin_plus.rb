@@ -300,7 +300,8 @@ def do_status(type, domain, tuxcmd)
     when "tux"
         ENV['TUXCONFIG'] = env('PS_CFG_HOME') + "/appserv/#{domain}/PSTUXCFG"
         tuxcmd.each do |cmd|
-            do_cmd("echo #{cmd} | " + env('TUXDIR') + "/bin/tmadmin -r | grep PS |  while IFS= read -r line; do printf '[%s] %s\n' \"\$\(date '+%Y-%m-%d %H:%M:%S'\)\" \"\$line\"; done")
+            output = do_cmd("echo #{cmd} | " + env('TUXDIR') + "/bin/tmadmin -r ") #| grep PS |  while IFS= read -r line; do printf '[%s] %s\n' \"\$\(date '+%Y-%m-%d %H:%M:%S'\)\" \"\$line\"; done")
+            p output
         end
     when "pubsub"
         do_psadmin_check ? nil : return

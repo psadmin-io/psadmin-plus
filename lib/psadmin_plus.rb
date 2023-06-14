@@ -128,14 +128,13 @@ module PsadminPlus
             runner.stdout
         else
             process_output(runner.stdout, runner.stderr, timestamp)
-        end
-
-        # Check exitcode and pass any errors
-        case runner.success?
-        when false
-            do_output("psadmin returned an error", timestamp, true)
-            print_std(stderr, timestamp, true)
-            exit 1
+            # Check exitcode and pass any errors for non-internal calls
+            case runner.success?
+            when false
+                do_output("psadmin returned an error", timestamp, true)
+                print_std(stderr, timestamp, true)
+                exit 1
+            end
         end
     end
 

@@ -42,8 +42,10 @@ if File.exists?(PS_PSA_CONF) then
     end
 end
 
+psa = Psadmin_plus.psa
+
 # constants
-OS_CONST            = Psadmin_plus.os
+OS_CONST            = psa.os
 PS_RUNTIME_USER     = ENV['PS_RUNTIME_USER'] || "psadm2"
 PS_HOOK_INTERP      = ENV['PS_HOOK_INTERP'] || "ruby"
 PS_HOOK_PRE         = ENV['PS_HOOK_PRE'] || "false"

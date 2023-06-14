@@ -4,6 +4,7 @@ require 'rbconfig'
 require 'etc'
 require 'open3'
 require_relative 'runner'
+require_relative 'logger'
 
 def do_help
     puts "Usage: psa [command] <type> <domain>"
@@ -54,21 +55,6 @@ end
 
 def red(text); colorize(text, 31); end
 def green(text); colorize(text, 32); end
-
-def logger
-    @logger ||= Logger.new(STDOUT).tap do |logger|
-        log_level_from_env = ENV['PS_PSA_DEBUG']
-        logger.level = Logger.const_get(log_level_from_env)
-        logger.formatter = proc do |severity, datetime, progname, msg|
-            date_format = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ") 
-            "#{cmd} (#{severity}): #{msg}\n"
-        end
-    end
-end
-
-def info(msg); logger.info msg; end
-def warn(msg); logger.warn msg; end
-def debug(msg); logger.debug msg; end
 
 def do_is_runtime_user_nix
     result = ENV['USER'] == PS_RUNTIME_USER ? true : false

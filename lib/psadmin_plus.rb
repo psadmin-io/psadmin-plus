@@ -321,7 +321,7 @@ def do_summary
     #do_status("web","all")
 end
 
-def do_status(type, domain, opts)
+def do_status(type, domain)
     case type
     when "app"
         do_psadmin_check ? nil : return
@@ -330,10 +330,8 @@ def do_status(type, domain, opts)
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c qstatus -d #{domain}")
         do_cmd("#{PS_PSADMIN_PATH}/psadmin -c pslist -d #{domain}")
     when "tux"
-        opts.each do |cmd|
-            do_psadmin_check ? nil : return
-            do_cmd("export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo #{cmd} | " + env('TUXDIR') + "/bin/tmadmin -r ")
-        end
+        do_psadmin_check ? nil : return
+        do_cmd("export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo pq | " + env('TUXDIR') + "/bin/tmadmin -r ")
     when "pubsub"
         do_psadmin_check ? nil : return
         do_cmd("export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo printserver -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")

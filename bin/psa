@@ -26,7 +26,7 @@ end
 commands = opts_c.split(',')
 types = opts_t.split(',')
 domains = opts_d.split(',')
-*statuses = opts_s.split(',')
+*statuses = opts_s[0].split(',')
 
 if types.include? "all" then types = ['app','prcs','web'] end
 if domains.include? "all" then all_domains = true end

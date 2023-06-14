@@ -59,8 +59,8 @@ module PsadminPlus
     def colorize(text, color_code); "\e[#{color_code}m#{text}\e[0m"; end
     def red(text); colorize(text, 31); end
     def green(text); colorize(text, 32); end
-    def info(msg); PsadminPlus.logger.info(msg); end
-    def debug(msg); PsadminPlus.logger.debug(msg); end
+    def info(msg); @@logger.info(msg); end
+    def debug(msg); @@logger.debug(msg); end
 
     def os
         @os ||= (

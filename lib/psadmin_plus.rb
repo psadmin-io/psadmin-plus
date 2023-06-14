@@ -336,11 +336,11 @@ module PsadminPlus
         # Check to see if psadmin loads correctly
         # This will help when used on web servers that don't have Tuxedo
         debug "Checking psadmin version to validate configuration:"
-        check = do_cmd("#{PS_PSADMIN_PATH}/psadmin -v 2>&1",false)
+        check = do_cmd("#{PS_PSADMIN_PATH}/psadmin -v 2>&1",false,false,"internal")
         if check.include? "error"
             # psadmin config is NOT valid
-            puts "ERROR: psadmin is not configured correctly for this environment!"
-            puts "       Some psadmin-plus actions only work when Tuxedo and psadmin are configured"
+            do_output("ERROR: psadmin is not configured correctly for this environment!")
+            do_output("       Some psadmin-plus actions only work when Tuxedo and psadmin are configured")
             false
         else
             # psadmin config is valid

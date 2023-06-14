@@ -43,7 +43,7 @@ class Runner
   # @return [Runner]
   def run
     Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
-      if realtime == "all"
+      if realtime == "all" || realtime == "summary"
         until [stdout, stderr].all?(&:eof?)
           readable = IO.select([stdout, stderr])
           next unless readable&.first

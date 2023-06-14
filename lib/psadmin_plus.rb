@@ -3,6 +3,7 @@
 require 'rbconfig'
 require 'etc'
 require 'open3'
+require 'runner'
 
 def do_help
     puts "Usage: psa [command] <type> <domain>"
@@ -81,7 +82,9 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = nil)
                 when "true"
                     p "Command: sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'"
                 end
-                stdout, stderr, status = Open3.capture3("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
+                # stdout, stderr, status = Open3.capture3("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
+                runner = Runner.new("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
+                runner.run
             else
                 print "#{PS_RUNTIME_USER} "
                 case "#{PS_PSA_DEBUG}"

@@ -83,8 +83,7 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = nil)
                     p "Command: sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'"
                 end
                 # stdout, stderr, status = Open3.capture3("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
-                runner = Runner.new("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
-                runner.realtime = true
+                runner = Runner.new("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'", realtime = true)
                 runner.run
                 # runner.stdout
             else

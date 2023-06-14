@@ -47,6 +47,13 @@ def do_help
     puts " "
 end
 
+def colorize(text, color_code)
+    "\e[#{color_code}m#{text}\e[0m"
+end
+
+def red(text); colorize(text, 31); end
+def green(text); colorize(text, 32); end
+
 def do_is_runtime_user_nix
     result = ENV['USER'] == PS_RUNTIME_USER ? true : false
 end
@@ -106,16 +113,24 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = nil)
     if timestamp == "off"
         stdout
     else
+        # Standard Output
         *lines = stdout.split(/\n/)
         # lines[0...-2].each do | line | # Remove two trailing extra lines
         lines.each do | line |
             do_output(line, timestamp)
         end
+
+        # Standard Error
+        *lines = stdout.split(/\n/)
+        # lines[0...-2].each do | line | # Remove two trailing extra lines
+        lines.each do | line |
+            do_output(line, timestamp, true)
+        end
     end
 
 end
 
-def do_output(line, timestamp = nil)
+def do_output(line, timestamp = nil, err = false)
 
     utctime = ""
     # Handle Output - Check if timestamps are requested
@@ -129,7 +144,11 @@ def do_output(line, timestamp = nil)
     
     if !line.empty?
         if line != '> '
-            puts (utctime + line).gsub('"', '')
+            if !err
+                puts (utctime + line).gsub('"', '')
+            else
+                puts (utctime + red(line)).gsub('"', '')
+            end
         end
     end
 end

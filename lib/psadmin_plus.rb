@@ -128,23 +128,25 @@ module PsadminPlus
             runner.stdout
         else
             process_output(runner.stdout, runner.stderr, timestamp)
-            # Check exitcode and pass any errors for non-internal calls
-            case runner.success?
-            when false
-                do_output("psadmin returned an error", timestamp, true)
-                print_std(stderr, timestamp, true)
-                exit 1
-            end
         end
     end
 
-    def process_output(stdout, stderr, timestamp = nil)
+    def process_output(stdout, stderr, timestamp)
         if PS_PSA_OUTPUT == "summary"
             print_std(stdout, timestamp)
         end
 
-        if PS_PSA_OUTPUT == "all"
-            print_std(stderr, timestamp, true)
+        case runner.success?
+        when true
+            if PS_PSA_OUTPUT == "quiet"
+                do_output("psadmin returned success", timestamp)
+            end
+        when false
+            do_output("psadmin returned an error", timestamp, true)
+            if PS_PSA_OUTPUT == "summary" || PS_PSA_OUTPUT == "quiet"
+                print_std(stderr, timestamp, true)
+            end
+            exit 1
         end
     end
 

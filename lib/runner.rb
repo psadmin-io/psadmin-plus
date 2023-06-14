@@ -43,26 +43,28 @@ class Runner
   # @return [Runner]
   def run
     Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
-      until [stdout, stderr].all?(&:eof?)
-        readable = IO.select([stdout, stderr])
-        next unless readable&.first
+      if realtime == "all"
+        until [stdout, stderr].all?(&:eof?)
+          readable = IO.select([stdout, stderr])
+          next unless readable&.first
 
-        readable.first.each do |stream|
-          data = +''
-          # rubocop:disable Lint/HandleExceptions
-          begin
-            stream.read_nonblock(1024, data)
-          rescue EOFError
-            # ignore, it's expected for read_nonblock to raise EOFError
-            # when all is read
-          end
+          readable.first.each do |stream|
+            data = +''
+            # rubocop:disable Lint/HandleExceptions
+            begin
+              stream.read_nonblock(1024, data)
+            rescue EOFError
+              # ignore, it's expected for read_nonblock to raise EOFError
+              # when all is read
+            end
 
-          if stream == stdout
-            @stdout << data
-            $stdout.write(data)
-          else
-            @stderr << data
-            $stderr.write(data)
+            if stream == stdout
+              @stdout << data
+              $stdout.write(data)
+            else
+              @stderr << data
+              $stderr.write(data)
+            end
           end
         end
       end

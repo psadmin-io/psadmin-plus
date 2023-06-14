@@ -103,9 +103,8 @@ module PsadminPlus
                 if "#{PS_PSA_SUDO}" == "on"
                     debug "Command: sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'"
                     # stdout, stderr, status = Open3.capture3("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
-                    runner = Runner.new("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'", realtime = true)
+                    runner = Runner.new("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'", realtime = PS_PSA_OUTPUT)
                     runner.run
-                    # runner.stdout
                 else
                     print "#{PS_RUNTIME_USER} "
                     debug "Command: su - #{PS_RUNTIME_USER} -c '#{cmd}'"

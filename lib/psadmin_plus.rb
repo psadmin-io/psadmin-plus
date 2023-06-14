@@ -127,16 +127,16 @@ module PsadminPlus
         if timestamp == "internal"
             runner.stdout
         else
-            process_output(runner.stdout, runner.stderr, timestamp)
+            process_output(runner.stdout, runner.stderr, runner.success?, timestamp)
         end
     end
 
-    def process_output(stdout, stderr, timestamp)
+    def process_output(stdout, stderr, success, timestamp)
         if PS_PSA_OUTPUT == "summary"
             print_std(stdout, timestamp)
         end
 
-        case runner.success?
+        case success
         when true
             if PS_PSA_OUTPUT == "quiet"
                 do_output("psadmin returned success", timestamp)

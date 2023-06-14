@@ -62,7 +62,7 @@ PS_MULTI_PREFIX     = ENV['PS_MULTI_PREFIX'].to_i || 0
 PS_PARALLEL_BOOT    = ENV['PS_PARALLEL_BOOT'] || "false"
 PS_PSA_DEBUG        = ENV['PS_PSA_DEBUG']  || "INFO"
 PS_PSA_TIMESTAMP    = ENV['PS_PSA_TIMESTAMP'] || "false"
-PS_PSA_OUTPUT       = ENV['PS_PSA_OUTPUT'] || "all" # values are "all", "summary", "quiet"
+PS_PSA_OUTPUT       = ENV['PS_PSA_OUTPUT'] || "summary" # values are "all", "summary", "quiet"
 
 # validation
 # check runtime user

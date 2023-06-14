@@ -30,7 +30,7 @@ domains = opts_d.split(',')
 
 if types.include? "all" then types = ['app','prcs','web'] end
 if domains.include? "all" then all_domains = true end
-if statuses.include? "all" then opts = ['psr', 'pq'] end
+if statuses.include? "all" then opts = ['pq'] end
 
 # setup environment
 PS_PSA_CONF = ENV['PS_PSA_CONF'] || "#{ENV['HOME']}/.psa.conf"

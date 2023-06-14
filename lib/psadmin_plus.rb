@@ -133,29 +133,30 @@ module PsadminPlus
 
     def process_output(stdout, stderr, exitcode, timestamp = nil)
         if PS_PSA_OUTPUT == "summary"
-            # Standard Output
-            *lines = stdout.split(/\n/)
-            lines.each do | line |
-                do_output(line, timestamp)
-            end
+            print_std(stdout, timestamp)
         end
 
         if PS_PSA_OUTPUT == "all"
-            # Standard Error
-            *lines = stderr.split(/\n/)
-            lines.each do | line |
-                do_output(line, timestamp, true)
-            end
+            print_std(stderr, timestamp, true)
         end
 
-        case "exitcode"
+        case exitcode
         when 0
             do_output("psadmin returned success", timestamp)
         when 1
             do_output("psadmin returned an error", timestamp, true)
+            print_std(stderr, timestamp, true)
             exit 1
         end
 
+    end
+
+    def print_std(std, timestamp, err = false)
+        # Standard Output
+        *lines = std.split(/\n/)
+        lines.each do | line |
+            do_output(line, timestamp, err)
+        end
     end
 
     def do_output(line, timestamp = nil, err = false)

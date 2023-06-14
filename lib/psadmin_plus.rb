@@ -55,6 +55,21 @@ end
 def red(text); colorize(text, 31); end
 def green(text); colorize(text, 32); end
 
+def logger
+    @logger ||= Logger.new(STDOUT).tap do |logger|
+        log_level_from_env = ENV['PS_PSA_DEBUG']
+        logger.level = Logger.const_get(log_level_from_env)
+        logger.formatter = proc do |severity, datetime, progname, msg|
+            date_format = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ") 
+            "#{cmd} (#{severity}): #{msg}\n"
+        end
+    end
+end
+
+def info(msg); logger.info msg; end
+def warn(msg); logger.warn msg; end
+def debug(msg); logger.debug msg; end
+
 def do_is_runtime_user_nix
     result = ENV['USER'] == PS_RUNTIME_USER ? true : false
 end
@@ -64,50 +79,35 @@ def do_is_runtime_user_win
 end
 
 def env(var)
-   result = "#{OS_CONST}" == "linux" ? "${#{var}}" : "%#{var}%"
+    result = "#{OS_CONST}" == "linux" ? "${#{var}}" : "%#{var}%"
 end
 
 def do_cmd(cmd, print = true, powershell = true, timestamp = nil)
     case "#{OS_CONST}"
     when "linux"
         if do_is_runtime_user_nix
-            case "#{PS_PSA_DEBUG}"
-            when "true"
-                p "Command: #{cmd}"
-            end
+            debug "Command: #{cmd}"
             out = `#{cmd}`
         else
             if "#{PS_PSA_SUDO}" == "on"
-                case "#{PS_PSA_DEBUG}"
-                when "true"
-                    p "Command: sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'"
-                end
+                debug "Command: sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'"
                 # stdout, stderr, status = Open3.capture3("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
                 runner = Runner.new("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'", realtime = true)
                 runner.run
                 # runner.stdout
             else
                 print "#{PS_RUNTIME_USER} "
-                case "#{PS_PSA_DEBUG}"
-                when "true"
-                    p "Command: su - #{PS_RUNTIME_USER} -c '#{cmd}'"
-                end
+                debug "Command: su - #{PS_RUNTIME_USER} -c '#{cmd}'"
                 out = `su - #{PS_RUNTIME_USER} -c '#{cmd}'`
             end
         end
     when "windows"
         case powershell
         when true
-            case "#{PS_PSA_DEBUG}"
-            when "true"
-                p "Command: powershell -NoProfile -Command \"#{cmd}\""
-            end
+            debug "Command: powershell -NoProfile -Command \"#{cmd}\""
             out = `powershell -NoProfile -Command "#{cmd}"`
         else
-            case "#{PS_PSA_DEBUG}"
-            when "true"
-                p "Command: #{cmd}"
-            end
+            debug "Command: #{cmd}"
             out = `#{cmd}`
         end
     else
@@ -325,13 +325,8 @@ end
 def do_psadmin_check
     # Check to see if psadmin loads correctly
     # This will help when used on web servers that don't have Tuxedo
-    case "#{PS_PSA_DEBUG}"
-    when "true"
-        puts "Checking psadmin version to validate configuration:"
-        check = do_cmd("#{PS_PSADMIN_PATH}/psadmin -v 2>&1",true)
-    else
-        check = do_cmd("#{PS_PSADMIN_PATH}/psadmin -v 2>&1",false)
-    end
+    debug "Checking psadmin version to validate configuration:"
+    check = do_cmd("#{PS_PSADMIN_PATH}/psadmin -v 2>&1",true)
     if check.include? "error"
         # psadmin config is NOT valid
         puts "ERROR: psadmin is not configured correctly for this environment!"
@@ -619,33 +614,33 @@ end
 
 def do_hookpre(command, type, domain) 
     if "#{PS_HOOK_PRE}" != "false"    
-        "#{PS_PSA_DEBUG}" == "true" ? (puts "Executing domain pre command hook...\n\n") : nil
+        debug "Executing domain pre command hook...\n\n"
         do_hook(command, type, domain, PS_HOOK_PRE)
-        "#{PS_PSA_DEBUG}" == "true" ? (puts "\n...hook done") : nil
+        debug "\n...hook done"
         end
 end 
 
 def do_hookpost(command, type, domain) 
     if "#{PS_HOOK_POST}" != "false"    
-        "#{PS_PSA_DEBUG}" == "true" ? (puts "Executing domain post command hook...\n\n") : nil
+        debug "Executing domain post command hook...\n\n"
         do_hook(command, type, domain, PS_HOOK_POST)
-        "#{PS_PSA_DEBUG}" == "true" ? (puts "\n...hook done") : nil
+        debug "\n...hook done"
     end
 end 
 
 def do_hookstart(command, type, domain) 
     if "#{PS_HOOK_START}" != "false"    
-        "#{PS_PSA_DEBUG}" == "true" ? (puts "Executing domain start hook...\n\n") : nil
+        debug "Executing domain start hook...\n\n"
         do_hook(command, type, domain, PS_HOOK_START)
-        "#{PS_PSA_DEBUG}" == "true" ? (puts "\n...hook done") : nil
+        debug "\n...hook done"
     end
 end 
 
 def do_hookstop(command, type, domain) 
     if "#{PS_HOOK_STOP}" != "false"    
-        "#{PS_PSA_DEBUG}" == "true" ? (puts "Executing domain stop hook...\n\n") : nil
+        debug "Executing domain stop hook...\n\n"
         do_hook(command, type, domain, PS_HOOK_STOP)
-        "#{PS_PSA_DEBUG}" == "true" ? (puts "\n...hook done") : nil
+        debug "\n...hook done"
     end
 end
 
@@ -654,7 +649,7 @@ def do_webprof_reload(domain)
 
     case "#{OS_CONST}"
     when "linux"	
-        "#{PS_PSA_DEBUG}" == "true" ? show_debug = true : show_debug = false
+        "#{PS_PSA_DEBUG}" == "DEBUG" ? show_debug = true : show_debug = false
 
         find_sites(domain).each do |s|
             # set vars
@@ -712,5 +707,5 @@ def os
             else
                 raise Error::WebDriverError, "unknown os: #{host_os.inspect}"
             end
-     )
+    )
 end

@@ -72,6 +72,7 @@ class Runner
           stdout.each {|l| puts l }
           stderr.each {|l| puts l }
         end
+        wait_thread.value
       end
       @exit_status = wait_thr.value.exitstatus
     end

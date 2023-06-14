@@ -30,6 +30,7 @@ class Runner
     @cmd = cmd.is_a?(Array) ? cmd.join(' ') : cmd
     @stdout = +''
     @stderr = +''
+    @realtime = false
     @exit_status = nil
   end
 

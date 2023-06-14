@@ -6,7 +6,7 @@ require 'open3'
 require 'logger'
 require_relative 'runner'
 
-module psadmin_plus
+module Psadmin_plus
 
     logger = Logger.new($stdout)
     logger.formatter = proc do |severity, datetime, progname, msg|

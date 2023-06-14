@@ -42,7 +42,7 @@ if File.exists?(PS_PSA_CONF) then
     end
 end
 
-psa = Psadmin_plus.Psa
+psa = Psa.new
 
 # constants
 OS_CONST            = psa.os

@@ -141,14 +141,13 @@ module PsadminPlus
         end
 
         case exitcode
-        when 0
+        when true
             do_output("psadmin returned success", timestamp)
-        when 1
+        when false
             do_output("psadmin returned an error", timestamp, true)
             print_std(stderr, timestamp, true)
             exit 1
         end
-
     end
 
     def print_std(std, timestamp, err = false)

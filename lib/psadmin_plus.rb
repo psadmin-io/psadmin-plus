@@ -117,7 +117,7 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = nil)
     if timestamp == "internal"
         runner.stdout
     else
-        process_output(runner.stdout, runner.stderr, runner.success, timestamp)
+        process_output(runner.stdout, runner.stderr, runner.success?, timestamp)
     end
 end
 

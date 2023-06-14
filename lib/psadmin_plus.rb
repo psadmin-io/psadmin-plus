@@ -201,7 +201,7 @@ module Psadmin_plus
     def find_apps_nix
         case "#{PS_MULTI_HOME}"
         when "false"
-            apps = do_cmd("find #{ENV('PS_CFG_HOME')}/appserv/*/psappsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
+            apps = do_cmd("find #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
         else
             apps = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
         end
@@ -211,7 +211,7 @@ module Psadmin_plus
     def find_prcss_nix
         case "#{PS_MULTI_HOME}"
         when "false"
-            prcss = do_cmd("find #{ENV('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
+            prcss = do_cmd("find #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
         else 
             prcss = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
         end
@@ -221,7 +221,7 @@ module Psadmin_plus
     def find_webs_nix
         case "#{PS_MULTI_HOME}"
         when "false"
-            webs = do_cmd("find #{ENV('PS_CFG_HOME')}/webserv/*/piaconfig -maxdepth 0",false,false,"internal").split(/\n+/)
+            webs = do_cmd("find #{env('PS_CFG_HOME')}/webserv/*/piaconfig -maxdepth 0",false,false,"internal").split(/\n+/)
         else
             webs = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig -maxdepth 0",false,false,"internal").split(/\n+/)
         end
@@ -236,7 +236,7 @@ module Psadmin_plus
     def find_apps_win
         case "#{PS_MULTI_HOME}"
         when "false"
-            apps = do_cmd("(get-childitem #{ENV('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            apps = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         else
             apps = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         end
@@ -246,7 +246,7 @@ module Psadmin_plus
     def find_prcss_win
         case "#{PS_MULTI_HOME}"
         when "false"
-            prcss = do_cmd("(get-childitem #{ENV('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            prcss = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         else
             prcss = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         end
@@ -256,7 +256,7 @@ module Psadmin_plus
     def find_webs_win
         case "#{PS_MULTI_HOME}"
         when "false"
-            webs = do_cmd("(get-childitem #{ENV('PS_CFG_HOME')}/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            webs = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         else
             webs = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         end
@@ -265,7 +265,7 @@ module Psadmin_plus
 
     def find_sites_win(domain)
         #TODO
-        #sites = do_cmd("(get-childitem #{ENV('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+        #sites = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
         #sites.map! {|site| site.split("\\")[-2]}
     end
 
@@ -296,9 +296,9 @@ module Psadmin_plus
     def do_list
         puts "---"
         print "hostname:        " ; do_cmd('hostname')
-        print "ps-home:         " ; do_cmd('echo ' + ENV('PS_HOME'))
+        print "ps-home:         " ; do_cmd('echo ' + env('PS_HOME'))
         if PS_MULTI_HOME == "false" 
-            print "ps-cfg-home:       " ; do_cmd('echo ' + ENV('PS_CFG_HOME'))
+            print "ps-cfg-home:       " ; do_cmd('echo ' + env('PS_CFG_HOME'))
         else
             puts "ps-cfg-home base:  #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*"  
         end
@@ -369,10 +369,10 @@ module Psadmin_plus
             do_cmd("#{PS_PSADMIN_PATH}/psadmin -c pslist -d #{domain}")
         when "tux"
             do_psadmin_check ? nil : return
-            do_cmd("export TUXCONFIG=#{ENV('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo pq | " + ENV('TUXDIR') + "/bin/tmadmin -r ")
+            do_cmd("export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo pq | " + env('TUXDIR') + "/bin/tmadmin -r ")
         when "pubsub"
             do_psadmin_check ? nil : return
-            do_cmd("export TUXCONFIG=#{ENV('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo printserver -g PUBSUB | " + ENV('TUXDIR') + "/bin/tmadmin -r")
+            do_cmd("export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo printserver -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
         when "prcs"
             do_psadmin_check ? nil : return
             do_cmd("#{PS_PSADMIN_PATH}/psadmin -p status -d #{domain}")
@@ -681,11 +681,11 @@ module Psadmin_plus
             end
         when "windows"
             puts "Windows support coming soon."		
-            #do_cmd(". #{ENV('PS_CFG_HOME')}/webserv/#{domain}/bin/setEnv.sh")
+            #do_cmd(". #{env('PS_CFG_HOME')}/webserv/#{domain}/bin/setEnv.sh")
 
             #find_sites.each do |s|
         #    # set vars
-            #    prop_file = "#{ENV('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/#{s}}/configuration.properties"
+            #    prop_file = "#{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/#{s}}/configuration.properties"
             #    url = "http://#{PS_PIA_HOST}.#{PS_PIA_DOMAIN}:#{PS_PIA_PORT}/psp/#{s}/?cmd=login&"
             #    # set reload in config.props 
             #    do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=1/g' #{prop_file}")

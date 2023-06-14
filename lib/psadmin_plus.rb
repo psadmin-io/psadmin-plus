@@ -49,22 +49,11 @@ def do_help
     puts " "
 end
 
-log = Logger.new(STDOUT)
-log.formatter = proc do |severity, datetime, progname, msg|
-    date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
-    case severity
-    when "INFO"
-        "[#{date_format}] ☆ #{severity.ljust(5)}: " + green(msg) + "'\n"
-    when "DEBUG"
-        "[#{date_format}] ★ #{severity.ljust(5)}: " + red(msg) + "'\n"
-    end
-end
-
 def colorize(text, color_code); "\e[#{color_code}m#{text}\e[0m"; end
 def red(text); colorize(text, 31); end
 def green(text); colorize(text, 32); end
-def info(msg); log.info(msg); end
-def debug(msg); log.debug(msg); end
+def info(msg); logger.info(msg); end
+def debug(msg); logger.debug(msg); end
 
 def do_is_runtime_user_nix
     result = ENV['USER'] == PS_RUNTIME_USER ? true : false

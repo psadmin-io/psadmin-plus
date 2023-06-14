@@ -1,11 +1,23 @@
 #!/usr/bin/env ruby
 
 begin
-  require 'psadmin_plus'
+    require 'psadmin_plus'
 rescue LoadError
-  # running directly, not through gem install
-  require_relative '../lib/psadmin_plus.rb'
+    # running directly, not through gem install
+    require_relative '../lib/psadmin_plus.rb'
 end
+
+logger = Logger.new($stdout)
+logger.formatter = proc do |severity, datetime, progname, msg|
+    date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
+    case severity
+    when "INFO"
+        "[#{date_format}] ☆ #{severity.ljust(5)}: " + green(msg) + "'\n"
+    when "DEBUG"
+        "[#{date_format}] ★ #{severity.ljust(5)}: " + red(msg) + "'\n"
+    end
+end
+
 
 # options
 opts_c   = ARGV.shift || "help"
@@ -13,13 +25,13 @@ opts_t   = ARGV.shift || "all"
 opts_d   = ARGV.shift || "all"
 # Set remaining arguments as environment variables
 ARGV.each do |arg|
-  if arg.include? "="
-    var = arg.split('=')
-	ENV[var[0]]=var[1]
-    puts "Setting environment variable " + var[0] + "=" + var[1]
-  else
-    # puts "Skip argument, no valid environment variable found."
-  end
+    if arg.include? "="
+        var = arg.split('=')
+        ENV[var[0]]=var[1]
+        puts "Setting environment variable " + var[0] + "=" + var[1]
+    else
+        # puts "Skip argument, no valid environment variable found."
+    end
 end
 
 commands = opts_c.split(',')

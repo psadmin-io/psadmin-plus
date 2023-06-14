@@ -20,6 +20,7 @@ module Logging
       logger.formatter = proc do |severity, datetime, progname, msg|
           date_format = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ") 
           "#{cmd} (#{severity}): #{msg}\n"
+      end
     end
   end
 end

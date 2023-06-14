@@ -1,6 +1,6 @@
 module Logging
   protected
-  
+
   def colorize(text, color_code)
     "\e[#{color_code}m#{text}\e[0m"
   end
@@ -14,15 +14,15 @@ module Logging
   end
 
   def info(msg)
-    logger.info msg
+    @logger.info msg
   end
 
   def warn(msg)
-    logger.warn msg
+    @logger.warn msg
   end
 
   def debug(msg)
-    logger.debug msg
+    @logger.debug msg
   end
 
   def logger

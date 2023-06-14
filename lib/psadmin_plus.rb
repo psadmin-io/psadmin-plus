@@ -5,7 +5,6 @@ require 'etc'
 require 'open3'
 require_relative 'runner'
 require_relative 'logger'
-
 include Logging
 
 def do_help

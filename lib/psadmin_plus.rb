@@ -59,7 +59,7 @@ def env(var)
    result = "#{OS_CONST}" == "linux" ? "${#{var}}" : "%#{var}%"
 end
 
-def do_cmd(cmd, print = true, powershell = true, timestamp = "no")
+def do_cmd(cmd, print = true, powershell = true, timestamp = nil)
     case "#{OS_CONST}"
     when "linux"
         if do_is_runtime_user_nix
@@ -74,7 +74,7 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = "no")
                 when "true"
                     p "Command: sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'"
                 end
-                stdout, status = Open3.capture2e("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
+                stdout, stderr, status = Open3.capture3("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
             else
                 print "#{PS_RUNTIME_USER} "
                 case "#{PS_PSA_DEBUG}"
@@ -103,31 +103,28 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = "no")
         out = "Invalid OS"
     end
 
+    *lines = stdout.split(/\n/)
+    lines[0...-2].each do | line |
+        do_output(line, timestamp)
+    end
+
+end
+
+def do_output(line, timestamp = nil)
+
+    utctime = ""
     # Handle Output - Check if timestamps are requested
     # - override if parameter is "off" for internal calls
     case "#{PS_PSA_TIMESTAMP}"
     when "true"
         if timestamp != "off"
-            timestamp = "on"
+            utctime = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")
         end
     end
-
-    if timestamp == "off" || timestamp == "no"
-        print ? (puts stdout) : result = stdout 
-        stdout
-    else
-        *lines = stdout.split(/\n/)
-        lines[0...-2].each do | line |
-            do_output(line)
-        end
-    end
-
-end
-
-def do_output(line)
+    
     if !line.empty?
         if line != '> '
-            puts (Time.now.strftime("[%Y-%m-%d %H:%M:%S] ") + line).gsub('"', '')
+            puts (utctime + line).gsub('"', '')
         end
     end
 end

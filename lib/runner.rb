@@ -60,22 +60,18 @@ class Runner
 
             if stream == stdout
               @stdout << data
-              $stdout.write(data)
+              if realtime == "all"
+                $stdout.write(data)
+              end
             else
               @stderr << data
-              $stderr.write(data)
+              if realtime == "all"
+                $stderr.write(data)
+              end
             end
           end
         end
       end
-      # DJI
-      # if @realtime == true
-      #   Thread.new do
-      #     stdout.each {|l| puts l }
-      #     stderr.each {|l| puts l }
-      #   end
-      #   wait_thread.value
-      # end
       @exit_status = wait_thr.value.exitstatus
     end
 

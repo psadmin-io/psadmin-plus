@@ -6,6 +6,8 @@ require 'open3'
 require_relative 'runner'
 require_relative 'logger'
 
+include Logging
+
 def do_help
     puts "Usage: psa [command] <type> <domain>"
     puts " "
@@ -48,13 +50,6 @@ def do_help
     puts "Each parameter type can be enter in a comma separated list "
     puts " "
 end
-
-def colorize(text, color_code)
-    "\e[#{color_code}m#{text}\e[0m"
-end
-
-def red(text); colorize(text, 31); end
-def green(text); colorize(text, 32); end
 
 def do_is_runtime_user_nix
     result = ENV['USER'] == PS_RUNTIME_USER ? true : false

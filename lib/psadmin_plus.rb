@@ -114,17 +114,17 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = nil)
     end
 
     if timestamp == "off"
-        stdout
+        runner.stdout
     else
         # Standard Output
-        *lines = stdout.split(/\n/)
+        *lines = runner.stdout.split(/\n/)
         # lines[0...-2].each do | line | # Remove two trailing extra lines
         lines.each do | line |
             do_output(line, timestamp)
         end
 
         # Standard Error
-        *lines = stderr.split(/\n/)
+        *lines = runner.stderr.split(/\n/)
         # lines[0...-2].each do | line | # Remove two trailing extra lines
         lines.each do | line |
             do_output(line, timestamp, true)

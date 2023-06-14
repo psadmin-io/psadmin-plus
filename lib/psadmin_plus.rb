@@ -50,6 +50,13 @@ def do_help
     puts " "
 end
 
+def colorize(text, color_code); "\e[#{color_code}m#{text}\e[0m"; end
+def red(text); colorize(text, 31); end
+def green(text); colorize(text, 32); end
+def info(msg); logger.info msg; end
+def warn(msg); logger.warn msg; end
+def debug(msg); logger.debug msg; end
+
 def do_is_runtime_user_nix
     result = ENV['USER'] == PS_RUNTIME_USER ? true : false
 end

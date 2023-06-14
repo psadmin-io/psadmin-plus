@@ -1,30 +1,6 @@
 module Logging
   protected
 
-  def colorize(text, color_code)
-    "\e[#{color_code}m#{text}\e[0m"
-  end
-
-  def red(text)
-    colorize(text, 31)
-  end
-  
-  def green(text)
-    colorize(text, 32)
-  end
-
-  def info(msg)
-    Logging::logger.info msg
-  end
-
-  def warn(msg)
-    Logging::logger.warn msg
-  end
-
-  def debug(msg)
-    Logging::logger.debug msg
-  end
-
   def logger
     @logger ||= Logger.new(STDOUT).tap do |logger|
       log_level_from_env = ENV['PS_PSA_DEBUG']

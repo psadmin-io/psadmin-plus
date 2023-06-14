@@ -36,7 +36,14 @@ class Runner
 
   # @return [Boolean] success or failure?
   def success?
-    exit_status.zero?
+    case exit_status
+    when 0
+        true
+    when 40 # stop an already stopped domain
+        true
+    else
+        false
+    end
   end
 
   # Run the command, return self

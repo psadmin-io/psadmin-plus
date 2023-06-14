@@ -9,7 +9,7 @@ require_relative 'runner'
 module PsadminPlus
 
     @@logger = Logger.new($stdout)
-    logger.formatter = proc do |severity, datetime, progname, msg|
+    @@logger.formatter = proc do |severity, datetime, progname, msg|
         date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
         case severity
         when "INFO"

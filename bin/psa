@@ -7,7 +7,7 @@ rescue LoadError
     require_relative '../lib/psadmin_plus.rb'
 end
 
-include Psadmin_plus
+include PsadminPlus
 
 # options
 opts_c   = ARGV.shift || "help"

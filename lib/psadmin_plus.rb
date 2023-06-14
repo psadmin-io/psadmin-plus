@@ -6,9 +6,9 @@ require 'open3'
 require 'logger'
 require_relative 'runner'
 
-module Psadmin_plus
+module PsadminPlus
 
-    logger = Logger.new($stdout)
+    @@logger = Logger.new($stdout)
     logger.formatter = proc do |severity, datetime, progname, msg|
         date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
         case severity
@@ -59,8 +59,8 @@ module Psadmin_plus
     def colorize(text, color_code); "\e[#{color_code}m#{text}\e[0m"; end
     def red(text); colorize(text, 31); end
     def green(text); colorize(text, 32); end
-    def info(msg); logger.info(msg); end
-    def debug(msg); logger.debug(msg); end
+    def info(msg); PsadminPlus.logger.info(msg); end
+    def debug(msg); PsadminPlus.logger.debug(msg); end
 
     def os
         @os ||= (

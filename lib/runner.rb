@@ -43,37 +43,37 @@ class Runner
   # @return [Runner]
   def run
     Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
-      # DJI
-      # until [stdout, stderr].all?(&:eof?)
-      #   readable = IO.select([stdout, stderr])
-      #   next unless readable&.first
+      until [stdout, stderr].all?(&:eof?)
+        readable = IO.select([stdout, stderr])
+        next unless readable&.first
 
-      #   readable.first.each do |stream|
-      #     data = +''
-      #     # rubocop:disable Lint/HandleExceptions
-      #     begin
-      #       stream.read_nonblock(1024, data)
-      #     rescue EOFError
-      #       # ignore, it's expected for read_nonblock to raise EOFError
-      #       # when all is read
-      #     end
+        readable.first.each do |stream|
+          data = +''
+          # rubocop:disable Lint/HandleExceptions
+          begin
+            stream.read_nonblock(1024, data)
+          rescue EOFError
+            # ignore, it's expected for read_nonblock to raise EOFError
+            # when all is read
+          end
 
-      #     if stream == stdout
-      #       @stdout << data
-      #       $stdout.write(data)
-      #     else
-      #       @stderr << data
-      #       $stderr.write(data)
-      #     end
-      #   end
-      # end
-      if @realtime == true
-        Thread.new do
-          stdout.each {|l| puts l }
-          stderr.each {|l| puts l }
+          if stream == stdout
+            @stdout << data
+            $stdout.write(data)
+          else
+            @stderr << data
+            $stderr.write(data)
+          end
         end
-        wait_thread.value
       end
+      # DJI
+      # if @realtime == true
+      #   Thread.new do
+      #     stdout.each {|l| puts l }
+      #     stderr.each {|l| puts l }
+      #   end
+      #   wait_thread.value
+      # end
       @exit_status = wait_thr.value.exitstatus
     end
 

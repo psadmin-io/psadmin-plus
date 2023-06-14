@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'os'
 begin
     require 'psadmin_plus'
 rescue LoadError
@@ -44,7 +43,7 @@ if File.exists?(PS_PSA_CONF) then
 end
 
 # constants
-OS_CONST            = os
+OS_CONST            = psadmin_plus.os
 PS_RUNTIME_USER     = ENV['PS_RUNTIME_USER'] || "psadm2"
 PS_HOOK_INTERP      = ENV['PS_HOOK_INTERP'] || "ruby"
 PS_HOOK_PRE         = ENV['PS_HOOK_PRE'] || "false"

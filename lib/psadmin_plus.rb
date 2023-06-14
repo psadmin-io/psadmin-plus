@@ -26,7 +26,6 @@ module Psadmin_plus
         puts "        "
         puts "    help           display this help message"
         puts "    list           list domains"
-        #puts "    admin          launch psadmin"
         puts "    summary        PS_CFG_HOME summary, no type or domain needed"
         puts "    status         status of the domain"
         puts "    start          hookstart, if enabled, then start the domain"
@@ -45,18 +44,13 @@ module Psadmin_plus
         puts "    prcs           act on process scheduler domains"
         puts "    web            act on web domains"
         puts "    all,<blank>    act on web, app, and prcs domains"
-        puts "    pubsub         act on PUBSUB group of application domains (status only)"
-        puts "    tux            act on tuxedo domain (status only)"
+        puts "    pubsub         (status only) PUBSUB group status"
+        puts "    tux            (status only) Tuxedo Queue status"
         puts "        "
         puts "Domains:"
         puts "        "
         puts "    dom            act on specific domains"
         puts "    all,<blank>    act on all domains"
-        puts " "
-        puts "Tux Status Options"
-        puts " "
-        puts "    psr            print server status"
-        puts "    pq             print queue status"
         puts " "
         puts "Each parameter type can be enter in a comma separated list "
         puts " "
@@ -67,6 +61,24 @@ module Psadmin_plus
     def green(text); colorize(text, 32); end
     def info(msg); logger.info(msg); end
     def debug(msg); logger.debug(msg); end
+
+    def os
+        @os ||= (
+            host_os = RbConfig::CONFIG['host_os']
+                case host_os
+                when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
+                    :windows
+                when /darwin|mac os/
+                    :macosx
+                when /linux/
+                    :linux
+                when /solaris|bsd/
+                    :unix
+                else
+                    raise Error::WebDriverError, "unknown os: #{host_os.inspect}"
+                end
+        )
+    end
 
     def do_is_runtime_user_nix
         result = ENV['USER'] == PS_RUNTIME_USER ? true : false
@@ -189,7 +201,7 @@ module Psadmin_plus
     def find_apps_nix
         case "#{PS_MULTI_HOME}"
         when "false"
-            apps = do_cmd("find #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
+            apps = do_cmd("find #{ENV('PS_CFG_HOME')}/appserv/*/psappsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
         else
             apps = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
         end
@@ -199,7 +211,7 @@ module Psadmin_plus
     def find_prcss_nix
         case "#{PS_MULTI_HOME}"
         when "false"
-            prcss = do_cmd("find #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
+            prcss = do_cmd("find #{ENV('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
         else 
             prcss = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
         end
@@ -209,7 +221,7 @@ module Psadmin_plus
     def find_webs_nix
         case "#{PS_MULTI_HOME}"
         when "false"
-            webs = do_cmd("find #{env('PS_CFG_HOME')}/webserv/*/piaconfig -maxdepth 0",false,false,"internal").split(/\n+/)
+            webs = do_cmd("find #{ENV('PS_CFG_HOME')}/webserv/*/piaconfig -maxdepth 0",false,false,"internal").split(/\n+/)
         else
             webs = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig -maxdepth 0",false,false,"internal").split(/\n+/)
         end
@@ -224,7 +236,7 @@ module Psadmin_plus
     def find_apps_win
         case "#{PS_MULTI_HOME}"
         when "false"
-            apps = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            apps = do_cmd("(get-childitem #{ENV('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         else
             apps = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         end
@@ -234,7 +246,7 @@ module Psadmin_plus
     def find_prcss_win
         case "#{PS_MULTI_HOME}"
         when "false"
-            prcss = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            prcss = do_cmd("(get-childitem #{ENV('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         else
             prcss = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         end
@@ -244,7 +256,7 @@ module Psadmin_plus
     def find_webs_win
         case "#{PS_MULTI_HOME}"
         when "false"
-            webs = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            webs = do_cmd("(get-childitem #{ENV('PS_CFG_HOME')}/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         else
             webs = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         end
@@ -253,7 +265,7 @@ module Psadmin_plus
 
     def find_sites_win(domain)
         #TODO
-        #sites = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+        #sites = do_cmd("(get-childitem #{ENV('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
         #sites.map! {|site| site.split("\\")[-2]}
     end
 
@@ -284,9 +296,9 @@ module Psadmin_plus
     def do_list
         puts "---"
         print "hostname:        " ; do_cmd('hostname')
-        print "ps-home:         " ; do_cmd('echo ' + env('PS_HOME'))
+        print "ps-home:         " ; do_cmd('echo ' + ENV('PS_HOME'))
         if PS_MULTI_HOME == "false" 
-            print "ps-cfg-home:       " ; do_cmd('echo ' + env('PS_CFG_HOME'))
+            print "ps-cfg-home:       " ; do_cmd('echo ' + ENV('PS_CFG_HOME'))
         else
             puts "ps-cfg-home base:  #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*"  
         end
@@ -357,10 +369,10 @@ module Psadmin_plus
             do_cmd("#{PS_PSADMIN_PATH}/psadmin -c pslist -d #{domain}")
         when "tux"
             do_psadmin_check ? nil : return
-            do_cmd("export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo pq | " + env('TUXDIR') + "/bin/tmadmin -r ")
+            do_cmd("export TUXCONFIG=#{ENV('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo pq | " + ENV('TUXDIR') + "/bin/tmadmin -r ")
         when "pubsub"
             do_psadmin_check ? nil : return
-            do_cmd("export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo printserver -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
+            do_cmd("export TUXCONFIG=#{ENV('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo printserver -g PUBSUB | " + ENV('TUXDIR') + "/bin/tmadmin -r")
         when "prcs"
             do_psadmin_check ? nil : return
             do_cmd("#{PS_PSADMIN_PATH}/psadmin -p status -d #{domain}")
@@ -669,11 +681,11 @@ module Psadmin_plus
             end
         when "windows"
             puts "Windows support coming soon."		
-            #do_cmd(". #{env('PS_CFG_HOME')}/webserv/#{domain}/bin/setEnv.sh")
+            #do_cmd(". #{ENV('PS_CFG_HOME')}/webserv/#{domain}/bin/setEnv.sh")
 
             #find_sites.each do |s|
         #    # set vars
-            #    prop_file = "#{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/#{s}}/configuration.properties"
+            #    prop_file = "#{ENV('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/#{s}}/configuration.properties"
             #    url = "http://#{PS_PIA_HOST}.#{PS_PIA_DOMAIN}:#{PS_PIA_PORT}/psp/#{s}/?cmd=login&"
             #    # set reload in config.props 
             #    do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=1/g' #{prop_file}")
@@ -690,21 +702,4 @@ module Psadmin_plus
         puts ""
     end
 
-    def os
-        @os ||= (
-            host_os = RbConfig::CONFIG['host_os']
-                case host_os
-                when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
-                    :windows
-                when /darwin|mac os/
-                    :macosx
-                when /linux/
-                    :linux
-                when /solaris|bsd/
-                    :unix
-                else
-                    raise Error::WebDriverError, "unknown os: #{host_os.inspect}"
-                end
-        )
-    end
 end

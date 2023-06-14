@@ -8,7 +8,7 @@ require_relative 'runner'
 
 module Psadmin_plus
 
-    class psa
+    class Psa
         logger = Logger.new($stdout)
         logger.formatter = proc do |severity, datetime, progname, msg|
             date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
@@ -702,6 +702,6 @@ module Psadmin_plus
             end
             puts ""
         end
-        
+
     end # End Class
 end # End Module

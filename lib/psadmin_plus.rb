@@ -103,9 +103,14 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = nil)
         out = "Invalid OS"
     end
 
-    *lines = stdout.split(/\n/)
-    lines[0...-2].each do | line |
-        do_output(line, timestamp)
+    if timestamp == "off"
+        stdout
+    else
+        *lines = stdout.split(/\n/)
+        # lines[0...-2].each do | line | # Remove two trailing extra lines
+        lines.each do | line |
+            do_output(line, timestamp)
+        end
     end
 
 end

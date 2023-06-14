@@ -14,15 +14,15 @@ module Logging
   end
 
   def info(msg)
-    @logger.info msg
+    Logging::logger.info msg
   end
 
   def warn(msg)
-    @logger.warn msg
+    Logging::logger.warn msg
   end
 
   def debug(msg)
-    @logger.debug msg
+    Logging::logger.debug msg
   end
 
   def logger

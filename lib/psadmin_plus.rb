@@ -84,8 +84,9 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = nil)
                 end
                 # stdout, stderr, status = Open3.capture3("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
                 runner = Runner.new("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
+                runner.realtime = true
                 runner.run
-                runner.stdout
+                # runner.stdout
             else
                 print "#{PS_RUNTIME_USER} "
                 case "#{PS_PSA_DEBUG}"
@@ -135,6 +136,13 @@ def process_output(stdout, stderr, exitcode, timestamp = nil)
     lines.each do | line |
         do_output(line, timestamp, true)
     end
+
+    case "exitcode"
+    when 1
+        do_output("psadmin returned an error", timestamp, true)
+        exit 1
+    end
+
 end
 
 def do_output(line, timestamp = nil, err = false)

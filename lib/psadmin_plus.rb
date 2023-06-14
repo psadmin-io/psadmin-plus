@@ -123,14 +123,14 @@ end
 
 def process_output(stdout, stderr, exitcode, timestamp = nil)
     # Standard Output
-    *lines = runner.stdout.split(/\n/)
+    *lines = stdout.split(/\n/)
     # lines[0...-2].each do | line | # Remove two trailing extra lines
     lines.each do | line |
         do_output(line, timestamp)
     end
 
     # Standard Error
-    *lines = runner.stderr.split(/\n/)
+    *lines = stderr.split(/\n/)
     # lines[0...-2].each do | line | # Remove two trailing extra lines
     lines.each do | line |
         do_output(line, timestamp, true)

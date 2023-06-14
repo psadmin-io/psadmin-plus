@@ -7,18 +7,6 @@ rescue LoadError
     require_relative '../lib/psadmin_plus.rb'
 end
 
-logger = Logger.new($stdout)
-logger.formatter = proc do |severity, datetime, progname, msg|
-    date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
-    case severity
-    when "INFO"
-        "[#{date_format}] ☆ #{severity.ljust(5)}: " + green(msg) + "'\n"
-    when "DEBUG"
-        "[#{date_format}] ★ #{severity.ljust(5)}: " + red(msg) + "'\n"
-    end
-end
-
-
 # options
 opts_c   = ARGV.shift || "help"
 opts_t   = ARGV.shift || "all"

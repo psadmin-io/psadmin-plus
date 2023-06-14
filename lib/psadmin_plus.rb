@@ -121,7 +121,7 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = nil)
         end
 
         # Standard Error
-        *lines = stdout.split(/\n/)
+        *lines = stderr.split(/\n/)
         # lines[0...-2].each do | line | # Remove two trailing extra lines
         lines.each do | line |
             do_output(line, timestamp, true)

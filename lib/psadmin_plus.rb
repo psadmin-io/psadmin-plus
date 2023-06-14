@@ -85,6 +85,7 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = nil)
                 # stdout, stderr, status = Open3.capture3("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
                 runner = Runner.new("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
                 runner.run
+                runner.stdout
             else
                 print "#{PS_RUNTIME_USER} "
                 case "#{PS_PSA_DEBUG}"
@@ -113,34 +114,37 @@ def do_cmd(cmd, print = true, powershell = true, timestamp = nil)
         out = "Invalid OS"
     end
 
-    if timestamp == "off"
+    if timestamp == "internal"
         runner.stdout
     else
-        # Standard Output
-        *lines = runner.stdout.split(/\n/)
-        # lines[0...-2].each do | line | # Remove two trailing extra lines
-        lines.each do | line |
-            do_output(line, timestamp)
-        end
+        process_output(runnder.stdout, runner.stderr, runner.success, timestamp)
+    end
+end
 
-        # Standard Error
-        *lines = runner.stderr.split(/\n/)
-        # lines[0...-2].each do | line | # Remove two trailing extra lines
-        lines.each do | line |
-            do_output(line, timestamp, true)
-        end
+def process_output(stdout, stderr, exitcode, timestamp = nil)
+    # Standard Output
+    *lines = runner.stdout.split(/\n/)
+    # lines[0...-2].each do | line | # Remove two trailing extra lines
+    lines.each do | line |
+        do_output(line, timestamp)
     end
 
+    # Standard Error
+    *lines = runner.stderr.split(/\n/)
+    # lines[0...-2].each do | line | # Remove two trailing extra lines
+    lines.each do | line |
+        do_output(line, timestamp, true)
+    end
 end
 
 def do_output(line, timestamp = nil, err = false)
 
     utctime = ""
     # Handle Output - Check if timestamps are requested
-    # - override if parameter is "off" for internal calls
+    # - override if parameter is "internal" for internal calls
     case "#{PS_PSA_TIMESTAMP}"
     when "true"
-        if timestamp != "off"
+        if timestamp != "internal"
             utctime = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")
         end
     end
@@ -180,9 +184,9 @@ end
 def find_apps_nix
     case "#{PS_MULTI_HOME}"
     when "false"
-        apps = do_cmd("find #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx 2>/dev/null",false,false,"off").split(/\n+/)
+        apps = do_cmd("find #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
     else
-        apps = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx 2>/dev/null",false,false,"off").split(/\n+/)
+        apps = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
     end
     apps.map! {|app| app.split("/")[-2]}
 end
@@ -190,9 +194,9 @@ end
 def find_prcss_nix
     case "#{PS_MULTI_HOME}"
     when "false"
-        prcss = do_cmd("find #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",false,false,"off").split(/\n+/)
+        prcss = do_cmd("find #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
     else 
-        prcss = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",false,false,"off").split(/\n+/)
+        prcss = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",false,false,"internal").split(/\n+/)
     end
     prcss.map! {|prcs| prcs.split("/")[-2]}
 end
@@ -200,24 +204,24 @@ end
 def find_webs_nix
     case "#{PS_MULTI_HOME}"
     when "false"
-        webs = do_cmd("find #{env('PS_CFG_HOME')}/webserv/*/piaconfig -maxdepth 0",false,false,"off").split(/\n+/)
+        webs = do_cmd("find #{env('PS_CFG_HOME')}/webserv/*/piaconfig -maxdepth 0",false,false,"internal").split(/\n+/)
     else
-        webs = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig -maxdepth 0",false,false,"off").split(/\n+/)
+        webs = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig -maxdepth 0",false,false,"internal").split(/\n+/)
     end
     webs.map! {|web| web.split("/")[-2]}
 end
 
 def find_sites_nix(domain)
-    webs = do_cmd("find ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/* -maxdepth 0",false,false,"off").split(/\n+/)
+    webs = do_cmd("find ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/* -maxdepth 0",false,false,"internal").split(/\n+/)
     webs.map! {|site| site.split("/")[-1]}
 end
 
 def find_apps_win
     case "#{PS_MULTI_HOME}"
     when "false"
-        apps = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"off").split(/\n+/)
+        apps = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
     else
-        apps = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"off").split(/\n+/)
+        apps = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
     end
     apps.map! {|app| app.split('\\')[-2]}
 end
@@ -225,9 +229,9 @@ end
 def find_prcss_win
     case "#{PS_MULTI_HOME}"
     when "false"
-        prcss = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"off").split(/\n+/)
+        prcss = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
     else
-        prcss = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"off").split(/\n+/)
+        prcss = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
     end
     prcss.map! {|prcs| prcs.split("\\")[-2]}
 end
@@ -235,9 +239,9 @@ end
 def find_webs_win
     case "#{PS_MULTI_HOME}"
     when "false"
-        webs = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"off").split(/\n+/)
+        webs = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
     else
-        webs = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"off").split(/\n+/)
+        webs = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
     end
     webs.map! {|web| web.split("\\")[-2]}
 end

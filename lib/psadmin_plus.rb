@@ -343,6 +343,8 @@ module PsadminPlus
         puts "PS_MULTI_HOME:     #{PS_MULTI_HOME}"
         puts "PS_PARALLEL_BOOT:  #{PS_PARALLEL_BOOT}"
         puts "PS_PSA_DEBUG:      #{PS_PSA_DEBUG}"
+        puts "PS_PSA_TIMETAMP:   #{PS_PSA_TIMESTAMP}"
+        puts "PS_PSA_OUTPUT:     #{PS_PSA_OUTPUT}"
         puts "" 
         puts "app:"
         find_apps.each do |a|

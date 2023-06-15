@@ -126,6 +126,7 @@ module PsadminPlus
             out = "Invalid OS"
         end
 
+        # "internal" is used to bypass output processing for psa internal functions
         if timestamp == "internal"
             runner.stdout
         else

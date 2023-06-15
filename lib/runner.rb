@@ -50,7 +50,7 @@ class Runner
   # @return [Runner]
   def run
     Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
-      if realtime == "all" || realtime == "summary"
+      if realtime == "all" # || realtime == "summary"
         until [stdout, stderr].all?(&:eof?)
           readable = IO.select([stdout, stderr])
           next unless readable&.first
@@ -91,7 +91,7 @@ class Runner
   def run!
     return run.stdout if run.success?
 
-    raise(Error, "command failed, exit: %d - stdout: %s / stderr: %s" % [exit_status, stdout, stderr])
+    raise(Error, "psadmin returned an error, exit: %d - stdout: %s / stderr: %s" % [exit_status, stdout, stderr])
   end
 
   # Run the command and return true if success, false if failure

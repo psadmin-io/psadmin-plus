@@ -137,6 +137,8 @@ module PsadminPlus
     def process_output(stdout, stderr, success, timestamp)
         if PS_PSA_OUTPUT == "summary"
             print_std(stdout, timestamp)
+            print_std(stderr, timestamp, false, true)
+            
         end
 
         case success
@@ -153,12 +155,22 @@ module PsadminPlus
         end
     end
 
-    def print_std(std, timestamp, err = false)
+    def print_std(std, timestamp, err = false, summary = false)
         # Standard Output
         *lines = std.split(/\n/)
         lines.each do | line |
-            do_output(line, timestamp, err)
+            if summary
+                if line_matches(line)
+                    do_output(line, timestamp, err)
+                end
+            else
+                do_output(line, timestamp, err)
+            end
         end
+    end
+
+    def line_matches(line)
+        line.include?("processes started") || line.include?("processes stopped")
     end
 
     def do_output(line, timestamp = nil, err = false)

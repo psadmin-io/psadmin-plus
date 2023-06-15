@@ -98,6 +98,11 @@ module PsadminPlus
     end
 
     def do_cmd(cmd:, internal: false)
+        if internal
+            output = "off"
+        else
+            output = PS_PSA_OUTPUT
+        end
         prefix = ""
         suffix = ""
         case "#{OS_CONST}"
@@ -121,7 +126,7 @@ module PsadminPlus
         end
 
         debug "Command: #{prefix}#{cmd}#{suffix}"
-        runner = Runner.new("#{prefix}#{cmd}#{suffix}", realtime = PS_PSA_OUTPUT)
+        runner = Runner.new("#{prefix}#{cmd}#{suffix}", realtime = output)
         runner.run
 
         # "internal" is used to bypass output processing for psa internal functions

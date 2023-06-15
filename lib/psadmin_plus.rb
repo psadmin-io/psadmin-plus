@@ -128,7 +128,7 @@ module PsadminPlus
         end
 
         debug "Command: #{prefix}#{cmd}#{suffix}"
-        runner = Runner.new("#{cmd}'", realtime = PS_PSA_OUTPUT)
+        runner = Runner.new("#{prefix}#{cmd}#{suffix}", realtime = PS_PSA_OUTPUT)
         runner.run
 
         # "internal" is used to bypass output processing for psa internal functions

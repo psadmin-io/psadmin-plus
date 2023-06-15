@@ -15,10 +15,10 @@ module PsadminPlus
         case severity
         when "INFO"
             # "[#{date_format}] " + 
-            "  ☆".encode("ASCII", "UTF-8", invalid: :replace, undef: :replace, replace: "  * ") + " #{severity.ljust(5)}: " + green(msg) + "'\n"
+            "  \u2606 #{severity.ljust(5)}: " + green(msg) + "'\n"
         when "DEBUG"
             # "[#{date_format}] " + 
-            "  ★".encode("ASCII", "UTF-8", invalid: :replace, undef: :replace, replace: "  * ") + " #{severity.ljust(5)}: " + red(msg) + "'\n"
+            "  \u2605 #{severity.ljust(5)}: " + red(msg) + "'\n"
         end
     end
 

@@ -4,7 +4,7 @@ require 'rbconfig'
 require 'etc'
 require 'open3'
 require 'logger'
-require_relative 'runner'
+# require_relative 'runner'
 
 module PsadminPlus
 
@@ -95,7 +95,7 @@ module PsadminPlus
         result = "#{OS_CONST}" == "linux" ? "${#{var}}" : "%#{var}%"
     end
 
-    def do_cmd(cmd, print = true, powershell = true, timestamp = nil)
+    def do_cmd(cmd, print = true, powershell = true, internal = false)
         prefix = ''
         suffix = ''
 
@@ -125,57 +125,75 @@ module PsadminPlus
         end
 
         # Run command
-        debug "Command: #{prefix}#{cmd}#{suffix}"
-        runner = Runner.new("#{prefix}#{cmd}#{suffix}", realtime = PS_PSA_OUTPUT, timestamp = PS_PSA_TIMESTAMP)
-        runner.run
-
-        # "internal" is used to bypass output processing for psa internal functions
-        if timestamp == "internal"
-            runner.stdout
+        command = "#{prefix}#{cmd}#{suffix}"
+        debug "Command: #{command}"
+        Open3.popen3(command) do |_stdin, stdout, stderr, _wait_thr|
+            if !internal
+                case PS_PSA_OUTPUT
+                when "summary"
+                    output_stream = stdout
+                when "all"
+                    output_stream = stdout.merge(stderr)
+                end
+                
+                # Read the output line by line in real-time
+                output_stream.each do |line|
+                    line = add_timestamp(line.chomp)
+                    do_output(line)
+                end
+            else
+                puts stdout
+            end
+            exit_status = _wait_thr.value.exitstatus
+        end
+        # case exit_status
+        # when 0
+        #     true
+        # when 40 # stop an already stopped domain
+        #     true
         # else
-        #     # process_output(runner.stdout, runner.stderr, runner.success?, timestamp)
-        end
+        #     false
+        # end
     end
 
-    def process_output(stdout, stderr, success, timestamp)
-        if PS_PSA_OUTPUT == "summary"
-            print_std(stdout, timestamp)
-        end
-
-        case success
-        when true
-            if PS_PSA_OUTPUT == "quiet"
-                do_output("psadmin returned success", timestamp)
-            end
-        when false
-            do_output("psadmin returned an error", timestamp, true)
-            if PS_PSA_OUTPUT == "summary" || PS_PSA_OUTPUT == "quiet"
-                print_std(stderr, timestamp, true)
-            end
-            exit 1
-        end
-    end
-
-    def print_std(std, timestamp, err = false)
-        # Standard Output
-        *lines = std.split(/\n/)
-        lines.each do | line |
-            do_output(line, timestamp, err)
-        end
-    end
-
-    def do_output(line, timestamp = nil, err = false)
-
-        utctime = ""
+    def add_timestamp(line)
         # Handle Output - Check if timestamps are requested
         # - override if parameter is "internal" for internal calls
         case "#{PS_PSA_TIMESTAMP}"
         when "true"
-            if timestamp != "internal"
-                utctime = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")
-            end
+            utctime = Time.now.strftime("[%Y-%m-%d %H:%M:%S]")
         end
-        
+        "#{utctime} #{line}"
+    end
+
+    # def process_output(stdout, stderr, success)
+    #     if PS_PSA_OUTPUT == "summary"
+    #         print_std(stdout, timestamp)
+    #     end
+
+    #     case success
+    #     when true
+    #         if PS_PSA_OUTPUT == "quiet"
+    #             do_output("psadmin returned success", timestamp)
+    #         end
+    #     when false
+    #         do_output("psadmin returned an error", timestamp, true)
+    #         if PS_PSA_OUTPUT == "summary" || PS_PSA_OUTPUT == "quiet"
+    #             print_std(stderr, timestamp, true)
+    #         end
+    #         exit 1
+    #     end
+    # end
+
+    # def print_std(std, timestamp, err = false)
+    #     # Standard Output
+    #     *lines = std.split(/\n/)
+    #     lines.each do | line |
+    #         do_output(line, timestamp, err)
+    #     end
+    # end
+
+    def do_output(line, err = false)
         if !line.empty?
             if line != '> '
                 if !err

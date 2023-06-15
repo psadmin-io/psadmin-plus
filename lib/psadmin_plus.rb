@@ -187,7 +187,7 @@ module PsadminPlus
         utctime = ""
         # Handle Output - Check if timestamps are requested
         # - override if parameter is "internal" for internal calls
-        case "#{PS_PSA_TIMESTAMP}"
+        case timestamp
         when "true"
             if timestamp != "internal"
                 utctime = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")

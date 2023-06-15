@@ -280,7 +280,7 @@ module PsadminPlus
 
     def find_sites_win(domain)
         #TODO
-        #sites = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
+        #sites = do_cmd(cmd: "(get-childitem #{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false).split(/\n+/)
         #sites.map! {|site| site.split("\\")[-2]}
     end
 
@@ -305,7 +305,7 @@ module PsadminPlus
     end
 
     def do_admin
-        do_cmd("#{PS_PSADMIN_PATH}/psadmin") 
+        do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin") 
     end
 
     def do_list
@@ -372,7 +372,7 @@ module PsadminPlus
 
         do_psadmin_check ? nil : exit
 
-        do_cmd("#{PS_PSADMIN_PATH}/psadmin -envsummary")
+        do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -envsummary")
         #do_status("web","all")
     end
 
@@ -380,24 +380,24 @@ module PsadminPlus
         case type
         when "app"
             do_psadmin_check ? nil : return
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -c sstatus -d #{domain}")
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -c cstatus -d #{domain}")
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -c qstatus -d #{domain}")
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -c pslist -d #{domain}")
+            do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -c sstatus -d #{domain}")
+            do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -c cstatus -d #{domain}")
+            do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -c qstatus -d #{domain}")
+            do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -c pslist -d #{domain}")
         when "tux"
             do_psadmin_check ? nil : return
-            do_cmd("export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo pq | " + env('TUXDIR') + "/bin/tmadmin -r ")
+            do_cmd(cmd: "export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo pq | " + env('TUXDIR') + "/bin/tmadmin -r ")
         when "pubsub"
             do_psadmin_check ? nil : return
-            do_cmd("export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo printserver -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
+            do_cmd(cmd: "export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo printserver -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
         when "prcs"
             do_psadmin_check ? nil : return
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -p status -d #{domain}")
+            do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -p status -d #{domain}")
         when "web"
             # TODO - PIA script status? 1. psadmin, 2. script, 3. lock file, 4. service
             #do_psadmin_check ? nil : return
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -w status -d #{domain}")
-            #do_cmd("${PS_CFG_HOME?}/webserv/#{domain}/bin/singleserverStatus.sh")
+            do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -w status -d #{domain}")
+            #do_cmd(cmd: "${PS_CFG_HOME?}/webserv/#{domain}/bin/singleserverStatus.sh")
             #if File.exist?("#{ENV['PS_CFG_HOME']}/webserv/#{domain}/servers/PIA/tmp/PIA.lok")
         else
             puts "Invalid type, see psa help"
@@ -437,7 +437,7 @@ module PsadminPlus
             do_hookstart("start",type,domain)
         when "pubsub"
             ENV['TUXCONFIG'] = "#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG"
-            do_cmd("echo 'boot -g PUBSUB' | #{ENV['TUXDIR']}/bin/tmadmin")
+            do_cmd(cmd: "echo 'boot -g PUBSUB' | #{ENV['TUXDIR']}/bin/tmadmin")
             # do_hookstart("start",type,domain) - TODO skip hook for PUBSUB?
         when "prcs"
             case "#{PS_WIN_SERVICES}"
@@ -508,7 +508,7 @@ module PsadminPlus
         when "pubsub"
             # do_hookstop("stop",type,domain) - TODO skip hook for PUBSUB?
             ENV['TUXCONFIG'] = "#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG"
-            do_cmd("echo 'shutdown -g PUBSUB' | #{ENV['TUXDIR']}/bin/tmadmin")
+            do_cmd(cmd: "echo 'shutdown -g PUBSUB' | #{ENV['TUXDIR']}/bin/tmadmin")
         when "prcs"
             do_hookstop("stop",type,domain)
             case "#{PS_WIN_SERVICES}"
@@ -546,15 +546,15 @@ module PsadminPlus
     def do_kill(type, domain)
         case type
         when "app"
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -c shutdown! -d #{domain}")
+            do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -c shutdown! -d #{domain}")
         when "prcs"
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -p kill -d #{domain}")
+            do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -p kill -d #{domain}")
         when "web"
             case "#{OS_CONST}"
             when "windows"
-                do_cmd("(gwmi win32_process | where {$_.Name -eq 'Java.exe'} | where {$_.CommandLine -match '#{domain}'}).ProcessId  -ErrorAction SilentlyContinue | % { stop-process $_ -force } -ErrorAction SilentlyContinue")
+                do_cmd(cmd: "(gwmi win32_process | where {$_.Name -eq 'Java.exe'} | where {$_.CommandLine -match '#{domain}'}).ProcessId  -ErrorAction SilentlyContinue | % { stop-process $_ -force } -ErrorAction SilentlyContinue")
             when "linux"
-                do_cmd("kill $(ps aux|grep java|grep ${PS_CFG_HOME?}/webserv/#{domain}/piaconfig|awk ' {print $2}')")
+                do_cmd(cmd: "kill $(ps aux|grep java|grep ${PS_CFG_HOME?}/webserv/#{domain}/piaconfig|awk ' {print $2}')")
             end
         else
             puts "Invalid type, see psa help"
@@ -564,9 +564,9 @@ module PsadminPlus
     def do_configure(type, domain)
         case type
         when "app"
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -c configure -d #{domain}")
+            do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -c configure -d #{domain}")
         when "prcs"
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -p configure -d #{domain}")
+            do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -p configure -d #{domain}")
         when "web"
             do_webprof_reload("#{domain}")
         else
@@ -577,22 +577,22 @@ module PsadminPlus
     def do_purge(type, domain)
         case type
         when "app"
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -c purge -d #{domain}")
+            do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -c purge -d #{domain}")
         when "prcs"
             case "#{OS_CONST}"
             when "linux"
-                do_cmd("rm -rf ${PS_CFG_HOME?}/appserv/prcs/#{domain}/CACHE/*")
+                do_cmd(cmd: "rm -rf ${PS_CFG_HOME?}/appserv/prcs/#{domain}/CACHE/*")
             when "windows"
-                do_cmd("Remove-Item $(Get-ChildItem ${env:PS_CFG_HOME}/appserv/prcs/#{domain}/CACHE/* | ?{ $_.PSIsContainer}) -recurse -force -ErrorAction SilentlyContinue".gsub('/','\\'))
+                do_cmd(cmd: "Remove-Item $(Get-ChildItem ${env:PS_CFG_HOME}/appserv/prcs/#{domain}/CACHE/* | ?{ $_.PSIsContainer}) -recurse -force -ErrorAction SilentlyContinue".gsub('/','\\'))
             end
             puts "prcs cache purged"
         when "web"
             case "#{OS_CONST}"
             when "linux"
-                do_cmd("rm -rf ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/")
+                do_cmd(cmd: "rm -rf ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/")
                 puts "web cache purged"
             when "windows"
-                do_cmd("Remove-Item $(Get-ChildItem ${env:PS_CFG_HOME}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/ | ?{ $_.PSIsContainer}) -recurse -force -ErrorAction SilentlyContinue".gsub('/','\\'))
+                do_cmd(cmd: "Remove-Item $(Get-ChildItem ${env:PS_CFG_HOME}/webserv/#{domain}/applications/peoplesoft/PORTAL*/*/cache*/ | ?{ $_.PSIsContainer}) -recurse -force -ErrorAction SilentlyContinue".gsub('/','\\'))
             end
         else
             puts "Invalid type, see psa help"
@@ -602,9 +602,9 @@ module PsadminPlus
     def do_flush(type, domain)
         case type
         when "app"
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -c cleanipc -d #{domain}")
+            do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -c cleanipc -d #{domain}")
         when "prcs"
-            do_cmd("#{PS_PSADMIN_PATH}/psadmin -p cleanipc -d #{domain}")
+            do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -p cleanipc -d #{domain}")
         when "web"
             return # web flush n/a
         else
@@ -685,31 +685,31 @@ module PsadminPlus
                 prop_file = "${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/#{s}/configuration.properties"
 
                 # set reload in config.props 
-                do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=1/g' #{prop_file}",show_debug)
+                do_cmd(cmd: "sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=1/g' #{prop_file}",show_debug)
 
                 # source setEnv and ping site
-                show_debug ? do_cmd("#{src_env} ; curl -s #{url}",show_debug) : do_cmd("#{src_env} ; curl -s -o /dev/null #{url}",show_debug)
+                show_debug ? do_cmd(cmd: "#{src_env} ; curl -s #{url}",show_debug) : do_cmd(cmd: "#{src_env} ; curl -s -o /dev/null #{url}",show_debug)
 
                 # unset reload in config.props
-                do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=0/g' #{prop_file}",show_debug)
+                do_cmd(cmd: "sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=0/g' #{prop_file}",show_debug)
 
                 # done
                 puts " - #{s}"
             end
         when "windows"
             puts "Windows support coming soon."		
-            #do_cmd(". #{env('PS_CFG_HOME')}/webserv/#{domain}/bin/setEnv.sh")
+            #do_cmd(cmd: ". #{env('PS_CFG_HOME')}/webserv/#{domain}/bin/setEnv.sh")
 
             #find_sites.each do |s|
         #    # set vars
             #    prop_file = "#{env('PS_CFG_HOME')}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/#{s}}/configuration.properties"
             #    url = "http://#{PS_PIA_HOST}.#{PS_PIA_DOMAIN}:#{PS_PIA_PORT}/psp/#{s}/?cmd=login&"
             #    # set reload in config.props 
-            #    do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=1/g' #{prop_file}")
+            #    do_cmd(cmd: "sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=1/g' #{prop_file}")
             #    # ping site
-            #    do_cmd("curl -s -o /dev/null '#{url}'")
+            #    do_cmd(cmd: "curl -s -o /dev/null '#{url}'")
             #    # unset reload in config.props
-            #    do_cmd("sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=0/g' #{prop_file}")
+            #    do_cmd(cmd: "sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=0/g' #{prop_file}")
             #    # done
             #    puts " - #{s}"
             #end

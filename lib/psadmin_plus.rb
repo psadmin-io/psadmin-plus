@@ -471,8 +471,8 @@ module PsadminPlus
                 when "true", "web", "all"
                     do_cmd(cmd: start_web_service_cmd)
                 else
-                    # Run command outside of powershell with 'false' parameter
-                    do_cmd(cmd: start_web_cmd_win, true, false)
+                    # Run command outside of powershell with 'false' parameter - use powershell now
+                    do_cmd(cmd: start_web_cmd_win)
                     case "#{PS_TRAIL_SERVICE}"
                     when "true", "web", "all"
                         do_cmd(cmd: start_web_service_cmd)

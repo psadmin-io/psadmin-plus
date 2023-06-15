@@ -319,10 +319,10 @@ module PsadminPlus
 
     def do_list
         puts "---"
-        print "hostname:        " ; do_cmd('hostname', false, false, "internal")
-        print "ps-home:         " ; do_cmd('echo ' + env('PS_HOME'), false, false, "internal")
+        print "hostname:        " ; do_cmd('hostname', timestamp: "internal")
+        print "ps-home:         " ; do_cmd('echo ' + env('PS_HOME'), timestamp: "internal")
         if PS_MULTI_HOME == "false" 
-            print "ps-cfg-home:       " ; do_cmd('echo ' + env('PS_CFG_HOME'), false, false, "internal")
+            print "ps-cfg-home:       " ; do_cmd('echo ' + env('PS_CFG_HOME'), timestamp: "internal")
         else
             puts "ps-cfg-home base:  #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*"  
         end

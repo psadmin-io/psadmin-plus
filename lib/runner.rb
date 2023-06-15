@@ -73,7 +73,7 @@ class Runner
             end
           else
             @stderr << data
-            if realtime == "all" || || timestamp == "internal"
+            if realtime == "all" || timestamp == "internal"
               # $stderr.write(data)
               do_output(data, timestamp, true)
             end

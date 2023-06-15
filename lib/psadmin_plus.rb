@@ -130,11 +130,11 @@ module PsadminPlus
         runner.run
 
         # "internal" is used to bypass output processing for psa internal functions
-        if timestamp == "internal"
-            runner.stdout
-        else
-            # process_output(runner.stdout, runner.stderr, runner.success?, timestamp)
-        end
+        # if timestamp == "internal"
+        #     runner.stdout
+        # else
+        #     # process_output(runner.stdout, runner.stderr, runner.success?, timestamp)
+        # end
     end
 
     def process_output(stdout, stderr, success, timestamp)

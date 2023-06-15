@@ -170,7 +170,9 @@ module PsadminPlus
     end
 
     def line_matches(line)
-        line.include?("processes started") || line.include?("processes stopped")
+        line.include?("processes started") || 
+        line.include?("process started") || 
+        line.include?("processes stopped")
     end
 
     def do_output(line, timestamp = nil, err = false)

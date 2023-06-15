@@ -436,9 +436,7 @@ module PsadminPlus
             end
             do_hookstart("start",type,domain)
         when "pubsub"
-            ENV['TUXCONFIG'] = "#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG"
-            do_cmd(cmd: "echo 'boot -g PUBSUB' | #{ENV['TUXDIR']}/bin/tmadmin")
-            # do_hookstart("start",type,domain) - TODO skip hook for PUBSUB?
+            do_cmd(cmd: "export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo boot -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
         when "prcs"
             case "#{PS_WIN_SERVICES}"
             when "true", "tux", "prcs", "all"
@@ -506,9 +504,7 @@ module PsadminPlus
                 end
             end
         when "pubsub"
-            # do_hookstop("stop",type,domain) - TODO skip hook for PUBSUB?
-            ENV['TUXCONFIG'] = "#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG"
-            do_cmd(cmd: "echo 'shutdown -g PUBSUB' | #{ENV['TUXDIR']}/bin/tmadmin")
+            do_cmd(cmd: "export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo shutdown -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
         when "prcs"
             do_hookstop("stop",type,domain)
             case "#{PS_WIN_SERVICES}"
@@ -685,13 +681,13 @@ module PsadminPlus
                 prop_file = "${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/#{s}/configuration.properties"
 
                 # set reload in config.props 
-                do_cmd(cmd: "sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=1/g' #{prop_file}",show_debug)
+                do_cmd(cmd: "sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=1/g' #{prop_file}")
 
                 # source setEnv and ping site
-                show_debug ? do_cmd(cmd: "#{src_env} ; curl -s #{url}",show_debug) : do_cmd(cmd: "#{src_env} ; curl -s -o /dev/null #{url}",show_debug)
+                show_debug ? do_cmd(cmd: "#{src_env} ; curl -s #{url}") : do_cmd(cmd: "#{src_env} ; curl -s -o /dev/null #{url}")
 
                 # unset reload in config.props
-                do_cmd(cmd: "sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=0/g' #{prop_file}",show_debug)
+                do_cmd(cmd: "sed -i 's/ReloadWebProfileWithoutRestart=.*/ReloadWebProfileWithoutRestart=0/g' #{prop_file}")
 
                 # done
                 puts " - #{s}"

@@ -202,9 +202,11 @@ module PsadminPlus
     end
 
     def do_cmd_banner(c,t,d)
-        puts ""
-        puts "===[ #{c} . #{t} . #{d} ]==="
-        puts ""
+        if PS_PSA_NO_BANNER != "true"
+            puts ""
+            puts "===[ #{c} . #{t} . #{d} ]==="
+            puts ""
+        end
     end
 
     def do_set_cfg_home(d)

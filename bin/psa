@@ -63,6 +63,7 @@ PS_PARALLEL_BOOT    = ENV['PS_PARALLEL_BOOT'] || "false"
 PS_PSA_DEBUG        = ENV['PS_PSA_DEBUG']  || "INFO"
 PS_PSA_TIMESTAMP    = ENV['PS_PSA_TIMESTAMP'] || "false"
 PS_PSA_OUTPUT       = ENV['PS_PSA_OUTPUT'] || "all" # values are "all", "summary", "quiet"
+PS_PSA_NO_BANNER    = ENV['PS_PSA_NO_BANNER'] || "false"
 
 # validation
 # check runtime user

@@ -336,6 +336,7 @@ module PsadminPlus
         puts "PS_PSA_DEBUG:      #{PS_PSA_DEBUG}"
         puts "PS_PSA_TIMETAMP:   #{PS_PSA_TIMESTAMP}"
         puts "PS_PSA_OUTPUT:     #{PS_PSA_OUTPUT}"
+        puts "PS_PSA_NO_BANNER:  #{PS_PSA_NO_BANNER}"
         puts "" 
         puts "app:"
         find_apps.each do |a|

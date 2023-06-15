@@ -96,35 +96,40 @@ module PsadminPlus
     end
 
     def do_cmd(cmd, print = true, powershell = true, timestamp = nil)
+        if timestamp != "internal"
+            timestamp = PS_PSA_TIMESTAMP
+        end
+
+        prefix = ""
+        suffix = ""
         case "#{OS_CONST}"
         when "linux"
             if do_is_runtime_user_nix
-                debug "Command: #{cmd}"
-                out = `#{cmd}`
+                # No prefix/suffix needed
             else
                 if "#{PS_PSA_SUDO}" == "on"
-                    debug "Command: sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'"
-                    # stdout, stderr, status = Open3.capture3("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'")
-                    runner = Runner.new("sudo su - #{PS_RUNTIME_USER} -c '#{cmd}'", realtime = PS_PSA_OUTPUT)
-                    runner.run
+                    prefix = "sudo su - #{PS_RUNTIME_USER} -c '"
+                    suffix = "'"
                 else
-                    print "#{PS_RUNTIME_USER} "
-                    debug "Command: su - #{PS_RUNTIME_USER} -c '#{cmd}'"
-                    out = `su - #{PS_RUNTIME_USER} -c '#{cmd}'`
+                    prefix = "su - #{PS_RUNTIME_USER} -c '"
+                    suffix = "'"
                 end
             end
         when "windows"
             case powershell
             when true
-                debug "Command: powershell -NoProfile -Command \"#{cmd}\""
-                out = `powershell -NoProfile -Command "#{cmd}"`
+                prefix = "powershell -NoProfile -Command \""
+                suffix = "\""
             else
-                debug "Command: #{cmd}"
-                out = `#{cmd}`
+                # No prefix/suffix needed
             end
         else
-            out = "Invalid OS"
+            puts "Invalid OS"
         end
+
+        debug "Command: #{prefix}#{cmd}#{suffix}"
+        runner = Runner.new("#{cmd}'", realtime = PS_PSA_OUTPUT)
+        runner.run
 
         # "internal" is used to bypass output processing for psa internal functions
         if timestamp == "internal"

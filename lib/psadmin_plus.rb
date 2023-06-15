@@ -226,9 +226,9 @@ module PsadminPlus
     def find_apps_nix
         case "#{PS_MULTI_HOME}"
         when "false"
-            apps = do_cmd("find #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx 2>/dev/null",internal: true).split(/\n+/)
+            apps = do_cmd(cmd: "find #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx 2>/dev/null",internal: true).split(/\n+/)
         else
-            apps = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx 2>/dev/null",internal: true).split(/\n+/)
+            apps = do_cmd(cmd: "find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx 2>/dev/null",internal: true).split(/\n+/)
         end
         apps.map! {|app| app.split("/")[-2]}
     end
@@ -236,9 +236,9 @@ module PsadminPlus
     def find_prcss_nix
         case "#{PS_MULTI_HOME}"
         when "false"
-            prcss = do_cmd("find #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",internal: true).split(/\n+/)
+            prcss = do_cmd(cmd: "find #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",internal: true).split(/\n+/)
         else 
-            prcss = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",internal: true).split(/\n+/)
+            prcss = do_cmd(cmd: "find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx 2>/dev/null",internal: true).split(/\n+/)
         end
         prcss.map! {|prcs| prcs.split("/")[-2]}
     end
@@ -246,24 +246,24 @@ module PsadminPlus
     def find_webs_nix
         case "#{PS_MULTI_HOME}"
         when "false"
-            webs = do_cmd("find #{env('PS_CFG_HOME')}/webserv/*/piaconfig -maxdepth 0",internal: true).split(/\n+/)
+            webs = do_cmd(cmd: "find #{env('PS_CFG_HOME')}/webserv/*/piaconfig -maxdepth 0",internal: true).split(/\n+/)
         else
-            webs = do_cmd("find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig -maxdepth 0",internal: true).split(/\n+/)
+            webs = do_cmd(cmd: "find #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig -maxdepth 0",internal: true).split(/\n+/)
         end
         webs.map! {|web| web.split("/")[-2]}
     end
 
     def find_sites_nix(domain)
-        webs = do_cmd("find ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/* -maxdepth 0",internal: true).split(/\n+/)
+        webs = do_cmd(cmd: "find ${PS_CFG_HOME?}/webserv/#{domain}/applications/peoplesoft/PORTAL.war/WEB-INF/psftdocs/* -maxdepth 0",internal: true).split(/\n+/)
         webs.map! {|site| site.split("/")[-1]}
     end
 
     def find_apps_win
         case "#{PS_MULTI_HOME}"
         when "false"
-            apps = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            apps = do_cmd(cmd: "(get-childitem #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         else
-            apps = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            apps = do_cmd(cmd: "(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         end
         apps.map! {|app| app.split('\\')[-2]}
     end
@@ -271,9 +271,9 @@ module PsadminPlus
     def find_prcss_win
         case "#{PS_MULTI_HOME}"
         when "false"
-            prcss = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            prcss = do_cmd(cmd: "(get-childitem #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         else
-            prcss = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            prcss = do_cmd(cmd: "(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         end
         prcss.map! {|prcs| prcs.split("\\")[-2]}
     end
@@ -281,9 +281,9 @@ module PsadminPlus
     def find_webs_win
         case "#{PS_MULTI_HOME}"
         when "false"
-            webs = do_cmd("(get-childitem #{env('PS_CFG_HOME')}/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            webs = do_cmd(cmd: "(get-childitem #{env('PS_CFG_HOME')}/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         else
-            webs = do_cmd("(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            webs = do_cmd(cmd: "(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
         end
         webs.map! {|web| web.split("\\")[-2]}
     end
@@ -320,10 +320,10 @@ module PsadminPlus
 
     def do_list
         puts "---"
-        print "hostname:          " ; do_cmd('hostname', internal: true)
-        print "ps-home:           " ; do_cmd('echo ' + env('PS_HOME'), internal: true)
+        print "hostname:          " ; do_cmd(cmd:'hostname', internal: true)
+        print "ps-home:           " ; do_cmd(cmd:'echo ' + env('PS_HOME'), internal: true)
         if PS_MULTI_HOME == "false" 
-            print "ps-cfg-home:       " ; do_cmd('echo ' + env('PS_CFG_HOME'), internal: true)
+            print "ps-cfg-home:       " ; do_cmd(cmd:'echo ' + env('PS_CFG_HOME'), internal: true)
         else
             puts "ps-cfg-home base:  #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*"  
         end
@@ -363,7 +363,7 @@ module PsadminPlus
         # Check to see if psadmin loads correctly
         # This will help when used on web servers that don't have Tuxedo
         debug "Checking psadmin version to validate configuration:"
-        check = do_cmd("#{PS_PSADMIN_PATH}/psadmin -v 2>&1", internal: true)
+        check = do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -v 2>&1", internal: true)
         if check.include? "error"
             # psadmin config is NOT valid
             do_output("ERROR: psadmin is not configured correctly for this environment!")

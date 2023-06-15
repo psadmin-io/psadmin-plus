@@ -261,9 +261,9 @@ module PsadminPlus
     def find_apps_win
         case "#{PS_MULTI_HOME}"
         when "false"
-            apps = do_cmd(cmd: "(get-childitem #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            apps = do_cmd(cmd: "(get-childitem #{env('PS_CFG_HOME')}/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",internal: true).split(/\n+/)
         else
-            apps = do_cmd(cmd: "(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            apps = do_cmd(cmd: "(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/*/psappsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",internal: true).split(/\n+/)
         end
         apps.map! {|app| app.split('\\')[-2]}
     end
@@ -271,9 +271,9 @@ module PsadminPlus
     def find_prcss_win
         case "#{PS_MULTI_HOME}"
         when "false"
-            prcss = do_cmd(cmd: "(get-childitem #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            prcss = do_cmd(cmd: "(get-childitem #{env('PS_CFG_HOME')}/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",).split(/\n+/)
         else
-            prcss = do_cmd(cmd: "(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            prcss = do_cmd(cmd: "(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/appserv/prcs/*/psprcsrv.ubx | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",internal: true).split(/\n+/)
         end
         prcss.map! {|prcs| prcs.split("\\")[-2]}
     end
@@ -281,9 +281,9 @@ module PsadminPlus
     def find_webs_win
         case "#{PS_MULTI_HOME}"
         when "false"
-            webs = do_cmd(cmd: "(get-childitem #{env('PS_CFG_HOME')}/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            webs = do_cmd(cmd: "(get-childitem #{env('PS_CFG_HOME')}/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",internal: true).split(/\n+/)
         else
-            webs = do_cmd(cmd: "(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",false,true,"internal").split(/\n+/)
+            webs = do_cmd(cmd: "(get-childitem #{PS_MULTI_HOME}#{PS_MULTI_DELIMIT}*/webserv/*/piaconfig | Format-Table -property FullName -HideTableHeaders | Out-String).Trim()",internal: true).split(/\n+/)
         end
         webs.map! {|web| web.split("\\")[-2]}
     end

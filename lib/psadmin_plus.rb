@@ -129,21 +129,20 @@ module PsadminPlus
         debug "Command: #{command}"
         Open3.popen3(command) do |_stdin, stdout, stderr, _wait_thr|
             output_string = '' 
-            output_stream.each do |line|
-
-                if !internal
-                    case PS_PSA_OUTPUT
-                    when "summary"
-                        output_stream = stdout
-                    when "all"
-                        output_stream = stdout.merge(stderr)
-                    end
-                    
-                    # Read the output line by line in real-time
-                    
-                    line = add_timestamp(line.chomp)
-                    do_output(line)
-                else
+            if !internal
+                case PS_PSA_OUTPUT
+                when "summary"
+                    output_stream = stdout
+                when "all"
+                    output_stream = stdout.merge(stderr)
+                end
+                output_stream.each do |line|
+                        # Read the output line by line in real-time
+                        line = add_timestamp(line.chomp)
+                        do_output(line)
+                end
+            else
+                stdout.each do |line|
                     output_string << line << "\n"
                 end
             end

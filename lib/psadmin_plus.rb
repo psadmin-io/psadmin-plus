@@ -18,6 +18,9 @@ module PsadminPlus
             "  " + "\u2606".force_encoding('UTF-8') + " #{severity.ljust(5)}: " + green(msg) + "'\n"
         when "DEBUG"
             # "[#{date_format}] " + 
+            "  " + "\u2605".force_encoding('UTF-8') + " #{severity.ljust(5)}: " + yellow(msg) + "'\n"
+        when "ERROR"
+            # "[#{date_format}] " + 
             "  " + "\u2605".force_encoding('UTF-8') + " #{severity.ljust(5)}: " + red(msg) + "'\n"
         end
     end
@@ -60,10 +63,12 @@ module PsadminPlus
     end
 
     def colorize(text, color_code); "\e[#{color_code}m#{text}\e[0m"; end
-    def red(text); colorize(text, 31); end
-    def green(text); colorize(text, 32); end
-    def info(msg); @@logger.info(msg); end
-    def debug(msg); @@logger.debug(msg); end
+    def red(text);    colorize(text, 31);  end
+    def green(text);  colorize(text, 32);  end
+    def yellow(text); colorize(text, 34);  end
+    def info(msg);    @@logger.info(msg);  end
+    def debug(msg);   @@logger.debug(msg); end
+    def error(msg);   @@logger.error(msg); end
 
     def os
         @os ||= (

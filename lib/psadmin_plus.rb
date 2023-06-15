@@ -142,11 +142,12 @@ module PsadminPlus
                         do_output(line)
                 end
             else
-                puts stdout.type
-                puts stdout
+                output_stream.each do |line|
+                    output_string << line
+                end
             end
             exit_status = _wait_thr.value.exitstatus
-            # puts output_string if internal
+            puts output_string if internal
         end
 
         # case exit_status

@@ -9,7 +9,7 @@ require_relative 'runner'
 module PsadminPlus
 
     @@logger = Logger.new($stdout)
-    @@logger.level = ENV['PS_PSA_DEBUG']
+    @@logger.level = ENV['PS_PSA_DEBUG'] || "INFO"
     @@logger.formatter = proc do |severity, datetime, progname, msg|
         date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
         case severity

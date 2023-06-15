@@ -97,11 +97,7 @@ module PsadminPlus
         result = "#{OS_CONST}" == "linux" ? "${#{var}}" : "%#{var}%"
     end
 
-    def do_cmd(cmd:, print = true, powershell = true, timestamp = nil, internal: false)
-        if !internal
-            timestamp = PS_PSA_TIMESTAMP
-        end
-
+    def do_cmd(cmd:, internal: false)
         prefix = ""
         suffix = ""
         case "#{OS_CONST}"
@@ -118,13 +114,8 @@ module PsadminPlus
                 end
             end
         when "windows"
-            case powershell
-            when true
-                prefix = "powershell -NoProfile -Command \""
-                suffix = "\""
-            else
-                # No prefix/suffix needed
-            end
+            prefix = "powershell -NoProfile -Command \""
+            suffix = "\""
         else
             puts "Invalid OS"
         end
@@ -135,64 +126,63 @@ module PsadminPlus
 
         # "internal" is used to bypass output processing for psa internal functions
         if internal
-            debug "internal output: #{runner.stdout}"
+            debug "internal output"
             runner.stdout
         else
-            process_output(runner.stdout, runner.stderr, runner.success?, timestamp)
+            debug "processing output"
+            process_output(stdout: runner.stdout, stderr: runner.stderr, success:runner.success?)
         end
     end
 
-    def process_output(stdout, stderr, success, timestamp)
+    def process_output(stdout:, stderr:, success:)
         if PS_PSA_OUTPUT == "summary"
-            print_std(stdout, timestamp)
-            print_std(stderr, timestamp, false, true)
+            debug "summary output - stdout"
+            print_std(std: stdout)
+            debug "summary output - stderr"
+            print_std(std: stderr, summary: true)
             
         end
 
         case success
         when true
-            # if PS_PSA_OUTPUT == "quiet"
-            #     do_output("psadmin returned success", timestamp)
-            # end
+            debug "command success"
         when false
             do_output("psadmin returned an error", timestamp, true)
             if PS_PSA_OUTPUT == "summary" || PS_PSA_OUTPUT == "quiet"
-                print_std(stderr, timestamp, true)
+                print_std(std:stderr, err: true)
             end
             exit 1
         end
     end
 
-    def print_std(std, timestamp, err = false, summary = false)
+    def print_std(std:, err: false, summary: false)
         # Standard Output
         *lines = std.split(/\n/)
         lines.each do | line |
             if summary
                 if line_matches(line)
-                    do_output(line, timestamp, err)
+                    do_output(line, err)
                 end
             else
-                do_output(line, timestamp, err)
+                do_output(line, err)
             end
         end
     end
 
     def line_matches(line)
+        debug "matching lines for summary output"
         line.include?("processes started") || 
         line.include?("process started") || 
         line.include?("processes stopped")
     end
 
-    def do_output(line, timestamp = nil, err = false)
-
+    def do_output(line, err = false)
         utctime = ""
         # Handle Output - Check if timestamps are requested
         # - override if parameter is "internal" for internal calls
-        case timestamp
+        case PS_PSA_TIMESTAMP
         when "true"
-            if timestamp != "internal"
-                utctime = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")
-            end
+            utctime = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")
         end
         
         if !line.empty?

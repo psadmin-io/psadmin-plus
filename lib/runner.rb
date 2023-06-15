@@ -88,15 +88,12 @@ class Runner
   end
 
   def do_output(line, timestamp = nil, err = false)
-
     utctime = ""
     # Handle Output - Check if timestamps are requested
     # - override if parameter is "internal" for internal calls
     case timestamp
     when "true"
-        if timestamp != "internal"
-            utctime = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")
-        end
+      utctime = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")
     end
     
     if !line.empty?

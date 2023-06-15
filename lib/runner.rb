@@ -69,15 +69,15 @@ class Runner
             @stdout << data
             if timestamp == "internal"
               $stdout.write(data)
-            elsif realtime == "all" || realtime == "summary" 
-              do_output(data, timestamp)
+            elsif @realtime == "all" || @realtime == "summary" 
+              do_output(data, @timestamp)
             end
           else
             @stderr << data
-            if timestamp == "internal"
+            if @timestamp == "internal"
               $stderr.write(data)
-            elsif realtime == "all" 
-              do_output(data, timestamp, true)
+            elsif @realtime == "all" 
+              do_output(data, @timestamp, true)
             end
           end
         end
@@ -92,7 +92,7 @@ class Runner
     utctime = ""
     # Handle Output - Check if timestamps are requested
     # - override if parameter is "internal" for internal calls
-    case timestamp
+    case @timestamp
     when "true"
       utctime = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")
     end

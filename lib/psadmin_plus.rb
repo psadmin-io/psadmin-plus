@@ -125,6 +125,7 @@ module PsadminPlus
         end
 
         # Run command
+        output_string = ''
         command = "#{prefix}#{cmd}#{suffix}"
         debug "Command: #{command}"
         Open3.popen3(command) do |_stdin, stdout, stderr, _wait_thr|
@@ -145,8 +146,9 @@ module PsadminPlus
                 output_string << line
             end
             exit_status = _wait_thr.value.exitstatus
-            puts output_string if internal
         end
+
+        puts output_string if internal
 
         # case exit_status
         # when 0

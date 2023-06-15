@@ -26,7 +26,7 @@ class Runner
   Error = Class.new(StandardError)
 
   # @param cmd [String,Array<String>] command to execute
-  def initialize(cmd, realtime = false)
+  def initialize(cmd, realtime = false, timestamp)
     @cmd = cmd.is_a?(Array) ? cmd.join(' ') : cmd
     @stdout = +''
     @stderr = +''

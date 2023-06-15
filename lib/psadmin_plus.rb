@@ -145,9 +145,8 @@ module PsadminPlus
                 output_string << line
             end
             exit_status = _wait_thr.value.exitstatus
+            puts output_string if internal
         end
-
-        puts output_string if internal
 
         # case exit_status
         # when 0

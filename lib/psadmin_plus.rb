@@ -14,14 +14,11 @@ module PsadminPlus
         date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
         case severity
         when "INFO"
-            # "[#{date_format}] " + 
-            "  ☆ " + green(severity.ljust(5)) + ": #{msg} \n"
+            green(severity.ljust(5)) + ": #{msg} \n"
         when "DEBUG"
-            # "[#{date_format}] " + 
-            "  ★ " + blue(severity.ljust(5)) + ": #{msg} \n"
+            blue(severity.ljust(5)) + ": #{msg} \n"
         when "ERROR"
-            # "[#{date_format}] " + 
-            "  ✖ " + red(severity.ljust(5)) + ": #{msg} \n"
+            red(severity.ljust(5)) + ": #{msg} \n"
         end
     end
 

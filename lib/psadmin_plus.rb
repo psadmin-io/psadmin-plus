@@ -434,12 +434,12 @@ module PsadminPlus
         when "app"
             case "#{PS_WIN_SERVICES}"
             when "true", "tux", "app", "all"
-                do_cmd(start_app_service_cmd)
+                do_cmd(cmd: start_app_service_cmd)
             else
-                do_cmd(start_app_cmd)
+                do_cmd(cmd: start_app_cmd)
                 case "#{PS_TRAIL_SERVICE}"
                 when "true"
-                    do_cmd(start_app_service_cmd)
+                    do_cmd(cmd: start_app_service_cmd)
                 end
             end
             do_hookstart("start",type,domain)
@@ -448,12 +448,12 @@ module PsadminPlus
         when "prcs"
             case "#{PS_WIN_SERVICES}"
             when "true", "tux", "prcs", "all"
-                do_cmd(start_prcs_service_cmd)
+                do_cmd(cmd: start_prcs_service_cmd)
             else
-                do_cmd(start_prcs_cmd)
+                do_cmd(cmd: start_prcs_cmd)
                 case "#{PS_TRAIL_SERVICE}"
                 when "true"
-                    do_cmd(start_prcs_service_cmd)
+                    do_cmd(cmd: start_prcs_service_cmd)
                 end
             end
             do_hookstart("start",type,domain)
@@ -463,19 +463,19 @@ module PsadminPlus
                 if File.exist?("#{ENV['PS_CFG_HOME']}/webserv/#{domain}/servers/PIA/tmp/PIA.lok")
                     puts "Domain #{domain} already started"
                 else
-                    do_cmd(start_web_cmd_lnx)
+                    do_cmd(cmd: start_web_cmd_lnx)
                     sleep 5.0
                 end
             when "windows"
                 case "#{PS_WIN_SERVICES}"
                 when "true", "web", "all"
-                    do_cmd(start_web_service_cmd)
+                    do_cmd(cmd: start_web_service_cmd)
                 else
                     # Run command outside of powershell with 'false' parameter
-                    do_cmd(start_web_cmd_win, true, false)
+                    do_cmd(cmd: start_web_cmd_win, true, false)
                     case "#{PS_TRAIL_SERVICE}"
                     when "true", "web", "all"
-                        do_cmd(start_web_service_cmd)
+                        do_cmd(cmd: start_web_service_cmd)
                     end
                 end
             end
@@ -503,12 +503,12 @@ module PsadminPlus
             do_hookstop("stop",type,domain)
             case "#{PS_WIN_SERVICES}"
             when "true"
-                do_cmd(stop_app_service_cmd)
+                do_cmd(cmd: stop_app_service_cmd)
             else
-                do_cmd(stop_app_cmd)
+                do_cmd(cmd: stop_app_cmd)
                 case "#{PS_TRAIL_SERVICE}"
                 when "true"
-                    do_cmd(stop_app_service_cmd)
+                    do_cmd(cmd: stop_app_service_cmd)
                 end
             end
         when "pubsub"
@@ -517,28 +517,28 @@ module PsadminPlus
             do_hookstop("stop",type,domain)
             case "#{PS_WIN_SERVICES}"
             when "true"
-                do_cmd(stop_prcs_service_cmd)
+                do_cmd(cmd: stop_prcs_service_cmd)
             else
-                do_cmd(stop_prcs_cmd)
+                do_cmd(cmd: stop_prcs_cmd)
                 case "#{PS_TRAIL_SERVICE}"
                 when "true"
-                    do_cmd(stop_prcs_service_cmd)
+                    do_cmd(cmd: stop_prcs_service_cmd)
                 end
             end
         when "web"
             do_hookstop("stop",type,domain)
             case "#{OS_CONST}"
             when "linux"
-                do_cmd(stop_web_cmd_lnx)
+                do_cmd(cmd: stop_web_cmd_lnx)
             when "windows"
                 case "#{PS_WIN_SERVICES}"
                 when "true"
-                    do_cmd(stop_web_service_cmd)
+                    do_cmd(cmd: stop_web_service_cmd)
                 else
-                    do_cmd(stop_web_cmd_win, true, false)
+                    do_cmd(cmd: stop_web_cmd_win, true, false)
                     case "#{PS_TRAIL_SERVICE}"
                     when "true"
-                        do_cmd(stop_web_service_cmd)
+                        do_cmd(cmd: stop_web_service_cmd)
                     end
                 end
             end

@@ -1,7 +1,7 @@
 require 'open3'
 
 class Runner
-  attr_reader :cmd, :exit_status, :stdout, :stderr, :realtime
+  attr_reader :cmd, :exit_status, :stdout, :stderr, :realtime, :timestamp
 
   # Run a command, return runner instance
   # @param cmd [String,Array<String>] command to execute
@@ -31,6 +31,7 @@ class Runner
     @stdout = +''
     @stderr = +''
     @realtime = realtime
+    @timestamp = timestamp
     @exit_status = nil
   end
 
@@ -50,7 +51,6 @@ class Runner
   # @return [Runner]
   def run
     Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
-      if realtime == "all" # || realtime == "summary"
         until [stdout, stderr].all?(&:eof?)
           readable = IO.select([stdout, stderr])
           next unless readable&.first
@@ -67,13 +67,15 @@ class Runner
 
             if stream == stdout
               @stdout << data
-              if realtime == "all"
-                $stdout.write(data)
+              if realtime == "all" || realtime == "summary"
+                # $stdout.write(data)
+                do_output(data, timestamp)
               end
             else
               @stderr << data
               if realtime == "all"
-                $stderr.write(data)
+                # $stderr.write(data)
+                do_output(data, timestamp, true)
               end
             end
           end
@@ -83,6 +85,29 @@ class Runner
     end
 
     self
+  end
+
+  def do_output(line, timestamp = nil, err = false)
+
+    utctime = ""
+    # Handle Output - Check if timestamps are requested
+    # - override if parameter is "internal" for internal calls
+    case timestamp
+    when "true"
+        if timestamp != "internal"
+            utctime = Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")
+        end
+    end
+    
+    if !line.empty?
+        if line != '> '
+            if !err
+                puts (utctime + line).gsub('"', '')
+            else
+                puts (utctime + red(line)).gsub('"', '')
+            end
+        end
+    end
   end
 
   # Run the command and return stdout, raise if fails

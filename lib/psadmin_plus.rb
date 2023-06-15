@@ -150,9 +150,9 @@ module PsadminPlus
 
         case success
         when true
-            if PS_PSA_OUTPUT == "quiet"
-                do_output("psadmin returned success", timestamp)
-            end
+            # if PS_PSA_OUTPUT == "quiet"
+            #     do_output("psadmin returned success", timestamp)
+            # end
         when false
             do_output("psadmin returned an error", timestamp, true)
             if PS_PSA_OUTPUT == "summary" || PS_PSA_OUTPUT == "quiet"

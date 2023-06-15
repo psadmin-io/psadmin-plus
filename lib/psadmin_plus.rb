@@ -125,30 +125,31 @@ module PsadminPlus
         end
 
         # Run command
-        output_string = ''
         command = "#{prefix}#{cmd}#{suffix}"
         debug "Command: #{command}"
         Open3.popen3(command) do |_stdin, stdout, stderr, _wait_thr|
-            if !internal
-                case PS_PSA_OUTPUT
-                when "summary"
-                    output_stream = stdout
-                when "all"
-                    output_stream = stdout.merge(stderr)
-                end
-                
-                # Read the output line by line in real-time
-                output_stream.each do |line|
+            output_string = '' 
+            output_stream.each do |line|
+
+                if !internal
+                    case PS_PSA_OUTPUT
+                    when "summary"
+                        output_stream = stdout
+                    when "all"
+                        output_stream = stdout.merge(stderr)
+                    end
+                    
+                    # Read the output line by line in real-time
+                    
                     line = add_timestamp(line.chomp)
                     do_output(line)
+                else
+                    output_string << line << "\n"
                 end
-            else
-                output_string << line
             end
             exit_status = _wait_thr.value.exitstatus
+            puts output_string if internal
         end
-
-        puts output_string if internal
 
         # case exit_status
         # when 0

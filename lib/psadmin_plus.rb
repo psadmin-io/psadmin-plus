@@ -18,7 +18,7 @@ module PsadminPlus
             "  " + "\u2606".force_encoding('UTF-8') + green(severity.ljust(5)) + ": #{msg} \n"
         when "DEBUG"
             # "[#{date_format}] " + 
-            "  " + "\u2605".force_encoding('UTF-8') + blue({severity.ljust(5)) + ": #{msg} \n"
+            "  " + "\u2605".force_encoding('UTF-8') + blue(severity.ljust(5)) + ": #{msg} \n"
         when "ERROR"
             # "[#{date_format}] " + 
             "  " + "\u2605".force_encoding('UTF-8') + red(severity.ljust(5)) + ": #{msg} \n"

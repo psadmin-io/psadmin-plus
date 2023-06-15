@@ -15,13 +15,13 @@ module PsadminPlus
         case severity
         when "INFO"
             # "[#{date_format}] " + 
-            "  " + "\u2606".force_encoding('UTF-8') + green(severity.ljust(5)) + ": #{msg} \n"
+            "  ☆ " + green(severity.ljust(5)) + ": #{msg} \n"
         when "DEBUG"
             # "[#{date_format}] " + 
-            "  " + "\u2605".force_encoding('UTF-8') + blue(severity.ljust(5)) + ": #{msg} \n"
+            "  ★ " + blue(severity.ljust(5)) + ": #{msg} \n"
         when "ERROR"
             # "[#{date_format}] " + 
-            "  " + "\u2605".force_encoding('UTF-8') + red(severity.ljust(5)) + ": #{msg} \n"
+            "  ✖ " + red(severity.ljust(5)) + ": #{msg} \n"
         end
     end
 
@@ -209,13 +209,14 @@ module PsadminPlus
     end
 
     def do_cmd_banner(c,t,d)
-        if "#{PS_PSA_TIMESTAMP}" == "true"
-            puts Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  + "===[ #{c} . #{t} . #{d} ]==="
-        else
-            puts ""
-            puts "===[ #{c} . #{t} . #{d} ]==="
-            puts ""
-        end
+        # if "#{PS_PSA_TIMESTAMP}" == "true"
+        #     puts Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")  + "===[ #{c} . #{t} . #{d} ]==="
+        # else
+        #     puts ""
+        #     puts "===[ #{c} . #{t} . #{d} ]==="
+        #     puts ""
+        # end
+        info "===[ #{c} . #{t} . #{d} ]==="
     end
 
     def do_set_cfg_home(d)

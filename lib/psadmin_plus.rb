@@ -97,7 +97,7 @@ module PsadminPlus
         result = "#{OS_CONST}" == "linux" ? "${#{var}}" : "%#{var}%"
     end
 
-    def do_cmd(cmd, print = true, powershell = true, timestamp = nil, internal = false)
+    def do_cmd(cmd:, print = true, powershell = true, timestamp = nil, internal: false)
         if !internal
             timestamp = PS_PSA_TIMESTAMP
         end

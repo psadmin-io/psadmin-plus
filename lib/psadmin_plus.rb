@@ -14,9 +14,11 @@ module PsadminPlus
         date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
         case severity
         when "INFO"
-            "[#{date_format}] " + "☆".encode('UTF-8') + " #{severity.ljust(5)}: " + green(msg) + "'\n"
+            # "[#{date_format}] " + 
+            "  ☆".encode("ASCII", "UTF-8", invalid: :replace, undef: :replace, replace: "  * ") + " #{severity.ljust(5)}: " + green(msg) + "'\n"
         when "DEBUG"
-            "[#{date_format}] " + "★".encode('UTF-8') + " #{severity.ljust(5)}: " + red(msg) + "'\n"
+            # "[#{date_format}] " + 
+            "  ★".encode("ASCII", "UTF-8", invalid: :replace, undef: :replace, replace: "  * ") + " #{severity.ljust(5)}: " + red(msg) + "'\n"
         end
     end
 

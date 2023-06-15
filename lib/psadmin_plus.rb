@@ -142,6 +142,7 @@ module PsadminPlus
                         do_output(line)
                 end
             else
+                puts stdout.type
                 puts stdout
             end
             exit_status = _wait_thr.value.exitstatus

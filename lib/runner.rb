@@ -67,13 +67,13 @@ class Runner
 
           if stream == stdout
             @stdout << data
-            if realtime == "all" || realtime == "summary"
+            if realtime == "all" || realtime == "summary" || timestamp == "internal"
               # $stdout.write(data)
               do_output(data, timestamp)
             end
           else
             @stderr << data
-            if realtime == "all"
+            if realtime == "all" || || timestamp == "internal"
               # $stderr.write(data)
               do_output(data, timestamp, true)
             end

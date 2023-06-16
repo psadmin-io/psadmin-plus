@@ -535,7 +535,7 @@ module PsadminPlus
                 when "true"
                     do_cmd(cmd: stop_web_service_cmd)
                 else
-                    do_cmd(cmd: stop_web_cmd_win, true, false)
+                    do_cmd(cmd: stop_web_cmd_win)
                     case "#{PS_TRAIL_SERVICE}"
                     when "true"
                         do_cmd(cmd: stop_web_service_cmd)

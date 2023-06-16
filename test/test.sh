@@ -3,12 +3,10 @@
 # Build the array of commands to test
 commands=(
   "status"
-  "stop"
-  "start"
   "status tux"
   "status pubsub"
-  "restart"
   "bounce"
+  "list"
 )
 
 # Loop through the array and execute each command

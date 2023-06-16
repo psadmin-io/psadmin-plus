@@ -398,7 +398,7 @@ module PsadminPlus
             when "linux"
                 do_cmd(cmd: "export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo pq | " + env('TUXDIR') + "/bin/tmadmin -r ")
             when "windows"
-                do_cmd(cmd: "cmd / set TUXCONFIG=\"#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG\" & 'pq' | . " + env('TUXDIR') + "/bin/tmadmin -r ")
+                do_cmd(cmd: "cmd /c 'set TUXCONFIG=\"#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG\" & 'pq' | . " + env('TUXDIR') + "/bin/tmadmin -r '")
             end
         when "pubsub"
             do_psadmin_check ? nil : return

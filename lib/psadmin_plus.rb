@@ -461,7 +461,7 @@ module PsadminPlus
         when "pubsub"
             case "#{OS_CONST}"
             when "linux"
-                do_cmd(cmd: "export TUXCONFIG=#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG && echo boot -g PUBSUB | #{env('TUXDIR')}/bin/tmadmin -r")
+                do_cmd(cmd: "export TUXCONFIG=#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG && echo boot -g PUBSUB | #{env('TUXDIR')}/bin/tmadmin")
             when "windows"
                 #do_cmd(cmd: "$env:TUXCONFIG=\"#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG\"; 'boot -g PUBSUB' | . " + env('TUXDIR') + "/bin/tmadmin -r")
             end
@@ -534,7 +534,7 @@ module PsadminPlus
         when "pubsub"
             case "#{OS_CONST}"
             when "linux"
-                do_cmd(cmd: "export TUXCONFIG=#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG && echo shutdown -g PUBSUB | #{env('TUXDIR')}/bin/tmadmin -r")
+                do_cmd(cmd: "export TUXCONFIG=#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG && echo stop -g PUBSUB | #{env('TUXDIR')}/bin/tmadmin")
             when "windows"
                 #do_cmd(cmd: "$env:TUXCONFIG=\"#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG\"; 'boot -g PUBSUB' | . " + env('TUXDIR') + "/bin/tmadmin -r")
             end

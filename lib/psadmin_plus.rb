@@ -394,10 +394,20 @@ module PsadminPlus
             do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -c pslist -d #{domain}")
         when "tux"
             do_psadmin_check ? nil : return
-            do_cmd(cmd: OS_SETENV + "TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG " + OS_JOIN + " echo pq | " + env('TUXDIR') + "/bin/tmadmin -r ")
+            case "#{OS_CONST}"
+            when "linux"
+                do_cmd(cmd: "export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo pq | " + env('TUXDIR') + "/bin/tmadmin -r ")
+            when "windows"
+                do_cmd(cmd: "$env:TUXCONFIG=\"#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG\"; 'pq' | . " + env('TUXDIR') + "/bin/tmadmin -r ")
+            end
         when "pubsub"
             do_psadmin_check ? nil : return
-            do_cmd(cmd: OS_SETENV + "TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG " + OS_JOIN + " echo printserver -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
+            case "#{OS_CONST}"
+            when "linux"
+                do_cmd(cmd: OS_SETENV + "TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG " + OS_JOIN + " echo printserver -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
+            when "windows"
+                do_cmd(cmd: "$env:TUXCONFIG=\"#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG\";  'printserver -g PUBSUB' | . " + env('TUXDIR') + "/bin/tmadmin -r")
+            end
         when "prcs"
             do_psadmin_check ? nil : return
             do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -p status -d #{domain}")
@@ -444,7 +454,12 @@ module PsadminPlus
             end
             do_hookstart("start",type,domain)
         when "pubsub"
-            do_cmd(cmd: OS_SETENV + "TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG " + OS_JOIN + " echo boot -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
+            case "#{OS_CONST}"
+            when "linux"
+                do_cmd(cmd: OS_SETENV + "TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG " + OS_JOIN + " echo boot -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
+            when "windows"
+                do_cmd(cmd: "$env:TUXCONFIG=\"#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG\"; 'boot -g PUBSUB' | . " + env('TUXDIR') + "/bin/tmadmin -r")
+            end
         when "prcs"
             case "#{PS_WIN_SERVICES}"
             when "true", "tux", "prcs", "all"

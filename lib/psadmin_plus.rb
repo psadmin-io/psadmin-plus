@@ -532,7 +532,12 @@ module PsadminPlus
                 end
             end
         when "pubsub"
-            do_cmd(cmd: "export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo shutdown -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
+            case "#{OS_CONST}"
+            when "linux"
+                do_cmd(cmd: OS_SETENV + "TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG " + OS_JOIN + " echo shutdown -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
+            when "windows"
+                #do_cmd(cmd: "$env:TUXCONFIG=\"#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG\"; 'boot -g PUBSUB' | . " + env('TUXDIR') + "/bin/tmadmin -r")
+            end
         when "prcs"
             do_hookstop("stop",type,domain)
             case "#{PS_WIN_SERVICES}"

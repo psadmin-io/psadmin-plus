@@ -22,14 +22,6 @@ module PsadminPlus
         end
     end
 
-    if os == "linux" then
-        @@os_join = "&&"
-        @@os_set_env = "export "
-    else
-        @@os_join = ";"
-        @@os_set_env = "$env:"
-    end
-
     def do_help
         puts "Usage: psa [command] <type> <domain>"
         puts " "
@@ -402,10 +394,10 @@ module PsadminPlus
             do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -c pslist -d #{domain}")
         when "tux"
             do_psadmin_check ? nil : return
-            do_cmd(cmd: @@os_set_env + "TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG " + @@os_join + " echo pq | " + env('TUXDIR') + "/bin/tmadmin -r ")
+            do_cmd(cmd: OS_SETENV + "TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG " + OS_JOIN + " echo pq | " + env('TUXDIR') + "/bin/tmadmin -r ")
         when "pubsub"
             do_psadmin_check ? nil : return
-            do_cmd(cmd: @@os_set_env + "TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG " + @@os_join + " echo printserver -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
+            do_cmd(cmd: OS_SETENV + "TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG " + OS_JOIN + " echo printserver -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
         when "prcs"
             do_psadmin_check ? nil : return
             do_cmd(cmd: "#{PS_PSADMIN_PATH}/psadmin -p status -d #{domain}")
@@ -452,7 +444,7 @@ module PsadminPlus
             end
             do_hookstart("start",type,domain)
         when "pubsub"
-            do_cmd(cmd: @@os_set_env + "TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG " + @@os_join + " echo boot -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
+            do_cmd(cmd: OS_SETENV + "TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG " + OS_JOIN + " echo boot -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
         when "prcs"
             case "#{PS_WIN_SERVICES}"
             when "true", "tux", "prcs", "all"

@@ -66,17 +66,17 @@ PS_PSA_OUTPUT       = ENV['PS_PSA_OUTPUT'] || "all" # values are "all", "summary
 PS_PSA_NO_BANNER    = ENV['PS_PSA_NO_BANNER'] || "false"
 
 # validation
-# check runtime user
+# check runtime user and set OS constants
 if "#{OS_CONST}" == "linux" then
-    os_join = "&&"
-    os_set_env = "export "
+    OS_JOIN = "&&"
+    OS_SETENV = "export "
     if !system("id #{PS_RUNTIME_USER} &> /dev/null") then
 	puts "#{PS_RUNTIME_USER} is not valid. Please correct PS_RUNTIME_USER, then try again."
         exit
     end
 else
-    os_join = ";"
-    os_set_env = "$env:"
+    OS_SETENV = ";"
+    OS_SETENV = "$env:"
 end
 
 # process

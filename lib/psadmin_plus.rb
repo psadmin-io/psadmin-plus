@@ -97,7 +97,7 @@ module PsadminPlus
         result = "#{OS_CONST}" == "linux" ? "${#{var}}" : "${env:#{var}}" #"%#{var}%"
     end
 
-    def do_cmd(cmd:, internal: false)
+    def do_cmd(cmd:, internal: false, powershell: true)
         if internal
             output = "off"
         else
@@ -119,8 +119,13 @@ module PsadminPlus
                 end
             end
         when "windows"
-            prefix = "powershell -NoProfile -Command \""
-            suffix = "\""
+            if powershell
+                prefix = "powershell -NoProfile -Command \""
+                suffix = "\""
+            else
+                prefix = "cmd /c "
+                suffix = ""
+            end
         else
             puts "Invalid OS"
         end
@@ -398,7 +403,7 @@ module PsadminPlus
             when "linux"
                 do_cmd(cmd: "export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo pq | " + env('TUXDIR') + "/bin/tmadmin -r ")
             when "windows"
-                do_cmd(cmd: "cmd /c set TUXCONFIG=#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG & echo 'pq' | #{ENV['TUXDIR']}/bin/tmadmin -r")
+                do_cmd(cmd: "set TUXCONFIG=#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG & echo 'pq' | #{ENV['TUXDIR']}/bin/tmadmin -r", powershell: false)
             end
         when "pubsub"
             do_psadmin_check ? nil : return

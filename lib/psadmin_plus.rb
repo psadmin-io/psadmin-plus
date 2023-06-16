@@ -152,7 +152,7 @@ module PsadminPlus
         when true
             debug "command success"
         when false
-            do_output("psadmin returned an error", timestamp, true)
+            do_output("psadmin returned an error", true)
             if PS_PSA_OUTPUT == "summary" || PS_PSA_OUTPUT == "quiet"
                 print_std(std:stderr, err: true)
             end

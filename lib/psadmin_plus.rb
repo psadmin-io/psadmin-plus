@@ -403,7 +403,7 @@ module PsadminPlus
             when "linux"
                 do_cmd(cmd: "export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo pq | " + env('TUXDIR') + "/bin/tmadmin -r ")
             when "windows"
-                do_cmd(cmd: "\"set TUXCONFIG=#{ENV['PS_CFG_HOME']}\\appserv\\#{domain}\\PSTUXCFG && echo 'pq' | #{ENV['TUXDIR']}\\bin\\tmadmin -r \"", powershell: false)
+                #do_cmd(cmd: "\"set TUXCONFIG=#{ENV['PS_CFG_HOME']}\\appserv\\#{domain}\\PSTUXCFG && echo 'pq' | #{ENV['TUXDIR']}\\bin\\tmadmin -r \"", powershell: false)
             end
         when "pubsub"
             do_psadmin_check ? nil : return
@@ -411,7 +411,7 @@ module PsadminPlus
             when "linux"
                 do_cmd(cmd: OS_SETENV + "TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG " + OS_JOIN + " echo printserver -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
             when "windows"
-                do_cmd(cmd: "$env:TUXCONFIG=\"#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG\";  'printserver -g PUBSUB' | . " + env('TUXDIR') + "/bin/tmadmin -r")
+                #do_cmd(cmd: "$env:TUXCONFIG=\"#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG\";  'printserver -g PUBSUB' | . " + env('TUXDIR') + "/bin/tmadmin -r")
             end
         when "prcs"
             do_psadmin_check ? nil : return
@@ -463,7 +463,7 @@ module PsadminPlus
             when "linux"
                 do_cmd(cmd: OS_SETENV + "TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG " + OS_JOIN + " echo boot -g PUBSUB | " + env('TUXDIR') + "/bin/tmadmin -r")
             when "windows"
-                do_cmd(cmd: "$env:TUXCONFIG=\"#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG\"; 'boot -g PUBSUB' | . " + env('TUXDIR') + "/bin/tmadmin -r")
+                #do_cmd(cmd: "$env:TUXCONFIG=\"#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG\"; 'boot -g PUBSUB' | . " + env('TUXDIR') + "/bin/tmadmin -r")
             end
         when "prcs"
             case "#{PS_WIN_SERVICES}"

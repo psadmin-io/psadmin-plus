@@ -22,7 +22,7 @@ module PsadminPlus
         end
     end
 
-    if "#{OS_CONST}" == "linux" then
+    if os == "linux" then
         @@os_join = "&&"
         @@os_set_env = "export "
     else

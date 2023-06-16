@@ -403,7 +403,7 @@ module PsadminPlus
             when "linux"
                 do_cmd(cmd: "export TUXCONFIG=#{env('PS_CFG_HOME')}/appserv/#{domain}/PSTUXCFG && echo pq | " + env('TUXDIR') + "/bin/tmadmin -r ")
             when "windows"
-                do_cmd(cmd: "set TUXCONFIG=#{ENV['PS_CFG_HOME']}/appserv/#{domain}/PSTUXCFG & echo 'pq' | #{ENV['TUXDIR']}\\bin\\tmadmin -r", powershell: false)
+                do_cmd(cmd: "\"set TUXCONFIG=#{ENV['PS_CFG_HOME']}\\appserv\\#{domain}\\PSTUXCFG && echo 'pq' | #{ENV['TUXDIR']}\\bin\\tmadmin -r \"", powershell: false)
             end
         when "pubsub"
             do_psadmin_check ? nil : return

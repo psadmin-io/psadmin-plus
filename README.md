@@ -113,6 +113,19 @@ Environment variables are used to control `psadmin-plus` and `psadmin` functiona
     * Sets the hook script to run before the `stop` command and after the `start` command.
     * Examples are found in `lib/hooks`.
     * If not set, default is `false` and no hook is triggered.
+* `PS_PSA_OUTPUT`
+    * `all` - the default - shows normal output like past versions
+    * `summary` - only show stdout (plus a few special lines from stderr like "x processes started" but reprocessed into stdout. This will help with Rundeck and other tools to keep stderr from being polluted with informational messages.
+    * `quiet` - hide all output - you can use exit codes from `psa`. On errors, `psa` will display stderr from `psadmin`.
+* `PS_PSA_TIMESTAMP`
+    * `true` - each line will have a timestamp prepended to it - useful with `psa status tux APPDOM` to output the Tuxedo Queue stats to file
+    * `false` - default
+* `PS_PSA_NO_BANNER`
+    * `true` - do not display the command banner - useful with the `PS_PSA_OUTPUT=quiet` option
+    * `false` - default
+* `PS_PSA_DEBUG`
+    * `INFO` - default - only display informational messages
+    * `DEBUG` - display debug output including commands
     
 ## Configuration File
 

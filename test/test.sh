@@ -26,16 +26,16 @@ do
   for var in "${variables[@]}"
   do
     export "$var"
+
+    eval "bin/psa $cmd"
+
+    # Verify the result of the command
+    if [ $? -eq 0 ]; then
+      echo "Test succeeded"
+    else
+      echo "Test failed"
+    fi
   done
-
-  eval "bin/psa $cmd"
-
-  # Verify the result of the command
-  if [ $? -eq 0 ]; then
-    echo "Test succeeded"
-  else
-    echo "Test failed"
-  fi
 
   echo
 done

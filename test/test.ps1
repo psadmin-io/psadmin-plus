@@ -23,15 +23,15 @@ foreach ($cmd in $commands) {
   foreach ($var in $variables) {
     $envVar = $var -split "="
     Set-Item -Path "env:$($envVar[0])" -Value $envVar[1]
-  }
 
-  Invoke-Expression "bin/psa $cmd"
+    Invoke-Expression "bin/psa $cmd"
 
-  # Verify the result of the command
-  if ($LASTEXITCODE -eq 0) {
-    Write-Host "Command succeeded"
-  } else {
-    Write-Host "Command failed"
+    # Verify the result of the command
+    if ($LASTEXITCODE -eq 0) {
+      Write-Host "Command succeeded"
+    } else {
+      Write-Host "Command failed"
+    }
   }
 
   Write-Host
